@@ -1,0 +1,503 @@
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap');
+
+:root {
+  --marni-ink:    #2A2A2A;
+  --marni-red:    #C8102E;
+  --marni-bubble: #F5F4F1;
+  --marni-border: #DAD7D1;
+  --marni-font:   'Jost', sans-serif;
+}
+
+.chat{
+  font-family: futura-pt !important;
+}
+
+/* il bottone flottante */
+.chat-widget.chat-button {
+  background-color: #ffffff !important;
+  border: 1px solid var(--marni-ink) !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+}
+
+.chat-widget .chat-widget-container {
+  background-image: url('https://www.marni.com/on/demandware.static/Sites-MarniEU-Site/-/default/dwe20b15ae/favicons/safari-pinned-tab.svg') !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: 52% 52% !important;
+  background-color: #ffffff !important;
+}
+
+.chat-widget .icon-widget,
+.chat-widget .animate-widget {
+  display: none !important;
+}
+
+.chat-widget.chat-button { color: var(--marni-ink) !important; }
+
+.chat-widget,
+.chat-widget * {
+  font-family: var(--marni-font) !important;
+}
+
+.suggestion-list {
+  list-style-type: none !important;      /* era: none (lo forzo) */
+  display: flex !important;              /* era: flex column -> lo rendo... */
+  flex-direction: row !important;        /* ...row (contro 'column' di default) */
+  flex-wrap: wrap !important;            /* per andare a capo */
+  gap: 10px !important;
+  padding-left: 0 !important;            /* contro padding-left di default */
+  padding: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;           /* contro var(--border-radius) */
+  box-shadow: none !important;           /* contro var(--box-shadow) */
+  -webkit-backdrop-filter: none !important;  /* contro var(--backdrop-filter) */
+  backdrop-filter: none !important;          /* idem */
+  background: transparent !important;
+}
+
+.suggestion-list .suggestion-item:first-child {
+  border-top-left-radius: 0 !important;   /* contro var(--border-radius) */
+  border-top-right-radius: 0 !important;  /* contro var(--border-radius) */
+}
+
+.suggestion-list .suggestion-item {
+  position: static !important;            /* contro position: relative */
+  display: block !important;              /* resta block, ma senza stile menu */
+  padding: 0 !important;                  /* contro padding 8px 12px 9px 12px */
+  margin: 0 !important;
+  background-color: transparent !important;  /* contro var(--bg-other-color) */
+  border-bottom: 0 !important;               /* contro border-bottom 1px solid */
+  cursor: pointer !important;
+}
+
+.message-button button,
+.suggestion-item .suggestion-item-text {
+  width: auto !important;                 
+  height: auto !important;               
+  border: 1px solid #DAD7D1 !important;  
+  background-color: #FFFFFF !important;   /* contro background-color: transparent */
+  color: #2A2A2A !important;              /* contro var(--fg-other-color) */
+  /*font-family: 'Jost', sans-serif !important;*/
+  font-size: 14px !important;             /* contro var(--font-12) */
+  line-height: 1 !important;              /* contro line-height var(--font-12)+3 */
+  border-radius: 999px !important;
+  padding: 11px 20px !important;
+  cursor: pointer !important;
+  transition: background .15s, border-color .15s !important;
+}
+
+.message-button button:not([disabled]):hover,
+.suggestion-item .suggestion-item-text:hover {
+  background-color: #F5F4F1 !important;
+  border-color: #DAD7D1 !important;
+  color: #2A2A2A !important;             
+}
+
+.suggestion-item .suggestion-item-text .focused {
+  color: inherit !important;
+}
+
+.container-message-display .other-message .other-message-body .message-text{
+  background: #F5F4F1 !important;
+  color: #000 !important;
+  font-size: 14px !important;
+  box-shadow: none !important;
+  /*font-family: 'Jost', sans-serif !important;*/
+}
+
+.message-date{
+  color: #00000040 !important;
+  letter-spacing: 1.5px !important;
+  font-size: 10px !important;
+  /*font-family: 'Jost', sans-serif !important;*/
+}
+
+.message-timestamp{
+  color: #00000054 !important;
+  /*font-family: 'Jost', sans-serif !important;*/
+}
+
+.container-message-display .other-message .other-message-body .message-text>.p {
+    padding: 12px 16px 12px 16px !important;
+}
+
+.rounded svg {
+  box-shadow: none !important;
+  background-color: transparent !important;
+  color: #000 !important;
+}
+
+.chat .chat-container {
+  background-color: white !important;
+}
+
+.chat-body .toolbar-item .toolbar-message-keyboard {
+  box-shadow: none !important;
+  border: 1px solid #000 !important;
+}
+
+.container-message-display .myself-message .myself-message-body .message-text {
+  box-shadow: none !important;
+  color: #000 !important;
+  font-size: 14px !important;
+  background-color: #f5f4f1 !important;
+}
+
+.container-message-display .myself-message .myself-message-body .message-text>.p {
+  padding: 12px 42px 12px 16px !important;
+}
+
+.chat-button svg{
+  color: #000 !important;
+}
+
+.language-title{
+  color: #000 !important;
+}
+
+.chat-panel-container .language-filter .language-input-filter {
+  border: 1px solid #000000 !important;
+  padding: 4px 14px !important;
+}
+
+.focus:not(:has(svg)):focus-visible {
+  box-shadow: none !important;
+}
+
+ul.bot-language li .flag-icon {
+  border: 5px solid #66718000 !important;
+}
+
+.chat-panel-window li.language-item .flag-icon {
+  border: 5px solid #66718000 !important;
+}
+
+.chat-panel-window li.language-item .flag-text {
+  font-size: 12px !important;
+  /*font-family: 'Jost', sans-serif !important;*/  
+}
+
+.container-message-display .loading-message-body .message-content .message-waiting {
+    box-shadow: none !important;
+}
+
+.vue-js-switch .v-switch-label.v-right {
+  color: white !important;
+}
+
+.vue-js-switch .v-switch-core {
+  background-color: black !important;
+}
+
+.chat-panel-window .slider-range {
+  background-color: black !important;
+}
+
+button.button {
+  background-color: black !important;
+  color: white !important;
+}
+
+
+/* ============================================================
+   SCHERMATA DI BENVENUTO
+   Il markup non e' modificabile: titolo, sottotitolo e "Non ora"
+   vengono inseriti con i pseudo-elementi. Il pulsante rotondo con
+   l'icona di accensione diventa il bottone a tutta larghezza.
+   ============================================================ */
+
+.chat-player-start {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  min-height: 440px !important;
+  padding: 44px 28px 28px !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+  font-family: var(--marni-font) !important;
+}
+
+.chat-player-permission {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100% !important;
+  position: relative !important;
+}
+
+/* ordine visivo: icona, titolo, sottotitolo, privacy, pulsante */
+.chat-player-go      { order: 1 !important; }
+.chat-player-privacy { order: 4 !important; }
+
+/* ---------- titolo e sottotitolo ---------- */
+.chat-player-permission::before {
+  content: "Ciao, sono Marni Agent";
+  order: 2;
+  display: block;
+  font-size: 19px;
+  font-weight: 500;
+  color: black;
+  letter-spacing: .2px;
+  margin: 0 0 10px;
+}
+
+.chat-player-permission::after {
+  content: "Sono qui per aiutarti con ordini, resi, prodotti e consigli di stile.";
+  order: 3;
+  display: block;
+  max-width: 250px;
+  font-family: var(--marni-font) !important;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #8A8A8A;
+  margin: 0 auto 36px;
+}
+
+/* ---------- icona in alto ---------- */
+.chat-player-go {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100% !important;
+  position: relative !important;
+}
+
+/* la scritta "Clicca qui sotto per parlare con me" non serve */
+.chat-player-permission-text { display: none !important; }
+
+.animated-icon-play-container {
+  position: relative !important;
+  width: 60px !important;
+  height: 60px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid var(--marni-border) !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+}
+
+/* le onde animate restano come accenno discreto */
+.animated-icon-play-container .animated-icon {
+  position: absolute !important;
+  width: 60px !important;
+  height: 60px !important;
+  color: var(--marni-border) !important;
+  opacity: .45 !important;
+  pointer-events: none !important;
+}
+.animated-icon-play-container .animated-button{
+    filter: none !important;
+}
+
+.chat-player-toolbar button{
+    margin-top: 0.3rem;
+}
+
+/* ---------- pulsante ---------- */
+.chat-player-start .animated-button {
+  position: absolute !important;
+  top: 305px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 250px !important;
+  height: 46px !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background-color: #000000 !important;
+  color: #fff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: background-color .18s ease !important;
+}
+
+.chat-player-start .animated-button:hover {
+  background-color: #000 !important;
+}
+
+.chat-player-start .animated-button svg { display: none !important; }
+
+.chat-player-start .animated-button::after {
+  content: "Inizia la conversazione";
+  font-family: var(--marni-font) !important;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: .2px;
+  color: #fff;
+}
+
+/* ---------- testo privacy ---------- */
+.chat-player-privacy {
+  max-width: 252px !important;
+  margin: 0 auto !important;
+}
+
+.chat-player-privacy p {
+  font-family: var(--marni-font) !important;
+  font-size: 11px !important;
+  line-height: 1.6 !important;
+  color: #A0A0A0 !important;
+  margin: 0 0 20px !important;
+}
+
+.chat-player-privacy a {
+  color: #6F6F6F !important;
+  text-decoration: underline !important;
+}
+
+/* ---------- "Non ora" ----------
+   Decorativo: il markup non prevede un secondo pulsante, quindi
+   qui e' solo testo. Per renderlo cliccabile serve una riga di
+   JavaScript che richiami window.algho.close(). */
+.chat-player-start::after {
+  content: "Non ora";
+  display: block;
+  margin-top: 92px;
+  font-family: var(--marni-font) !important;
+  font-size: 12px;
+  color: #A0A0A0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* schermi bassi: riduco gli spazi per non tagliare il contenuto */
+@media (max-height: 620px) {
+  .chat-player-start { min-height: 400px !important; padding-top: 32px !important; }
+  .chat-player-permission::after { margin-bottom: 28px !important; }
+  .chat-player-start .animated-button { top: 262px !important; }
+  .chat-player-start::after { margin-top: 78px !important; }
+}
+
+/* ============================================================
+   ANTEPRIMA LINK — formato compatto
+   ============================================================ */
+
+ul.message-link-content {
+  position: relative !important;
+  list-style: none !important;
+  display: flex !important;
+  padding: 10px 12px !important;
+  border: 1px solid #DAD7D1 !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  transition: background-color .15s ease !important;
+}
+
+.message-link-content .link-image{
+    max-width: 100% !important;
+}
+
+.message-link-content .message-link-items{
+    border-bottom: none !important
+}
+
+ul.message-link-content:hover { background: #F5F4F1 !important; }
+
+li.message-link-items {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 18px 0 0 !important;
+}
+
+.message-link-item {
+  display: grid !important;
+  grid-template-columns: 40px 1fr !important;
+  grid-template-areas:
+    "img titolo"
+    "img descrizione" !important;
+  align-items: center !important;
+  column-gap: 12px !important;
+  row-gap: 1px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.message-link-item .link-image {
+  grid-area: img !important;
+  height: 40px !important;
+  object-fit: cover !important;
+  border-radius: 10px !important;
+  background: #F5F4F1 !important;
+  margin: 0 !important;
+  display: block !important;
+}
+
+.message-link-item .link-title {
+  grid-area: titolo !important;
+  /*font-family: 'Jost', sans-serif !important;*/
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  color: #2A2A2A !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.message-link-item .link-description {
+  grid-area: descrizione !important;
+  /*font-family: 'Jost', sans-serif !important;*/
+  font-size: 11.5px !important;
+  line-height: 1.35 !important;
+  color: #9A9A9A !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+li.message-link-anchor {
+  position: static !important;
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+li.message-link-anchor button {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  font-size: 0 !important;
+  z-index: 2 !important;
+}
+
+li.message-link-anchor button .focused,
+li.message-link-anchor button span,
+li.message-link-anchor button a {
+  display: none !important;
+}
+
+ul.message-link-content::after {
+  content: "";
+  position: absolute !important;
+  right: 14px !important;
+  top: 50% !important;
+  width: 7px !important;
+  height: 7px !important;
+  margin-top: -4px !important;
+  border-right: 1.5px solid #B4B4B4 !important;
+  border-bottom: 1.5px solid #B4B4B4 !important;
+  transform: rotate(-45deg) !important;
+  pointer-events: none !important;
+}
