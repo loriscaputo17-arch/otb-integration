@@ -742,12 +742,13 @@ ul.message-link-content::after {
 /* pulsante testuale, per gli inviti */
 .mr-btn-testo, .message-text .mr-btn-testo {
   padding: 9px 16px !important;
-  background: #FFFFFF !important;
-  color: var(--marni-ink) !important;
+  background: #000000 !important;
+  color: #fff !important;
   border: 1px solid var(--marni-ink) !important;
   border-radius: 100px !important;
   font-size: 12px !important;
   cursor: pointer !important;
+  font-family: futura-pt !important;
 }
 .mr-btn-testo:hover, .message-text .mr-btn-testo:hover {
   background: var(--marni-bubble) !important;
@@ -1128,7 +1129,7 @@ ul.message-link-content::after {
   flex: 1 !important;
   padding: 8px 0 !important;
   background: #FFFFFF !important;
-  border: 1px solid var(--marni-border) !important;
+  border: 1px solid #e0e0e0 !important;
   border-radius: 100px !important;
   cursor: pointer !important;
   font-size: 15px !important;
@@ -1143,7 +1144,7 @@ ul.message-link-content::after {
 
 .mr-btn--scuro, .message-text .mr-btn--scuro {
   background: var(--marni-ink) !important;
-  border-color: var(--marni-ink) !important;
+  border-color: #e0e0e0 !important;
   color: #FFFFFF !important;
 }
 .mr-btn--scuro:hover, .message-text .mr-btn--scuro:hover {
