@@ -12,14 +12,6 @@
   font-family: futura-pt !important;
 }
 
-/* il bottone flottante */
-.chat-widget.chat-button {
-  background-color: #ffffff !important;
-  border: 1px solid var(--marni-ink) !important;
-  border-radius: 50% !important;
-  overflow: hidden !important;
-}
-
 .chat-widget .chat-widget-container {
   background-image: url('https://www.marni.com/on/demandware.static/Sites-MarniEU-Site/-/default/dwe20b15ae/favicons/safari-pinned-tab.svg') !important;
   background-repeat: no-repeat !important;
@@ -201,7 +193,6 @@ button.button {
   color: white !important;
 }
 
-
 /* ============================================================
    SCHERMATA DI BENVENUTO
    Il markup non e' modificabile: titolo, sottotitolo e "Non ora"
@@ -228,10 +219,6 @@ button.button {
   width: 100% !important;
   position: relative !important;
 }
-
-/* ordine visivo: icona, titolo, sottotitolo, privacy, pulsante */
-.chat-player-go      { order: 1 !important; }
-.chat-player-privacy { order: 4 !important; }
 
 /* ---------- titolo e sottotitolo ---------- */
 .chat-player-permission::before {
@@ -689,446 +676,6 @@ ul.message-link-content::after {
   flex: 1 !important;
   padding: 8px 0 !important;
   background: #FFFFFF !important;
-  border: 1px solid var(--marni-border) !important;
-  border-radius: 100px !important;
-  cursor: pointer !important;
-  font-size: 15px !important;
-  line-height: 1 !important;
-  color: var(--marni-ink) !important;
-  transition: background-color .15s ease, border-color .15s ease !important;
-}
-
-.mr-btn:hover, .message-text .mr-btn:hover {
-  background: var(--marni-bubble) !important;
-}
-
-.mr-btn--scuro, .message-text .mr-btn--scuro {
-  background: var(--marni-ink) !important;
-  border-color: var(--marni-ink) !important;
-  color: #FFFFFF !important;
-}
-.mr-btn--scuro:hover, .message-text .mr-btn--scuro:hover {
-  background: #000000 !important;
-}
-
-/* pulsante largo, per le azioni principali */
-.mr-btn-largo, .message-text .mr-btn-largo {
-  display: block !important;
-  width: 100% !important;
-  padding: 12px !important;
-  background: var(--marni-ink) !important;
-  color: #FFFFFF !important;
-  border: none !important;
-  border-radius: 100px !important;
-  font-size: 13px !important;
-  cursor: pointer !important;
-  text-align: center !important;
-  text-decoration: none !important;
-  box-sizing: border-box !important;
-}
-.mr-btn-largo:hover, .message-text .mr-btn-largo:hover {
-  background: #000000 !important;
-}
-
-.mr-btn-largo--chiaro, .message-text .mr-btn-largo--chiaro {
-  background: #FFFFFF !important;
-  color: var(--marni-ink) !important;
-  border: 1px solid var(--marni-ink) !important;
-}
-.mr-btn-largo--chiaro:hover, .message-text .mr-btn-largo--chiaro:hover {
-  background: var(--marni-bubble) !important;
-}
-
-/* pulsante testuale, per gli inviti */
-.mr-btn-testo, .message-text .mr-btn-testo {
-  padding: 9px 16px !important;
-  background: #000000 !important;
-  color: #fff !important;
-  border: 1px solid var(--marni-ink) !important;
-  border-radius: 100px !important;
-  font-size: 12px !important;
-  cursor: pointer !important;
-  font-family: futura-pt !important;
-}
-.mr-btn-testo:hover, .message-text .mr-btn-testo:hover {
-  background: var(--marni-bubble) !important;
-}
-
-/* ---------- taglie ---------- */
-.mr-taglie, .message-text .mr-taglie {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 6px !important;
-  margin-bottom: 10px !important;
-}
-
-.mr-taglia, .message-text .mr-taglia {
-  min-width: 46px !important;
-  padding: 8px 12px !important;
-  background: #FFFFFF !important;
-  color: var(--marni-ink) !important;
-  border: 1px solid var(--marni-ink) !important;
-  border-radius: 100px !important;
-  font-size: 12px !important;
-  cursor: pointer !important;
-}
-.mr-taglia:hover, .message-text .mr-taglia:hover {
-  background: var(--marni-bubble) !important;
-}
-
-.mr-taglia--esaurita, .message-text .mr-taglia--esaurita {
-  color: #BBBBBB !important;
-  border-color: var(--marni-border) !important;
-  cursor: default !important;
-  text-decoration: line-through !important;
-}
-
-/* ---------- chip di affinamento ---------- */
-.mr-chips, .message-text .mr-chips {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 6px !important;
-  margin-top: 8px !important;
-}
-
-.mr-chip, .message-text .mr-chip {
-  padding: 7px 13px !important;
-  background: #FFFFFF !important;
-  color: var(--marni-ink) !important;
-  border: 1px solid var(--marni-border) !important;
-  border-radius: 100px !important;
-  font-size: 12px !important;
-  cursor: pointer !important;
-}
-.mr-chip:hover, .message-text .mr-chip:hover {
-  background: var(--marni-bubble) !important;
-}
-
-.mr-chip--scuro, .message-text .mr-chip--scuro {
-  background: var(--marni-ink) !important;
-  color: #FFFFFF !important;
-  border-color: var(--marni-ink) !important;
-}
-
-/* ---------- riquadri ---------- */
-.mr-box, .message-text .mr-box {
-  border: 1px solid var(--marni-border) !important;
-  border-radius: 2px !important;
-  padding: 14px !important;
-  margin-bottom: 12px !important;
-}
-
-.mr-box--pulito, .message-text .mr-box--pulito {
-  border: none !important;
-  padding: 0 !important;
-}
-
-.mr-sezione, .message-text .mr-sezione {
-  border-top: 1px solid #EEEEEE !important;
-  margin-top: 10px !important;
-  padding-top: 10px !important;
-}
-
-/* ---------- righe (carrello, ordini) ---------- */
-.mr-riga, .message-text .mr-riga {
-  display: flex !important;
-  gap: 10px !important;
-  align-items: center !important;
-  padding: 10px 0 !important;
-  border-bottom: 1px solid #F0F0F0 !important;
-}
-.mr-riga:last-child, .message-text .mr-riga:last-child {
-  border-bottom: none !important;
-}
-
-.mr-riga-foto, .message-text .mr-riga-foto {
-  width: 54px !important;
-  height: 54px !important;
-  object-fit: cover !important;
-  border-radius: 2px !important;
-  background: var(--marni-bubble) !important;
-  flex: 0 0 54px !important;
-}
-
-.mr-riga-testo, .message-text .mr-riga-testo {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-}
-.mr-riga-nome, .message-text .mr-riga-nome {
-  font-size: 13px !important;
-  color: var(--marni-ink) !important;
-  line-height: 1.35 !important;
-}
-.mr-riga-meta, .message-text .mr-riga-meta {
-  font-size: 11px !important;
-  color: #999 !important;
-  margin-top: 2px !important;
-}
-.mr-riga-prezzo, .message-text .mr-riga-prezzo {
-  font-size: 13px !important;
-  color: var(--marni-ink) !important;
-  font-weight: 600 !important;
-  white-space: nowrap !important;
-}
-
-.mr-totale, .message-text .mr-totale {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: baseline !important;
-  padding: 12px 0 10px !important;
-  border-top: 1px solid var(--marni-border) !important;
-  font-size: 14px !important;
-  color: var(--marni-ink) !important;
-}
-.mr-totale b, .message-text .mr-totale b {
-  font-weight: 600 !important;
-}
-
-/* ---------- stati ---------- */
-.mr-stato, .message-text .mr-stato {
-  display: inline-block !important;
-  padding: 4px 10px !important;
-  border-radius: 100px !important;
-  font-size: 11px !important;
-  font-weight: 500 !important;
-}
-.mr-stato--corso, .message-text .mr-stato--corso {
-  background: #FFF4E5 !important;
-  color: #B06000 !important;
-}
-.mr-stato--spedito, .message-text .mr-stato--spedito {
-  background: #E7F3FF !important;
-  color: #0B5CAD !important;
-}
-.mr-stato--consegnato, .message-text .mr-stato--consegnato {
-  background: #E8F5EC !important;
-  color: #1A7F37 !important;
-}
-.mr-stato--annullato, .message-text .mr-stato--annullato {
-  background: #FBEAEA !important;
-  color: #B42318 !important;
-}
-
-/* ---------- mappa e negozi ---------- */
-.mr-negozio, .message-text .mr-negozio {
-  border: 1px solid var(--marni-border) !important;
-  border-radius: 2px !important;
-  padding: 12px !important;
-  margin-bottom: 8px !important;
-}
-.mr-negozio-nome, .message-text .mr-negozio-nome {
-  font-size: 14px !important;
-  color: var(--marni-ink) !important;
-  font-weight: 500 !important;
-}
-.mr-negozio-distanza, .message-text .mr-negozio-distanza {
-  font-size: 11px !important;
-  color: #999 !important;
-  float: right !important;
-}
-.mr-negozio-indirizzo, .message-text .mr-negozio-indirizzo {
-  font-size: 12px !important;
-  color: #666 !important;
-  line-height: 1.4 !important;
-  margin-top: 4px !important;
-}
-.mr-negozio-aperto, .message-text .mr-negozio-aperto {
-  font-size: 11px !important;
-  color: #1A7F37 !important;
-  margin-top: 4px !important;
-}
-.mr-negozio-chiuso, .message-text .mr-negozio-chiuso {
-  font-size: 11px !important;
-  color: #999 !important;
-  margin-top: 4px !important;
-}
-/* ============================================================
-   COMPONENTI DELLE RISPOSTE
-   Classi usate dai flussi n8n. Gli stili stanno qui, non nel
-   codice: cambiare un colore o una spaziatura si fa in un punto
-   solo, senza toccare i venti flussi.
-
-   Nomenclatura: mr- (Marni Response) + componente + elemento.
-   ============================================================ */
-
-/* ---------- contenitore della risposta ---------- */
-.mr-wrap, .message-text .mr-wrap {
-  width: 310px !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-/* ---------- intestazioni e testi ---------- */
-.mr-intro, .message-text .mr-intro {
-  font-size: 13px !important;
-  color: #555 !important;
-  line-height: 1.45 !important;
-  margin-bottom: 10px !important;
-}
-
-.mr-titolo, .message-text .mr-titolo {
-  font-size: 14px !important;
-  color: var(--marni-ink) !important;
-  margin-bottom: 2px !important;
-}
-
-.mr-sottotitolo, .message-text .mr-sottotitolo {
-  font-size: 11px !important;
-  color: #888 !important;
-  margin-bottom: 6px !important;
-}
-
-.mr-nota, .message-text .mr-nota {
-  font-size: 12px !important;
-  color: #555 !important;
-  line-height: 1.5 !important;
-  margin-bottom: 10px !important;
-}
-
-.mr-nota--stile, .message-text .mr-nota--stile {
-  font-style: italic !important;
-  color: #666 !important;
-}
-
-.mr-criteri, .message-text .mr-criteri {
-  font-size: 11px !important;
-  color: #999 !important;
-  margin: -6px 0 10px !important;
-}
-
-.mr-avviso, .message-text .mr-avviso {
-  font-size: 11px !important;
-  color: #B06000 !important;
-  margin-bottom: 6px !important;
-}
-
-.mr-successo, .message-text .mr-successo {
-  font-size: 13px !important;
-  color: #1A7F37 !important;
-  font-weight: 600 !important;
-  margin-bottom: 8px !important;
-}
-.mr-errore, .message-text .mr-errore {
-  font-size: 13px !important;
-  color: #B42318 !important;
-  margin-bottom: 8px !important;
-}
-
-/* ---------- carosello ---------- */
-.mr-carosello, .message-text .mr-carosello {
-  display: flex !important;
-  gap: 12px !important;
-  overflow-x: auto !important;
-  padding: 0 0 14px !important;
-  scrollbar-width: auto !important;
-}
-
-.mr-scorri, .message-text .mr-scorri {
-  font-size: 11px !important;
-  color: #999 !important;
-  text-align: center !important;
-  margin: -4px 0 10px !important;
-}
-
-/* ---------- card prodotto ---------- */
-.mr-card, .message-text .mr-card {
-  flex: 0 0 210px !important;
-  width: 210px !important;
-  background: #EFEFEF !important;
-  border-radius: 2px !important;
-  overflow: hidden !important;
-}
-
-.mr-card-foto, .message-text .mr-card-foto {
-  display: block !important;
-  padding: 16px 18px !important;
-  text-align: center !important;
-  background: #EFEFEF !important;
-}
-
-.mr-card-foto img, .message-text .mr-card-foto img {
-  width: 100% !important;
-  height: auto !important;
-  display: block !important;
-  margin: 0 auto !important;
-}
-
-.mr-card-corpo, .message-text .mr-card-corpo {
-  background: #FFFFFF !important;
-  padding: 12px !important;
-}
-
-.mr-card-link, .message-text .mr-card-link {
-  text-decoration: none !important;
-  color: var(--marni-ink) !important;
-}
-
-.mr-card-nome, .message-text .mr-card-nome {
-  font-size: 14px !important;
-  line-height: 1.35 !important;
-  min-height: 36px !important;
-  color: var(--marni-ink) !important;
-}
-
-.mr-card-prezzo, .message-text .mr-card-prezzo {
-  font-size: 15px !important;
-  color: var(--marni-ink) !important;
-  font-weight: 600 !important;
-  margin: 8px 0 !important;
-}
-
-.mr-card-prezzo del,
-.mr-card-prezzo .mr-prezzo-pieno, .message-text .mr-card-prezzo .mr-prezzo-pieno {
-  font-size: 12px !important;
-  color: #999 !important;
-  text-decoration: line-through !important;
-  font-weight: 400 !important;
-  margin-right: 6px !important;
-}
-
-.mr-card-prezzo .mr-prezzo-scontato, .message-text .mr-card-prezzo .mr-prezzo-scontato {
-  color: var(--marni-red) !important;
-}
-
-.mr-card-nota, .message-text .mr-card-nota {
-  font-size: 11px !important;
-  color: #999 !important;
-  font-weight: 400 !important;
-}
-
-.mr-card-desc, .message-text .mr-card-desc {
-  font-size: 11px !important;
-  color: #777 !important;
-  line-height: 1.35 !important;
-  margin-bottom: 10px !important;
-  min-height: 30px !important;
-}
-
-.mr-card-perche, .message-text .mr-card-perche {
-  font-size: 10px !important;
-  color: #888 !important;
-  line-height: 1.35 !important;
-  padding: 4px 2px 0 !important;
-}
-
-.mr-card-categoria, .message-text .mr-card-categoria {
-  font-size: 10px !important;
-  color: #FFFFFF !important;
-  background: var(--marni-ink) !important;
-  padding: 3px 8px !important;
-  text-align: center !important;
-}
-
-/* ---------- azioni ---------- */
-.mr-azioni, .message-text .mr-azioni {
-  display: flex !important;
-  gap: 6px !important;
-}
-
-.mr-btn, .message-text .mr-btn {
-  flex: 1 !important;
-  padding: 8px 0 !important;
-  background: #FFFFFF !important;
   border: 1px solid #e0e0e0 !important;
   border-radius: 100px !important;
   cursor: pointer !important;
@@ -1179,6 +726,16 @@ ul.message-link-content::after {
   background: var(--marni-bubble) !important;
 }
 
+/* pulsante testuale, per gli inviti */
+.mr-btn-testo, .message-text .mr-btn-testo {
+  padding: 9px 16px !important;
+  background: #FFFFFF !important;
+  color: var(--marni-ink) !important;
+  border: 1px solid var(--marni-ink) !important;
+  border-radius: 100px !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+}
 .mr-btn-testo:hover, .message-text .mr-btn-testo:hover {
   background: var(--marni-bubble) !important;
 }
@@ -1383,7 +940,6 @@ ul.message-link-content::after {
   border-left: 3px solid var(--marni-ink) !important;
 }
 
-
 /* ============================================================
    ANNULLA GLI STILI DEL WIDGET SULLE NOSTRE CARD
    Il widget applica i suoi stili ai link e alle immagini dentro
@@ -1418,4 +974,10 @@ ul.message-link-content::after {
 .message-text .mr-wrap,
 .message-text .mr-carosello {
   max-width: 100% !important;
+}
+
+/* carosello piu' compatto, usato dal flusso categoria */
+.mr-carosello--stretto, .message-text .mr-carosello--stretto {
+  gap: 10px !important;
+  padding-bottom: 8px !important;
 }
