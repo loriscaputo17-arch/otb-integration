@@ -382,6 +382,9 @@ document.body.appendChild(script);
 (function proattivo() {
 
   var CONFIG = {
+    // Sulla scheda prodotto l'invito automatico e' stato disattivato: interrompe
+    // il cliente mentre guarda il capo. Basta metterlo a true per riaccenderlo.
+    suPaginaProdotto: false,
     attesaPdp: 25000,        // sulla scheda prodotto: dopo 25 secondi di permanenza
     attesaRiservata: 2500,   // in area riservata: quasi subito, e' il momento giusto
     chiaveSessione: 'algho_proattivo_fatti'
@@ -632,6 +635,7 @@ document.body.appendChild(script);
 
     // SCHEDA PRODOTTO: dopo una permanenza che indica interesse reale
     if (tipo === 'prodotto') {
+      if (!CONFIG.suPaginaProdotto) return;
       var pid = idProdotto();
       if (!pid) return;
       var attivo = true;
