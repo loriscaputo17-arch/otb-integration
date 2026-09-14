@@ -981,3 +981,144 @@ ul.message-link-content::after {
   gap: 10px !important;
   padding-bottom: 8px !important;
 }
+
+/* ============================================================
+   SCHEDA PRODOTTO
+   Usata dal prezzo e dal dettaglio: una sola card grande invece
+   del carosello.
+   ============================================================ */
+
+.mr-scheda, .message-text .mr-scheda {
+  max-width: 320px !important;
+  border: 1px solid #E5E5E5 !important;
+  border-radius: 2px !important;
+  overflow: hidden !important;
+}
+
+.mr-scheda-foto, .message-text .mr-scheda-foto {
+  display: block !important;
+}
+.mr-scheda-foto img, .message-text .mr-scheda-foto img {
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+}
+
+.mr-scheda-corpo, .message-text .mr-scheda-corpo {
+  padding: 14px !important;
+}
+
+.mr-scheda-nome, .message-text .mr-scheda-nome {
+  font-size: 14px !important;
+  color: var(--marni-ink) !important;
+  line-height: 1.35 !important;
+  margin-bottom: 3px !important;
+}
+
+.mr-scheda-meta, .message-text .mr-scheda-meta {
+  font-size: 11px !important;
+  color: #999 !important;
+  margin-bottom: 10px !important;
+}
+
+/* ---------- prezzo in evidenza ---------- */
+.mr-prezzo-riga, .message-text .mr-prezzo-riga {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 8px !important;
+  margin-bottom: 4px !important;
+}
+
+.mr-prezzo-grande, .message-text .mr-prezzo-grande {
+  font-size: 20px !important;
+  color: var(--marni-ink) !important;
+  font-weight: 600 !important;
+  margin-bottom: 10px !important;
+}
+
+.mr-prezzo-grande.mr-prezzo-scontato,
+.message-text .mr-prezzo-grande.mr-prezzo-scontato {
+  color: var(--marni-red) !important;
+  margin-bottom: 0 !important;
+}
+
+.mr-risparmio, .message-text .mr-risparmio {
+  font-size: 12px !important;
+  color: var(--marni-red) !important;
+  margin-bottom: 10px !important;
+}
+
+/* ---------- disponibilita' e consegna ---------- */
+.mr-disponibile, .message-text .mr-disponibile {
+  font-size: 12px !important;
+  color: #1A7F37 !important;
+  margin-bottom: 4px !important;
+}
+
+.mr-consegna, .message-text .mr-consegna {
+  font-size: 12px !important;
+  color: #555 !important;
+  margin-bottom: 10px !important;
+}
+
+.mr-etichetta, .message-text .mr-etichetta {
+  font-size: 11px !important;
+  color: #777 !important;
+  margin-bottom: 6px !important;
+}
+
+/* ---------- azioni della scheda ---------- */
+.mr-azioni--spaziate, .message-text .mr-azioni--spaziate {
+  margin-bottom: 8px !important;
+}
+
+.mr-btn-azione, .message-text .mr-btn-azione {
+  flex: 1 !important;
+  padding: 10px 0 !important;
+  background: #FFFFFF !important;
+  color: var(--marni-ink) !important;
+  border: 1px solid var(--marni-ink) !important;
+  border-radius: 100px !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+}
+.mr-btn-azione:hover, .message-text .mr-btn-azione:hover {
+  background: var(--marni-bubble) !important;
+}
+
+.mr-btn-azione--principale, .message-text .mr-btn-azione--principale {
+  flex: 2 !important;
+  background: var(--marni-ink) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  font-size: 13px !important;
+}
+.mr-btn-azione--principale:hover,
+.message-text .mr-btn-azione--principale:hover {
+  background: #000000 !important;
+}
+
+.mr-btn-secondario, .message-text .mr-btn-secondario {
+  flex: 1 !important;
+  padding: 8px 0 !important;
+  background: #F4F4F4 !important;
+  color: var(--marni-ink) !important;
+  border: 1px solid #DDDDDD !important;
+  border-radius: 100px !important;
+  font-size: 12px !important;
+  cursor: pointer !important;
+}
+.mr-btn-secondario:hover, .message-text .mr-btn-secondario:hover {
+  background: var(--marni-bubble) !important;
+}
+
+/* ---------- varie ---------- */
+.mr-sotto, .message-text .mr-sotto {
+  margin-top: 10px !important;
+}
+
+.mr-link, .message-text .mr-link {
+  font-size: 12px !important;
+  color: var(--marni-ink) !important;
+  text-decoration: underline !important;
+}
