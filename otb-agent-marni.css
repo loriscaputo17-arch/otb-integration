@@ -1179,16 +1179,6 @@ ul.message-link-content::after {
   background: var(--marni-bubble) !important;
 }
 
-/* pulsante testuale, per gli inviti */
-.mr-btn-testo, .message-text .mr-btn-testo {
-  padding: 9px 16px !important;
-  background: #FFFFFF !important;
-  color: var(--marni-ink) !important;
-  border: 1px solid var(--marni-ink) !important;
-  border-radius: 100px !important;
-  font-size: 12px !important;
-  cursor: pointer !important;
-}
 .mr-btn-testo:hover, .message-text .mr-btn-testo:hover {
   background: var(--marni-bubble) !important;
 }
