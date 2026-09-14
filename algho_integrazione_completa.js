@@ -152,13 +152,13 @@ window.askGeoAndFindStore = function () {
 
 // ---------- 3. Caricamento widget Algho ----------
 var tag = document.createElement("algho-viewer");
-tag.setAttribute("bot-id", "83d45a8e7c5ecc3878be0e97c8691a57");
+tag.setAttribute("bot-id", "c36e178aaa6b6b5624b2530e85d0d14d");
 tag.setAttribute("widget", "true");
 tag.setAttribute("audio", "false");
 tag.setAttribute("voice", "false");
 tag.setAttribute("open", "false");
 tag.setAttribute("theme-style", "light");
-tag.setAttribute("theme-css", "https://cdn.jsdelivr.net/gh/loriscaputo17-arch/otb-integration@main/otb-agent-marni.css?v=" + Math.floor(Date.now()/300000));
+tag.setAttribute("theme-css", "https://candid-jalebi-000334.netlify.app/otb-agent-marni.css");
 tag.setAttribute("widget-border-color", "#000000");
 tag.setAttribute("z-index", "9999");
 document.body.appendChild(tag);
@@ -418,7 +418,28 @@ document.body.appendChild(script);
       };
     }
   } catch (e) {}
-  function conversazioneAvviata() { return clienteHaScritto; }
+  // Non basta intercettare sendUserMessage: il cliente puo' aver scritto
+  // direttamente nel widget, o aperto la chat cliccando il pulsante. Guardiamo
+  // la conversazione vera: se c'e' anche un solo messaggio, lasciamolo fare.
+  function conversazioneInCorso() {
+    try {
+      var host = document.querySelector('algho-viewer');
+      var radice = (host && host.shadowRoot) ? host.shadowRoot : null;
+      if (!radice) return false;
+      // messaggi del cliente
+      var miei = radice.querySelectorAll('.myself-message, .message-myself, [class*="myself"]');
+      if (miei && miei.length) return true;
+      // messaggi dell'agente oltre al benvenuto: segno che si sta conversando
+      var altri = radice.querySelectorAll('.other-message, [class*="other-message"]');
+      if (altri && altri.length > 1) return true;
+      // il campo di scrittura contiene testo: sta digitando
+      var input = radice.querySelector('input[type="text"], textarea, [contenteditable="true"]');
+      if (input && String(input.value || input.textContent || '').trim().length > 1) return true;
+    } catch (e) {}
+    return false;
+  }
+
+  function conversazioneAvviata() { return clienteHaScritto || conversazioneInCorso(); }
 
   // il widget non espone isOpen: tengo traccia io delle aperture
   var chatApertaOra = false;
@@ -436,7 +457,21 @@ document.body.appendChild(script);
       }
     });
   } catch (e) {}
-  function chatAperta() { return chatApertaOra; }
+  // Il cliente puo' aver aperto la chat cliccando il widget, senza passare
+  // dai metodi che intercettiamo: controlliamo se il pannello e' visibile.
+  function pannelloVisibile() {
+    try {
+      var host = document.querySelector('algho-viewer');
+      var radice = (host && host.shadowRoot) ? host.shadowRoot : null;
+      if (!radice) return false;
+      var pannello = radice.querySelector('.chat-panel-container, .chat-container, [class*="chat-panel"]');
+      if (!pannello) return false;
+      var r = pannello.getBoundingClientRect();
+      return r.width > 100 && r.height > 100;
+    } catch (e) { return false; }
+  }
+
+  function chatAperta() { return chatApertaOra || pannelloVisibile(); }
 
   function pronto() {
     return !!(window.algho && window.algho.sendUserMessage);
@@ -603,7 +638,10 @@ document.body.appendChild(script);
       // se il cliente aggiunge al carrello o va via, non proponiamo piu'
       window.addEventListener('beforeunload', function () { attivo = false; });
       setTimeout(function () {
-        if (attivo) proponi('prodotto', T.prodotto, pid, INV.prodotto);
+        // ricontrollo adesso: nei 25 secondi il cliente puo' aver iniziato a scrivere
+        if (attivo && !chatAperta() && !conversazioneAvviata()) {
+          proponi('prodotto', T.prodotto, pid, INV.prodotto);
+        }
       }, CONFIG.attesaPdp);
     }
   }
@@ -777,6 +815,60 @@ document.body.appendChild(script);
 
   // richiamabile a mano per provarla
   window.__sincronizzaCarrello = aggiornaSito;
+})();
+
+
+// ---------- TRASFERIMENTO AL CARRELLO DEL SITO ----------
+// Da guest il carrello della chat e quello del sito sono due sessioni diverse.
+// Il sito espone Cart-AddProduct in POST con il solo pid (l'EAN della variante)
+// e nessun token: possiamo quindi travasare i capi usando la sessione del sito,
+// perche' questa funzione gira dentro la pagina.
+(function TrasferimentoCarrello(){
+
+  function endpoint(nome){
+    // ricavo il percorso dei controller dalla pagina, cosi' resta valido
+    // anche cambiando sito o lingua
+    var base = '/on/demandware.store/Sites-MarniEU-Site/it_IT/';
+    try{
+      var a = document.querySelector('a[href*="/on/demandware.store/"], form[action*="/on/demandware.store/"]');
+      var href = a ? (a.getAttribute('href') || a.getAttribute('action') || '') : '';
+      var m = href.match(/(\/on\/demandware\.store\/Sites-[^/]+\/[^/]+\/)/);
+      if (m) base = m[1];
+    }catch(e){}
+    return base + nome;
+  }
+
+  function aggiungiUno(pid, quantita){
+    return fetch(endpoint('Cart-AddProduct'), {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+      body: 'pid=' + encodeURIComponent(pid) + '&quantity=' + (quantita || 1)
+    }).then(function(r){ return r.ok ? r.json() : null; })
+      .catch(function(){ return null; });
+  }
+
+  // Trasferisce i capi e porta al carrello. Gli id sono gli EAN delle varianti,
+  // gli stessi che la chat usa per aggiungere al basket SCAPI.
+  window.trasferisciAlCarrello = function(ids, vaiAlCarrello){
+    var elenco = (ids || []).filter(Boolean);
+    if (!elenco.length) { if (vaiAlCarrello !== false) window.location.href = '/it-it/cart'; return; }
+    var fatti = 0;
+    var catena = elenco.reduce(function(p, pid){
+      return p.then(function(){
+        return aggiungiUno(pid, 1).then(function(res){
+          if (res && res.error === false) fatti++;
+        });
+      });
+    }, Promise.resolve());
+    return catena.then(function(){
+      if (vaiAlCarrello !== false) {
+        var loc = (window.location.pathname.match(/^\/([a-z]{2}-[a-z]{2})\//i) || [null,'it-it'])[1];
+        window.location.href = '/' + loc + '/cart';
+      }
+      return fatti;
+    });
+  };
 })();
 
 // ---------- DIAGNOSTICA ----------
