@@ -152,13 +152,13 @@ window.askGeoAndFindStore = function () {
 
 // ---------- 3. Caricamento widget Algho ----------
 var tag = document.createElement("algho-viewer");
-tag.setAttribute("bot-id", "c36e178aaa6b6b5624b2530e85d0d14d");
+tag.setAttribute("bot-id", "83d45a8e7c5ecc3878be0e97c8691a57");
 tag.setAttribute("widget", "true");
 tag.setAttribute("audio", "false");
 tag.setAttribute("voice", "false");
 tag.setAttribute("open", "false");
 tag.setAttribute("theme-style", "light");
-tag.setAttribute("theme-css", "https://candid-jalebi-000334.netlify.app/otb-agent-marni.css");
+tag.setAttribute("theme-css", "https://cdn.jsdelivr.net/gh/loriscaputo17-arch/otb-integration@main/otb-agent-marni.css");
 tag.setAttribute("widget-border-color", "#000000");
 tag.setAttribute("z-index", "9999");
 document.body.appendChild(tag);
