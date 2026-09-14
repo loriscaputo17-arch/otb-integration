@@ -1122,3 +1122,43 @@ ul.message-link-content::after {
   color: var(--marni-ink) !important;
   text-decoration: underline !important;
 }
+
+/* ---------- disponibilita' e taglie ---------- */
+.mr-esaurite, .message-text .mr-esaurite {
+  font-size: 11px !important;
+  color: #AAAAAA !important;
+  margin-top: 8px !important;
+}
+
+.mr-misure, .message-text .mr-misure {
+  font-size: 11px !important;
+  color: #777 !important;
+  margin-top: 10px !important;
+  padding-top: 8px !important;
+  border-top: 1px solid #EEEEEE !important;
+}
+
+.mr-dettaglio, .message-text .mr-dettaglio {
+  font-size: 11px !important;
+  color: #777 !important;
+  margin-top: 4px !important;
+}
+.mr-dettaglio--sopra, .message-text .mr-dettaglio--sopra {
+  margin-top: 8px !important;
+}
+
+.mr-etichetta--sopra, .message-text .mr-etichetta--sopra {
+  margin: 12px 0 6px !important;
+}
+
+.mr-grigio, .message-text .mr-grigio {
+  color: #999 !important;
+}
+
+.mr-riga-semplice, .message-text .mr-riga-semplice {
+  display: flex !important;
+}
+
+.mr-link--piccolo, .message-text .mr-link--piccolo {
+  font-size: 11px !important;
+}
