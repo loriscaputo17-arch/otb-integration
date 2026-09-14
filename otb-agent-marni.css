@@ -18,6 +18,7 @@
   background-position: center center !important;
   background-size: 52% 52% !important;
   background-color: #ffffff !important;
+  border-radius: 100%;
 }
 
 .chat-widget .icon-widget,
