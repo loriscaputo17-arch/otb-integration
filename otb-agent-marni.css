@@ -13,12 +13,6 @@
 }
 
 /* il bottone flottante */
-.chat-widget.chat-button {
-  background-color: #ffffff !important;
-  border: 1px solid var(--marni-ink) !important;
-  border-radius: 50% !important;
-  overflow: hidden !important;
-}
 
 .chat-widget .chat-widget-container {
   background-image: url('https://www.marni.com/on/demandware.static/Sites-MarniEU-Site/-/default/dwe20b15ae/favicons/safari-pinned-tab.svg') !important;
@@ -201,7 +195,6 @@ button.button {
   color: white !important;
 }
 
-
 /* ============================================================
    SCHERMATA DI BENVENUTO
    Il markup non e' modificabile: titolo, sottotitolo e "Non ora"
@@ -230,10 +223,9 @@ button.button {
 }
 
 /* ordine visivo: icona, titolo, sottotitolo, privacy, pulsante */
-.chat-player-go      { order: 1 !important; }
-.chat-player-privacy { order: 4 !important; }
 
 /* ---------- titolo e sottotitolo ---------- */
+
 .chat-player-permission::before {
   content: "Ciao, sono Marni Agent";
   order: 2;
@@ -258,6 +250,7 @@ button.button {
 }
 
 /* ---------- icona in alto ---------- */
+
 .chat-player-go {
   display: flex !important;
   flex-direction: column !important;
@@ -267,6 +260,7 @@ button.button {
 }
 
 /* la scritta "Clicca qui sotto per parlare con me" non serve */
+
 .chat-player-permission-text { display: none !important; }
 
 .animated-icon-play-container {
@@ -282,6 +276,7 @@ button.button {
 }
 
 /* le onde animate restano come accenno discreto */
+
 .animated-icon-play-container .animated-icon {
   position: absolute !important;
   width: 60px !important;
@@ -290,6 +285,7 @@ button.button {
   opacity: .45 !important;
   pointer-events: none !important;
 }
+
 .animated-icon-play-container .animated-button{
     filter: none !important;
 }
@@ -299,6 +295,7 @@ button.button {
 }
 
 /* ---------- pulsante ---------- */
+
 .chat-player-start .animated-button {
   position: absolute !important;
   top: 305px !important;
@@ -333,6 +330,7 @@ button.button {
 }
 
 /* ---------- testo privacy ---------- */
+
 .chat-player-privacy {
   max-width: 252px !important;
   margin: 0 auto !important;
@@ -355,6 +353,7 @@ button.button {
    Decorativo: il markup non prevede un secondo pulsante, quindi
    qui e' solo testo. Per renderlo cliccabile serve una riga di
    JavaScript che richiami window.algho.close(). */
+
 .chat-player-start::after {
   content: "Non ora";
   display: block;
@@ -367,6 +366,7 @@ button.button {
 }
 
 /* schermi bassi: riduco gli spazi per non tagliare il contenuto */
+
 @media (max-height: 620px) {
   .chat-player-start { min-height: 400px !important; padding-top: 32px !important; }
   .chat-player-permission::after { margin-bottom: 28px !important; }
@@ -500,4 +500,444 @@ ul.message-link-content::after {
   border-bottom: 1.5px solid #B4B4B4 !important;
   transform: rotate(-45deg) !important;
   pointer-events: none !important;
+}
+
+/* ============================================================
+   COMPONENTI DELLE RISPOSTE
+   Classi usate dai flussi n8n. Gli stili stanno qui, non nel
+   codice: cambiare un colore o una spaziatura si fa in un punto
+   solo, senza toccare i venti flussi.
+
+   Nomenclatura: mr- (Marni Response) + componente + elemento.
+   ============================================================ */
+
+/* ---------- contenitore della risposta ---------- */
+
+/* ---------- intestazioni e testi ---------- */
+
+/* ---------- carosello ---------- */
+
+/* ---------- card prodotto ---------- */
+
+/* ---------- azioni ---------- */
+
+/* pulsante largo, per le azioni principali */
+
+/* pulsante testuale, per gli inviti */
+
+/* ---------- taglie ---------- */
+
+/* ---------- chip di affinamento ---------- */
+
+/* ---------- riquadri ---------- */
+
+/* ---------- righe (carrello, ordini) ---------- */
+
+/* ---------- stati ---------- */
+
+/* ---------- mappa e negozi ---------- */
+
+/* ============================================================
+   COMPONENTI DELLE RISPOSTE
+   Classi usate dai flussi n8n. Gli stili stanno qui, non nel
+   codice: cambiare un colore o una spaziatura si fa in un punto
+   solo, senza toccare i venti flussi.
+
+   Nomenclatura: mr- (Marni Response) + componente + elemento.
+   ============================================================ */
+
+/* ---------- contenitore della risposta ---------- */
+
+.mr-wrap {
+  width: 310px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ---------- intestazioni e testi ---------- */
+
+.mr-intro {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.45;
+  margin-bottom: 10px;
+}
+
+.mr-titolo {
+  font-size: 14px;
+  color: var(--marni-ink);
+  margin-bottom: 2px;
+}
+
+.mr-sottotitolo {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.mr-nota {
+  font-size: 12px;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.mr-nota--stile {
+  font-style: italic;
+  color: #666;
+}
+
+.mr-criteri {
+  font-size: 11px;
+  color: #999;
+  margin: -6px 0 10px;
+}
+
+.mr-avviso {
+  font-size: 11px;
+  color: #B06000;
+  margin-bottom: 6px;
+}
+
+.mr-successo { font-size: 13px; color: #1A7F37; font-weight: 600; margin-bottom: 8px; }
+
+.mr-errore   { font-size: 13px; color: #B42318; margin-bottom: 8px; }
+
+/* ---------- carosello ---------- */
+
+.mr-carosello {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 0 0 14px;
+  scrollbar-width: auto;
+}
+
+.mr-scorri {
+  font-size: 11px;
+  color: #999;
+  text-align: center;
+  margin: -4px 0 10px;
+}
+
+/* ---------- card prodotto ---------- */
+
+.mr-card {
+  flex: 0 0 210px;
+  width: 210px;
+  background: #EFEFEF;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.mr-card-foto {
+  display: block;
+  padding: 16px 18px;
+  text-align: center;
+  background: #EFEFEF;
+}
+
+.mr-card-foto img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.mr-card-corpo {
+  background: #FFFFFF;
+  padding: 12px;
+}
+
+.mr-card-link {
+  text-decoration: none;
+  color: var(--marni-ink);
+}
+
+.mr-card-nome {
+  font-size: 14px;
+  line-height: 1.35;
+  min-height: 36px;
+  color: var(--marni-ink);
+}
+
+.mr-card-prezzo {
+  font-size: 15px;
+  color: var(--marni-ink);
+  font-weight: 600;
+  margin: 8px 0;
+}
+
+.mr-card-prezzo del,
+.mr-card-prezzo .mr-prezzo-pieno {
+  font-size: 12px;
+  color: #999;
+  text-decoration: line-through;
+  font-weight: 400;
+  margin-right: 6px;
+}
+
+.mr-card-prezzo .mr-prezzo-scontato { color: var(--marni-red); }
+
+.mr-card-nota {
+  font-size: 11px;
+  color: #999;
+  font-weight: 400;
+}
+
+.mr-card-desc {
+  font-size: 11px;
+  color: #777;
+  line-height: 1.35;
+  margin-bottom: 10px;
+  min-height: 30px;
+}
+
+.mr-card-perche {
+  font-size: 10px;
+  color: #888;
+  line-height: 1.35;
+  padding: 4px 2px 0;
+}
+
+.mr-card-categoria {
+  font-size: 10px;
+  color: #FFFFFF;
+  background: var(--marni-ink);
+  padding: 3px 8px;
+  text-align: center;
+}
+
+/* ---------- azioni ---------- */
+
+.mr-azioni {
+  display: flex;
+  gap: 6px;
+}
+
+.mr-btn {
+  flex: 1;
+  padding: 8px 0;
+  background: #FFFFFF;
+  border: 1px solid var(--marni-border);
+  border-radius: 100px;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--marni-ink);
+  transition: background-color .15s ease, border-color .15s ease;
+}
+
+.mr-btn:hover { background: var(--marni-bubble); }
+
+.mr-btn--scuro {
+  background: var(--marni-ink);
+  border-color: var(--marni-ink);
+  color: #FFFFFF;
+}
+
+.mr-btn--scuro:hover { background: #000000; }
+
+/* pulsante largo, per le azioni principali */
+
+.mr-btn-largo {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: var(--marni-ink);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 100px;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.mr-btn-largo:hover { background: #000000; }
+
+.mr-btn-largo--chiaro {
+  background: #FFFFFF;
+  color: var(--marni-ink);
+  border: 1px solid var(--marni-ink);
+}
+
+.mr-btn-largo--chiaro:hover { background: var(--marni-bubble); }
+
+/* pulsante testuale, per gli inviti */
+
+.mr-btn-testo {
+  padding: 9px 16px;
+  background: #FFFFFF;
+  color: var(--marni-ink);
+  border: 1px solid var(--marni-ink);
+  border-radius: 100px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.mr-btn-testo:hover { background: var(--marni-bubble); }
+
+/* ---------- taglie ---------- */
+
+.mr-taglie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.mr-taglia {
+  min-width: 46px;
+  padding: 8px 12px;
+  background: #FFFFFF;
+  color: var(--marni-ink);
+  border: 1px solid var(--marni-ink);
+  border-radius: 100px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.mr-taglia:hover { background: var(--marni-bubble); }
+
+.mr-taglia--esaurita {
+  color: #BBBBBB;
+  border-color: var(--marni-border);
+  cursor: default;
+  text-decoration: line-through;
+}
+
+/* ---------- chip di affinamento ---------- */
+
+.mr-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.mr-chip {
+  padding: 7px 13px;
+  background: #FFFFFF;
+  color: var(--marni-ink);
+  border: 1px solid var(--marni-border);
+  border-radius: 100px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.mr-chip:hover { background: var(--marni-bubble); }
+
+.mr-chip--scuro {
+  background: var(--marni-ink);
+  color: #FFFFFF;
+  border-color: var(--marni-ink);
+}
+
+/* ---------- riquadri ---------- */
+
+.mr-box {
+  border: 1px solid var(--marni-border);
+  border-radius: 2px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.mr-box--pulito { border: none; padding: 0; }
+
+.mr-sezione {
+  border-top: 1px solid #EEEEEE;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+/* ---------- righe (carrello, ordini) ---------- */
+
+.mr-riga {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.mr-riga:last-child { border-bottom: none; }
+
+.mr-riga-foto {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 2px;
+  background: var(--marni-bubble);
+  flex: 0 0 54px;
+}
+
+.mr-riga-testo { flex: 1 1 auto; min-width: 0; }
+
+.mr-riga-nome  { font-size: 13px; color: var(--marni-ink); line-height: 1.35; }
+
+.mr-riga-meta  { font-size: 11px; color: #999; margin-top: 2px; }
+
+.mr-riga-prezzo{ font-size: 13px; color: var(--marni-ink); font-weight: 600; white-space: nowrap; }
+
+.mr-totale {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 12px 0 10px;
+  border-top: 1px solid var(--marni-border);
+  font-size: 14px;
+  color: var(--marni-ink);
+}
+
+.mr-totale b { font-weight: 600; }
+
+/* ---------- stati ---------- */
+
+.mr-stato {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.mr-stato--corso     { background: #FFF4E5; color: #B06000; }
+
+.mr-stato--spedito   { background: #E7F3FF; color: #0B5CAD; }
+
+.mr-stato--consegnato{ background: #E8F5EC; color: #1A7F37; }
+
+.mr-stato--annullato { background: #FBEAEA; color: #B42318; }
+
+/* ---------- mappa e negozi ---------- */
+
+.mr-negozio {
+  border: 1px solid var(--marni-border);
+  border-radius: 2px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.mr-negozio-nome     { font-size: 14px; color: var(--marni-ink); font-weight: 500; }
+
+.mr-negozio-distanza { font-size: 11px; color: #999; float: right; }
+
+.mr-negozio-indirizzo{ font-size: 12px; color: #666; line-height: 1.4; margin-top: 4px; }
+
+.mr-negozio-aperto   { font-size: 11px; color: #1A7F37; margin-top: 4px; }
+
+.mr-negozio-chiuso   { font-size: 11px; color: #999; margin-top: 4px; }
+
+/* spiegazione della palette armocromatica */
+
+.mr-box-palette {
+  font-size: 12px;
+  color: #555;
+  line-height: 1.5;
+  margin: -4px 0 12px;
+  padding: 10px 12px;
+  background: #F7F7F7;
+  border-left: 3px solid var(--marni-ink);
 }
