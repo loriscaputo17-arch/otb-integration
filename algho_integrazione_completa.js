@@ -158,7 +158,7 @@ tag.setAttribute("audio", "false");
 tag.setAttribute("voice", "false");
 tag.setAttribute("open", "false");
 tag.setAttribute("theme-style", "light");
-tag.setAttribute("theme-css", "https://cdn.jsdelivr.net/gh/loriscaputo17-arch/otb-integration@main/otb-agent-marni.css");
+tag.setAttribute("theme-css", "https://cdn.jsdelivr.net/gh/loriscaputo17-arch/otb-integration@main/otb-agent-marni.css?v=" + Math.floor(Date.now()/300000));
 tag.setAttribute("widget-border-color", "#000000");
 tag.setAttribute("z-index", "9999");
 document.body.appendChild(tag);
