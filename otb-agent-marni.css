@@ -968,6 +968,7 @@ ul.message-link-content::after {
   min-width: 0 !important;
   height: auto !important;
   line-height: 1 !important;
+  font-family: futura-pt !important;
 }
 
 /* il contenitore del messaggio non deve limitare il carosello */
@@ -1070,6 +1071,7 @@ ul.message-link-content::after {
 /* ---------- azioni della scheda ---------- */
 .mr-azioni--spaziate, .message-text .mr-azioni--spaziate {
   margin-bottom: 8px !important;
+  margin-top: 1rem !important;
 }
 
 .mr-btn-azione, .message-text .mr-btn-azione {
@@ -1088,7 +1090,7 @@ ul.message-link-content::after {
 
 .mr-btn-azione--principale, .message-text .mr-btn-azione--principale {
   flex: 2 !important;
-  background: var(--marni-ink) !important;
+  background: #000 !important;
   color: #FFFFFF !important;
   border: none !important;
   font-size: 13px !important;
@@ -1259,10 +1261,11 @@ ul.message-link-content::after {
 
 /* ---------- scheda prodotto: formato ampio ---------- */
 .mr-scheda-foto--ampia, .message-text .mr-scheda-foto--ampia {
-  background: #EFEFEF !important;
-  padding: 20px 26px !important;
   text-align: center !important;
-  border-radius: 2px !important;
+}
+
+.mr-scheda-foto{
+  border-radius: 12px !important;
 }
 
 .mr-scheda-corpo--aperto, .message-text .mr-scheda-corpo--aperto {
