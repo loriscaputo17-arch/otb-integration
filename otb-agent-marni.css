@@ -15,10 +15,10 @@
 .chat-widget .chat-widget-container {
   background-image: url('https://www.marni.com/on/demandware.static/Sites-MarniEU-Site/-/default/dwe20b15ae/favicons/safari-pinned-tab.svg') !important;
   background-repeat: no-repeat !important;
+  border-radius: 100% !important;
   background-position: center center !important;
   background-size: 52% 52% !important;
   background-color: #ffffff !important;
-  border-radius: 100% !important;
 }
 
 .chat-widget .icon-widget,
