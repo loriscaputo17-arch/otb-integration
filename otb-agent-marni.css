@@ -704,7 +704,7 @@ ul.message-link-content::after {
   display: block !important;
   width: 100% !important;
   padding: 12px !important;
-  background: var(--marni-ink) !important;
+  background: #000 !important;
   color: #FFFFFF !important;
   border: none !important;
   border-radius: 100px !important;
@@ -1176,13 +1176,17 @@ ul.message-link-content::after {
   border: 1px solid #E5E5E5 !important;
   border-radius: 2px !important;
   overflow: hidden !important;
+  border-bottom-left-radius: 12px !important;
+  border-bottom-right-radius: 12px !important;
 }
 
 .mr-carrello-testata, .message-text .mr-carrello-testata {
-  background: var(--marni-ink) !important;
+  background: #000 !important;
   color: #FFFFFF !important;
   padding: 10px 14px !important;
   font-size: 14px !important;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
 }
 
 .mr-carrello .mr-riga, .message-text .mr-carrello .mr-riga {
