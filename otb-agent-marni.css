@@ -160,6 +160,10 @@
   box-shadow: none !important;
 }
 
+ul.bot-language{
+  padding-top: 0.5rem !important;
+}
+
 ul.bot-language li .flag-icon {
   border: 5px solid #66718000 !important;
 }
@@ -282,8 +286,14 @@ button.button {
     filter: none !important;
 }
 
+.chat-player-toolbar{
+  padding: 0 !important;
+  align-items: center !important;
+  margin-left: 1rem;
+}
+
 .chat-player-toolbar button{
-    margin-top: 0.3rem;
+    margin-top: 0rem;
 }
 
 /* ---------- pulsante ---------- */
