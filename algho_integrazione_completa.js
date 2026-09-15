@@ -163,7 +163,7 @@ window.askGeoAndFindStore = function () {
 
 // ---------- 3. Caricamento widget Algho ----------
 var tag = document.createElement("algho-viewer");
-tag.setAttribute("bot-id", "83d45a8e7c5ecc3878be0e97c8691a57");
+tag.setAttribute("bot-id", "077b660a2a26b329e9de6a8b60758320");
 tag.setAttribute("widget", "true");
 tag.setAttribute("audio", "false");
 tag.setAttribute("voice", "false");
