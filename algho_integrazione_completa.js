@@ -59,12 +59,23 @@ function datiUtente() {
 function isLoginAttivo() {
   var u = datiUtente();
   if (!u) return false;
-  // conferma dal cookie di sessione autenticata
+
+  // user_info resta nel localStorage anche dopo il logout: da solo non prova
+  // nulla. Serve un cookie di SESSIONE, che il sito cancella all'uscita.
+  // Trattare da loggato chi non lo e' e' peggio del contrario: l'agente
+  // parlerebbe di ordini e preferiti di una sessione che il sito non riconosce.
+
+  // cquid: Salesforce lo valorizza per i clienti autenticati.
+  // Attenzione: per i guest vale "||" (due barre), che NON e' una sessione.
   var cquid = leggiCookie('cquid');
-  if (cquid && cquid.length > 1) return true;
-  // in mancanza del cookie, mi affido a user_info: meglio riconoscere il cliente
-  // che trattarlo da guest quando ha appena effettuato l'accesso
-  return true;
+  if (cquid && cquid.replace(/\|/g, '').trim().length > 1) return true;
+
+  // dwsid: identificativo di sessione, presente finche' la sessione e' viva
+  var dwsid = leggiCookie('dwsid');
+  if (dwsid && dwsid.length > 8) return true;
+
+  // nessuna sessione attiva: i dati in localStorage sono un residuo
+  return false;
 }
 
 // recupera i dati dell'utente loggato dal sito Marni.
@@ -890,6 +901,22 @@ window.__alghoDiagnostica = function () {
     algho_pronto: !!(window.algho && window.algho.setAJWT),
     ajwt_inviato: false,
     proattivo_attivo: typeof window.__proattivoTest === 'function',
+    // distinguo il login vero dal residuo nel localStorage: e' la differenza
+    // fra un cliente riconosciuto e uno che il sito considera guest
+    sessione_reale: (function(){
+      try{
+        var cq = leggiCookie('cquid');
+        var dw = leggiCookie('dwsid');
+        var ui = !!localStorage.getItem('user_info');
+        return {
+          user_info_presente: ui,
+          cquid: cq || '(assente)',
+          dwsid: dw ? '(presente)' : '(assente)',
+          login_riconosciuto: isLoginAttivo(),
+          nota: (ui && !isLoginAttivo()) ? 'dati residui di un accesso passato: il sito ti considera guest' : ''
+        };
+      }catch(e){ return '(errore)'; }
+    })(),
     carrello_sito: (function(){
       try{
         var el = document.querySelector('.minicart-action.counter-icon');
