@@ -13,12 +13,24 @@ function b64url(obj) {
 }
 function creaAJWTunsigned(utente) {
   var header = { alg: 'none', typ: 'JWT' };
+  // I cookie di sessione restano sul browser: n8n non li vede. Ma l'AJWT
+  // viaggia fino ai flussi nell'header algho-json-web-token, quindi e' li'
+  // che va messa la prova di sessione. Senza, lo stato considera OSPITE
+  // qualunque cliente, e wishlist, profilo e guardaroba deviano sempre
+  // sull'alternativa anche a chi ha fatto l'accesso.
+  var cquid = leggiCookie('cquid') || '';
+  var dwsid = leggiCookie('dwsid') || '';
   var payload = {
     payload: {
       email: utente.email || '',
       customerId: utente.customerId || '',
       customerNo: utente.customerNo || '',
-      name: utente.name || ''
+      name: utente.name || '',
+      // prova di sessione reale, gia' verificata da isLoginAttivo()
+      sessione: true,
+      cquid: cquid,
+      dwsid: dwsid ? dwsid.slice(0, 12) : '',   // basta un frammento
+      emessoIl: Date.now()
     }
   };
   return b64url(header) + '.' + b64url(payload) + '.';
@@ -107,12 +119,24 @@ function getUtenteLoggato() {
   return { email: email, customerId: '', customerNo: '', name: '' };
 }
 // imposta l'AJWT su Algho (se l'utente e' loggato)
+var _ultimaIdentita = '';
+
 function impostaIdentitaAlgho() {
   var u = getUtenteLoggato();
-  if (!u.email && !u.customerId) return false; // guest: niente AJWT
+  if (!u.email && !u.customerId) {
+    // Guest: niente AJWT. Ma se prima era loggato ed e' uscito, bisogna
+    // dirlo, altrimenti Algho continua a mandare l'identita' di prima.
+    if (_ultimaIdentita && window.algho && window.algho.setAJWT) {
+      window.algho.setAJWT('');
+      _ultimaIdentita = '';
+    }
+    return false;
+  }
   var token = creaAJWTunsigned(u);
+  var firma = (u.customerId || '') + '|' + (u.email || '');
   if (window.algho && window.algho.setAJWT) {
     window.algho.setAJWT(token);
+    _ultimaIdentita = firma;
     return true;
   }
   return false;
