@@ -99,6 +99,21 @@
 .chat-body .header-close button,
 .chat-body .header-title button { background: transparent !important; color: var(--marni-ink) !important; }
 .chat-button svg, .header-chat svg { color: var(--marni-ink) !important; fill: currentColor !important; }
+/* "Ricomincia": pulsante testuale nell'header, prima della X (inserito dallo script) */
+.chat-body .header-close { display: flex !important; align-items: center !important; gap: 12px !important; }
+.chat-body .header-close .mr-ricomincia {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--marni-ink) !important;
+  padding: 0 !important;
+  color: var(--marni-ink) !important;
+  font-family: inherit !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+  letter-spacing: var(--marni-ls) !important;
+  cursor: pointer !important;
+}
+.chat-body .header-close .mr-ricomincia:hover { color: var(--marni-hover) !important; border-color: var(--marni-hover) !important; }
 ul.bot-language { padding: 0 !important; margin: 0 !important; }
 ul.bot-language li .flag-icon,
 .chat-panel-window li.language-item .flag-icon { border: none !important; }
@@ -602,6 +617,22 @@ ul.message-link-content::after {
 .mr-negozio-aperto::before, .mr-negozio-chiuso::before, .message-text .mr-negozio-aperto::before, .message-text .mr-negozio-chiuso::before { content: ""; width: 6px; height: 6px; background: currentColor; }
 .mr-negozio-aperto, .message-text .mr-negozio-aperto { color: var(--marni-verde) !important; }
 .mr-negozio-chiuso, .message-text .mr-negozio-chiuso { color: var(--marni-arancio) !important; }
+/* azioni negozio: "Apri in Maps" + "Chiama" affiancati */
+.mr-negozio-azioni, .message-text .mr-negozio-azioni { display: flex !important; flex-wrap: wrap !important; gap: 8px !important; margin-top: 12px !important; }
+.mr-btn-mappa, .message-text .mr-btn-mappa {
+  display: inline-block !important;
+  padding: 7px 12px !important;
+  background: var(--marni-ink) !important;
+  color: #FFFFFF !important;
+  border: 1px solid var(--marni-ink) !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+}
+.mr-btn-mappa:hover, .message-text .mr-btn-mappa:hover { background: #333333 !important; color: #FFFFFF !important; }
+.mr-btn-mappa--chiaro, .message-text .mr-btn-mappa--chiaro { background: #FFFFFF !important; color: var(--marni-ink) !important; }
+.mr-btn-mappa--chiaro:hover, .message-text .mr-btn-mappa--chiaro:hover { background: #FFFFFF !important; color: var(--marni-hover) !important; border-color: var(--marni-hover) !important; }
 
 /* palette armocromia */
 .mr-box-palette, .message-text .mr-box-palette { font-size: 12px !important; line-height: 18px !important; color: var(--marni-ink) !important; margin: 0 0 12px !important; padding: 12px !important; background: #FFFFFF !important; border: 1px solid var(--marni-bordo) !important; border-left: 1px solid var(--marni-bordo) !important; }
