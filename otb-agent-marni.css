@@ -20,7 +20,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500&display=swap');
 
-:root {
+:host, :root, .chat, .chat-widget, .chat-panel-container {
   --marni-ink:     #0D0D0D;
   --marni-blu:     #1100FF;
   --marni-muto:    #7D7D7D;
@@ -168,8 +168,8 @@ ul.bot-language li .flag-icon,
 .container-message-display .other-message-multimedia:empty { display: none !important; }
 
 /* icona "AI" accanto ai messaggi del bot: non prevista dal design */
+.container-message-display .other-message svg.icon-baloon,
 .container-message-display .other-message .other-message-avatar,
-.container-message-display .other-message .avatar,
 .container-message-display .padding-left-common-content::before { display: none !important; }
 
 /* ============================================================
