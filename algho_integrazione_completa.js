@@ -82,11 +82,10 @@ function isLoginAttivo() {
   var cquid = leggiCookie('cquid');
   if (cquid && cquid.replace(/\|/g, '').trim().length > 1) return true;
 
-  // dwsid: identificativo di sessione, presente finche' la sessione e' viva
-  var dwsid = leggiCookie('dwsid');
-  if (dwsid && dwsid.length > 8) return true;
-
-  // nessuna sessione attiva: i dati in localStorage sono un residuo
+  // NB: dwsid NON prova il login: Salesforce lo assegna a qualunque visita,
+  // anche ospite. Usarlo faceva partire AJWT e proattivo "area riservata"
+  // per tutti (MCR-4523 / MCR-4551). Conta solo cquid.
+  // nessuna sessione autenticata: i dati in localStorage sono un residuo
   return false;
 }
 
