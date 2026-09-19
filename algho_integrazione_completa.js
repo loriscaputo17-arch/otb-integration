@@ -974,3 +974,59 @@ window.__alghoDiagnostica = function () {
   console.log(out);
   return out;
 };
+
+
+// ---------- 8. NAVIGAZIONE GUIDATA (funzioni proattive #04-#06, #11-#12, #16, #18, #28-#29, #32-#33, #35, #40-#41) ----------
+// I flussi rispondono con link e bottoni verso pagine del sito (scheda prodotto,
+// carrello, preferiti, ordini, boutique, categoria, regali, ricerca). Il clic del
+// cliente e' la conferma richiesta dai casi d'uso: da qui in poi l'agente lo
+// PORTA sulla pagina nella stessa scheda, invece di aprirne una nuova. I link
+// esterni (Maps, documenti) restano in nuova scheda.
+(function NavigazioneGuidata() {
+  var HOST_SITO = /(^|\.)marni\.com$/i;
+  var ESTERNI = /google\.[a-z.]+\/maps|maps\.apple|\.pdf(\?|$)/i;
+
+  function stessoSito(href) {
+    try {
+      var u = new URL(href, window.location.href);
+      return HOST_SITO.test(u.hostname) && !ESTERNI.test(u.href);
+    } catch (e) { return false; }
+  }
+
+  function vai(href) {
+    try {
+      // il pannello resta aperto dopo la navigazione: il widget rilegge il suo stato
+      // da sessionStorage, e la conversazione prosegue sulla pagina di arrivo
+      if (window.algho && window.algho.setCurrentUrl) window.algho.setCurrentUrl(href);
+    } catch (e) {}
+    window.location.assign(href);
+  }
+
+  function aggancia(radice) {
+    if (!radice || radice.__marniNavAgganciata) return;
+    radice.__marniNavAgganciata = true;
+    radice.addEventListener('click', function (ev) {
+      var a = ev.target && ev.target.closest ? ev.target.closest('a[href]') : null;
+      if (!a) return;
+      var href = a.getAttribute('href') || '';
+      if (!href || href.charAt(0) === '#' || /^(javascript|mailto|tel):/i.test(href)) return;
+      if (!stessoSito(a.href)) return;
+      if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button !== 0) return; // il cliente vuole una nuova scheda
+      ev.preventDefault();
+      ev.stopPropagation();
+      vai(a.href);
+    }, true);
+  }
+
+  var att = 0;
+  var t = setInterval(function () {
+    att++;
+    var host = document.querySelector('algho-viewer');
+    var radice = host && host.shadowRoot;
+    if (radice) { clearInterval(t); aggancia(radice); }
+    else if (att > 60) clearInterval(t);
+  }, 500);
+
+  // per i flussi: window.marniVai(url) porta il cliente su una pagina del sito
+  window.marniVai = function (href) { if (stessoSito(href)) vai(href); else window.open(href, '_blank'); };
+})();
