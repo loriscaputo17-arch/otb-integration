@@ -1078,3 +1078,44 @@ window.__alghoDiagnostica = function () {
   // ...e a ogni riapertura del pannello
   document.addEventListener('click', function () { setTimeout(function () { var h = document.querySelector('algho-viewer'); if (h && h.shadowRoot) inserisci(h.shadowRoot); }, 600); }, true);
 })();
+
+// ---------- 10. PULIZIA TESTO — residui di tag nelle risposte da documentazione ----------
+// Algho spezza le risposte SDA in paragrafi e a volte lascia in testa al testo
+// un frammento di tag ("p>", ">", "</p>"). Lo togliamo appena il messaggio
+// compare, prima che il cliente lo legga.
+(function PuliziaTesto() {
+  var RESIDUO = /^\s*(?:<\/?p>|<\/?br\s*\/?>|p>|>|\*\s)+/;
+
+  function pulisci(nodo) {
+    var testi = [];
+    if (nodo.nodeType === 3) testi.push(nodo);
+    else if (nodo.querySelectorAll) {
+      nodo.querySelectorAll('.other-message .message-text').forEach(function (m) {
+        var w = document.createTreeWalker(m, NodeFilter.SHOW_TEXT);
+        var n; while ((n = w.nextNode())) testi.push(n);
+      });
+    }
+    testi.forEach(function (t) {
+      if (RESIDUO.test(t.textContent)) t.textContent = t.textContent.replace(RESIDUO, '');
+    });
+  }
+
+  function osserva(radice) {
+    if (radice.__marniPulizia) return;
+    radice.__marniPulizia = true;
+    new MutationObserver(function (muts) {
+      muts.forEach(function (mu) {
+        mu.addedNodes.forEach(pulisci);
+        if (mu.type === 'characterData') pulisci(mu.target);
+      });
+    }).observe(radice, { childList: true, subtree: true, characterData: true });
+  }
+
+  var att = 0;
+  var t = setInterval(function () {
+    att++;
+    var host = document.querySelector('algho-viewer');
+    if (host && host.shadowRoot) { clearInterval(t); osserva(host.shadowRoot); }
+    else if (att > 120) clearInterval(t);
+  }, 500);
+})();
