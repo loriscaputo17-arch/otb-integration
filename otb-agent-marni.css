@@ -1,222 +1,274 @@
-@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&display=swap');
+/* ============================================================
+   MARNI AGENT — tema del widget Algho
+   Allineato al Figma "Marni Agent by QuestIt v2" (pagina Atoms +
+   Flussi) — 2026-09-19.
 
-:root {
-  --marni-ink:    #2A2A2A;
-  --marni-red:    #C8102E;
-  --marni-bubble: #F5F4F1;
-  --marni-border: #DAD7D1;
-  --marni-font:   'Jost', sans-serif;
+   Token (dal Figma):
+     font        Futura PT 400 · 14px / 20px · letter-spacing .21px
+     ink         #0D0D0D          testo, bullet dei messaggi bot
+     blu utente  #1100FF          testo e bullet dei messaggi cliente
+     muto        #7D7D7D          placeholder, prezzo barrato, note
+     bordo chip  #CCCCCC          chip, bottoni, box (hover #404040)
+     riga input  #262626          sola riga sotto il campo
+     riga header #000000          1px sotto l'header
+     verde       #1A7F37          solo stati positivi di fatto
+     arancio     #F28C28          chiuso / attenzione
+     rosso       #B42318          errore
+     raggio      0                nessun angolo arrotondato
+   Larghezza risposte: 360px mobile / 420px desktop.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500&display=swap');
+
+:host, :root, .chat, .chat-widget, .chat-panel-container {
+  --marni-ink:     #0D0D0D;
+  --marni-blu:     #1100FF;
+  --marni-muto:    #7D7D7D;
+  --marni-bordo:   #CCCCCC;
+  --marni-hover:   #404040;
+  --marni-riga:    #262626;
+  --marni-verde:   #1A7F37;
+  --marni-arancio: #F28C28;
+  --marni-rosso:   #B42318;
+  --marni-fondo:   #F2F2F2;
+  --marni-font:    futura-pt, 'Futura PT', 'Jost', 'Helvetica Neue', Arial, sans-serif;
+  --marni-fs:      14px;
+  --marni-lh:      20px;
+  --marni-ls:      .21px;
 }
 
-.chat{
-  font-family: futura-pt !important;
+/* ---------- base ---------- */
+.chat, .chat *,
+.chat-widget, .chat-widget *,
+.chat-panel-container, .chat-panel-container * {
+  font-family: var(--marni-font) !important;
+  letter-spacing: var(--marni-ls) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
+.chat {
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+}
+.chat .chat-container,
+.chat-panel-container,
+.chat-panel-window,
+.chat-body {
+  background: #FFFFFF !important;
+}
+.chat-panel-container { border: 1px solid #E0E0E0 !important; }
 
+/* ---------- launcher (pallino con la M) ---------- */
 .chat-widget .chat-widget-container {
   background-image: url('https://www.marni.com/on/demandware.static/Sites-MarniEU-Site/-/default/dwe20b15ae/favicons/safari-pinned-tab.svg') !important;
   background-repeat: no-repeat !important;
-  border-radius: 100% !important;
   background-position: center center !important;
   background-size: 52% 52% !important;
-  background-color: #ffffff !important;
+  background-color: #FFFFFF !important;
+  border-radius: 100% !important;
 }
-
 .chat-widget .icon-widget,
-.chat-widget .animate-widget {
-  display: none !important;
+.chat-widget .animate-widget { display: none !important; }
+.chat-widget.chat-button { color: var(--marni-ink) !important; border-radius: 100% !important; overflow: hidden !important; }
+
+/* ============================================================
+   HEADER — "Assistente AI" a sinistra, icone a destra, riga nera
+   ============================================================ */
+.chat-body .header-container,
+.chat-body .header-chat {
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #000000 !important;
+  min-height: 68px !important;
+  padding: 0 24px !important;
+  box-sizing: border-box !important;
 }
-
-.chat-widget.chat-button { color: var(--marni-ink) !important; border-radius: 100%; overflow: hidden !important; }
-
-.chat-widget,
-.chat-widget * {
-  font-family: var(--marni-font) !important;
+.chat-body .header-chat { border-bottom: none !important; padding: 0 !important; }
+.chat-body .header-title {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  color: var(--marni-ink) !important;
 }
-
-.suggestion-list {
-  list-style-type: none !important;      /* era: none (lo forzo) */
-  display: flex !important;              /* era: flex column -> lo rendo... */
-  flex-direction: row !important;        /* ...row (contro 'column' di default) */
-  flex-wrap: wrap !important;            /* per andare a capo */
-  gap: 10px !important;
-  padding-left: 0 !important;            /* contro padding-left di default */
-  padding: 0 !important;
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-  margin: 0 !important;
-  border-radius: 0 !important;           /* contro var(--border-radius) */
-  box-shadow: none !important;           /* contro var(--box-shadow) */
-  -webkit-backdrop-filter: none !important;  /* contro var(--backdrop-filter) */
-  backdrop-filter: none !important;          /* idem */
-  background: transparent !important;
+.chat-body .header-title::before {
+  content: "Assistente AI";
+  font-size: var(--marni-fs);
+  line-height: var(--marni-lh);
+  color: var(--marni-ink);
 }
-
-.suggestion-list .suggestion-item:first-child {
-  border-top-left-radius: 0 !important;   /* contro var(--border-radius) */
-  border-top-right-radius: 0 !important;  /* contro var(--border-radius) */
-}
-
-.suggestion-list .suggestion-item {
-  position: static !important;            /* contro position: relative */
-  display: block !important;              /* resta block, ma senza stile menu */
-  padding: 0 !important;                  /* contro padding 8px 12px 9px 12px */
-  margin: 0 !important;
-  background-color: transparent !important;  /* contro var(--bg-other-color) */
-  border-bottom: 0 !important;               /* contro border-bottom 1px solid */
-  cursor: pointer !important;
-}
-
-.message-button button,
-.suggestion-item .suggestion-item-text {
-  width: auto !important;                 
-  height: auto !important;               
-  border: 1px solid #DAD7D1 !important;  
-  background-color: #FFFFFF !important;   /* contro background-color: transparent */
-  color: #2A2A2A !important;              /* contro var(--fg-other-color) */
-  /*font-family: 'Jost', sans-serif !important;*/
-  font-size: 14px !important;             /* contro var(--font-12) */
-  line-height: 1 !important;              /* contro line-height var(--font-12)+3 */
-  border-radius: 999px !important;
-  padding: 11px 20px !important;
-  cursor: pointer !important;
-  transition: background .15s, border-color .15s !important;
-}
-
-.message-button button:not([disabled]):hover,
-.suggestion-item .suggestion-item-text:hover {
-  background-color: #F5F4F1 !important;
-  border-color: #DAD7D1 !important;
-  color: #2A2A2A !important;             
-}
-
-.suggestion-item .suggestion-item-text .focused {
-  color: inherit !important;
-}
-
-.container-message-display .other-message .other-message-body .message-text{
-  background: #F5F4F1 !important;
-  color: #000 !important;
-  font-size: 14px !important;
-  box-shadow: none !important;
-  /*font-family: 'Jost', sans-serif !important;*/
-}
-
-.message-date{
-  color: #00000040 !important;
-  letter-spacing: 1.5px !important;
-  font-size: 10px !important;
-  /*font-family: 'Jost', sans-serif !important;*/
-}
-
-.message-timestamp{
-  color: #00000054 !important;
-  /*font-family: 'Jost', sans-serif !important;*/
-}
-
-.container-message-display .other-message .other-message-body .message-text>.p {
-    padding: 12px 16px 12px 16px !important;
-}
-
-.rounded svg {
-  box-shadow: none !important;
-  background-color: transparent !important;
-  color: #000 !important;
-}
-
-.chat .chat-container {
-  background-color: white !important;
-}
-
-.chat-body .toolbar-item .toolbar-message-keyboard {
-  box-shadow: none !important;
-  border: 1px solid #000 !important;
-}
-
-.container-message-display .myself-message .myself-message-body .message-text {
-  box-shadow: none !important;
-  color: #000 !important;
-  font-size: 14px !important;
-  background-color: #f5f4f1 !important;
-}
-
-.container-message-display .myself-message .myself-message-body .message-text>.p {
-  padding: 12px 42px 12px 16px !important;
-}
-
-.chat-button svg{
-  color: #000 !important;
-}
-
-.language-title{
-  color: #000 !important;
-}
-
+.chat-body .header-close button,
+.chat-body .header-title button { background: transparent !important; color: var(--marni-ink) !important; }
+.chat-button svg, .header-chat svg { color: var(--marni-ink) !important; fill: currentColor !important; }
+ul.bot-language { padding: 0 !important; margin: 0 !important; }
+ul.bot-language li .flag-icon,
+.chat-panel-window li.language-item .flag-icon { border: none !important; }
+.chat-panel-window li.language-item .flag-text { font-size: var(--marni-fs) !important; color: var(--marni-ink) !important; }
+.language-title { color: var(--marni-ink) !important; }
 .chat-panel-container .language-filter .language-input-filter {
-  border: 1px solid #000000 !important;
-  padding: 4px 14px !important;
-}
-
-.focus:not(:has(svg)):focus-visible {
-  box-shadow: none !important;
-}
-
-ul.bot-language{
-  padding-top: 0.5rem !important;
-}
-
-ul.bot-language li .flag-icon {
-  border: 5px solid #66718000 !important;
-}
-
-.chat-panel-window li.language-item .flag-icon {
-  border: 5px solid #66718000 !important;
-}
-
-.chat-panel-window li.language-item .flag-text {
-  font-size: 12px !important;
-  /*font-family: 'Jost', sans-serif !important;*/  
-}
-
-.container-message-display .loading-message-body .message-content .message-waiting {
-    box-shadow: none !important;
-}
-
-.vue-js-switch .v-switch-label.v-right {
-  color: white !important;
-}
-
-.vue-js-switch .v-switch-core {
-  background-color: black !important;
-}
-
-.chat-panel-window .slider-range {
-  background-color: black !important;
-}
-
-button.button {
-  background-color: black !important;
-  color: white !important;
+  border: none !important;
+  border-bottom: 1px solid var(--marni-riga) !important;
+  padding: 8px 0 !important;
 }
 
 /* ============================================================
-   SCHERMATA DI BENVENUTO
-   Il markup non e' modificabile: titolo, sottotitolo e "Non ora"
-   vengono inseriti con i pseudo-elementi. Il pulsante rotondo con
-   l'icona di accensione diventa il bottone a tutta larghezza.
+   MESSAGGI — niente bolle. Bot: quadratino nero + testo.
+   Cliente: testo blu allineato a destra + quadratino blu.
    ============================================================ */
+.container-message-display { background: #FFFFFF !important; padding: 12px 0 !important; }
+.message-date { display: none !important; }
+.message-timestamp { display: none !important; }
 
+.container-message-display .other-message .other-message-body,
+.container-message-display .myself-message .myself-message-body {
+  max-width: 100% !important;
+  padding: 0 !important;
+}
+.container-message-display .other-message .other-message-body .message-text,
+.container-message-display .myself-message .myself-message-body .message-text {
+  background: transparent !important;
+  color: var(--marni-ink) !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  border: none !important;
+  margin: 0 !important;
+}
+.container-message-display .other-message .other-message-body .message-text > .p {
+  position: relative !important;
+  padding: 12px 64px 12px 40px !important;
+}
+.container-message-display .other-message .other-message-body .message-text > .p::before {
+  content: "";
+  position: absolute;
+  left: 24px;
+  top: 19px;
+  width: 6px;
+  height: 6px;
+  background: var(--marni-ink);
+}
+.container-message-display .other-message .other-message-body .message-text > .p p { margin: 0 !important; }
+
+.container-message-display .myself-message { justify-content: flex-end !important; }
+.container-message-display .myself-message .myself-message-body .message-text > .p {
+  position: relative !important;
+  padding: 12px 40px 12px 64px !important;
+  text-align: right !important;
+  color: var(--marni-blu) !important;
+}
+.container-message-display .myself-message .myself-message-body .message-text > .p::after {
+  content: "";
+  position: absolute;
+  right: 24px;
+  top: 19px;
+  width: 6px;
+  height: 6px;
+  background: var(--marni-blu);
+}
+.container-message-display .myself-message .myself-message-body .message-text span { color: var(--marni-blu) !important; }
+.container-message-display .loading-message-body .message-content .message-waiting { background: transparent !important; }
+.container-message-display .other-message-multimedia:empty { display: none !important; }
+
+/* messaggio fatto solo di chip (continuazioni): niente quadratino */
+.container-message-display .other-message .message-text > .p:has(> .mr-chips:only-child)::before,
+.container-message-display .other-message .message-text > .p:has(> div > .mr-chips:only-child)::before { display: none !important; }
+
+/* icona "AI" accanto ai messaggi del bot: non prevista dal design */
+.container-message-display .other-message svg.icon-baloon,
+.container-message-display .other-message .other-message-avatar,
+.container-message-display .padding-left-common-content::before { display: none !important; }
+
+/* ============================================================
+   CHIP / SUGGERIMENTI — colonna, 1px #CCCCCC, 9px 12px
+   ============================================================ */
+.suggestion-list {
+  list-style: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+  padding: 4px 40px 12px 54px !important;
+  margin: 0 !important;
+  background: transparent !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.suggestion-list .suggestion-item {
+  position: static !important;
+  display: block !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+.message-button button,
+.suggestion-item .suggestion-item-text {
+  display: inline-block !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 9px 12px !important;
+  border: 1px solid var(--marni-bordo) !important;
+  background: #FFFFFF !important;
+  color: var(--marni-ink) !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  transition: border-color .15s, color .15s !important;
+}
+.message-button button:not([disabled]):hover,
+.suggestion-item .suggestion-item-text:hover {
+  background: #FFFFFF !important;
+  border-color: var(--marni-hover) !important;
+  color: var(--marni-hover) !important;
+}
+.suggestion-item .suggestion-item-text .focused { color: inherit !important; }
+.focus:not(:has(svg)):focus-visible { box-shadow: none !important; }
+
+/* ============================================================
+   INPUT — nessun riquadro, solo la riga sotto
+   ============================================================ */
+.container-message-manager-component,
+.container-message-manager {
+  background: #FFFFFF !important;
+  border-top: 1px solid #000000 !important;
+}
+.toolbar-message-manager { padding: 12px 24px 24px !important; gap: 8px !important; }
+.chat-body .toolbar-item .toolbar-message-keyboard {
+  border: none !important;
+  border-bottom: 1px solid var(--marni-riga) !important;
+  background: #FFFFFF !important;
+  padding: 12px 8px !important;
+}
+.chat-body .toolbar-item .toolbar-message-keyboard.focus-within { border-bottom-color: var(--marni-ink) !important; }
+.message-text-box input.message-input {
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+  background: transparent !important;
+}
+.message-text-box input.message-input::placeholder { color: var(--marni-muto) !important; opacity: 1 !important; }
+.toolbar-message-keyboard button svg { color: var(--marni-bordo) !important; }
+.toolbar-message-keyboard.focus-within button svg { color: var(--marni-ink) !important; }
+.menu-container .rounded svg { background: transparent !important; color: var(--marni-ink) !important; }
+.vue-js-switch .v-switch-label.v-right { color: #FFFFFF !important; }
+.vue-js-switch .v-switch-core { background: var(--marni-ink) !important; }
+.chat-panel-window .slider-range { background: var(--marni-ink) !important; }
+button.button { background: var(--marni-ink) !important; color: #FFFFFF !important; }
+
+/* ============================================================
+   SCHERMATA DI BENVENUTO
+   ============================================================ */
 .chat-player-start {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  min-height: 440px !important;
-  padding: 44px 28px 28px !important;
+  min-height: 460px !important;
+  padding: 96px 28px 28px !important;
   box-sizing: border-box !important;
   text-align: center !important;
-  font-family: var(--marni-font) !important;
+  background: #FFFFFF !important;
 }
-
 .chat-player-permission {
   display: flex !important;
   flex-direction: column !important;
@@ -224,32 +276,26 @@ button.button {
   width: 100% !important;
   position: relative !important;
 }
-
-/* ---------- titolo e sottotitolo ---------- */
 .chat-player-permission::before {
   content: "Ciao, sono Marni Agent";
   order: 2;
   display: block;
-  font-size: 19px;
-  font-weight: 500;
-  color: black;
-  letter-spacing: .2px;
-  margin: 0 0 10px;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 400;
+  color: var(--marni-ink);
+  margin: 0 0 12px;
 }
-
 .chat-player-permission::after {
   content: "Sono qui per aiutarti con ordini, resi, prodotti e consigli di stile.";
   order: 3;
   display: block;
-  max-width: 250px;
-  font-family: var(--marni-font) !important;
-  font-size: 13px;
-  line-height: 1.55;
-  color: #8A8A8A;
-  margin: 0 auto 36px;
+  max-width: 260px;
+  font-size: var(--marni-fs);
+  line-height: var(--marni-lh);
+  color: var(--marni-ink);
+  margin: 0 auto 40px;
 }
-
-/* ---------- icona in alto ---------- */
 .chat-player-go {
   display: flex !important;
   flex-direction: column !important;
@@ -257,162 +303,80 @@ button.button {
   width: 100% !important;
   position: relative !important;
 }
-
-/* la scritta "Clicca qui sotto per parlare con me" non serve */
 .chat-player-permission-text { display: none !important; }
-
 .animated-icon-play-container {
   position: relative !important;
-  width: 60px !important;
-  height: 60px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border: 1px solid var(--marni-border) !important;
-  border-radius: 50% !important;
-  background: #fff !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: visible !important;
+  border: none !important;
+  background: transparent !important;
 }
+.animated-icon-play-container .animated-icon { display: none !important; }
+.animated-icon-play-container .animated-button { filter: none !important; }
+.chat-player-toolbar { padding: 0 !important; align-items: center !important; margin-left: 1rem; }
+.chat-player-toolbar button { margin-top: 0 !important; }
 
-/* le onde animate restano come accenno discreto */
-.animated-icon-play-container .animated-icon {
-  position: absolute !important;
-  width: 60px !important;
-  height: 60px !important;
-  color: var(--marni-border) !important;
-  opacity: .45 !important;
-  pointer-events: none !important;
-}
-.animated-icon-play-container .animated-button{
-    filter: none !important;
-}
-
-.chat-player-toolbar{
-  padding: 0 !important;
-  align-items: center !important;
-  margin-left: 1rem;
-}
-
-.chat-player-toolbar button{
-    margin-top: 0rem;
-}
-
-/* ---------- pulsante ---------- */
+/* pulsante "Inizia la conversazione": pieno nero, squadrato */
 .chat-player-start .animated-button {
   position: absolute !important;
-  top: 305px !important;
+  top: 330px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  width: 250px !important;
-  height: 46px !important;
-  border: none !important;
-  border-radius: 999px !important;
-  background-color: #000000 !important;
-  color: #fff !important;
+  width: 220px !important;
+  height: 40px !important;
+  border: 1px solid var(--marni-ink) !important;
+  background: var(--marni-ink) !important;
+  color: #FFFFFF !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer !important;
-  transition: background-color .18s ease !important;
 }
-
-.chat-player-start .animated-button:hover {
-  background-color: #000 !important;
-}
-
+.chat-player-start .animated-button:hover { background: #333333 !important; }
 .chat-player-start .animated-button svg { display: none !important; }
-
 .chat-player-start .animated-button::after {
   content: "Inizia la conversazione";
-  font-family: var(--marni-font) !important;
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: .2px;
-  color: #fff;
+  font-size: var(--marni-fs);
+  line-height: var(--marni-lh);
+  color: #FFFFFF;
 }
-
-/* ---------- testo privacy ---------- */
-.chat-player-privacy {
-  max-width: 252px !important;
-  margin: 0 auto !important;
-}
-
+.chat-player-privacy { max-width: 260px !important; margin: 0 auto !important; }
 .chat-player-privacy p {
-  font-family: var(--marni-font) !important;
-  font-size: 11px !important;
-  line-height: 1.6 !important;
-  color: #A0A0A0 !important;
-  margin: 0 0 20px !important;
+  font-size: 12px !important;
+  line-height: 18px !important;
+  color: var(--marni-ink) !important;
+  margin: 0 0 24px !important;
 }
-
-.chat-player-privacy a {
-  color: #6F6F6F !important;
-  text-decoration: underline !important;
-}
-
-/* ---------- "Non ora" ----------
-   Decorativo: il markup non prevede un secondo pulsante, quindi
-   qui e' solo testo. Per renderlo cliccabile serve una riga di
-   JavaScript che richiami window.algho.close(). */
-.chat-player-start::after {
-  content: "Non ora";
-  display: block;
-  margin-top: 92px;
-  font-family: var(--marni-font) !important;
-  font-size: 12px;
-  color: #A0A0A0;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-/* schermi bassi: riduco gli spazi per non tagliare il contenuto */
+.chat-player-privacy a { color: var(--marni-ink) !important; text-decoration: underline !important; }
+.chat-player-start::after { content: none !important; }
 @media (max-height: 620px) {
-  .chat-player-start { min-height: 400px !important; padding-top: 32px !important; }
+  .chat-player-start { min-height: 400px !important; padding-top: 56px !important; }
   .chat-player-permission::after { margin-bottom: 28px !important; }
-  .chat-player-start .animated-button { top: 262px !important; }
-  .chat-player-start::after { margin-top: 78px !important; }
+  .chat-player-start .animated-button { top: 280px !important; }
 }
 
 /* ============================================================
-   ANTEPRIMA LINK — formato compatto
+   ANTEPRIMA LINK (card compatta del widget)
    ============================================================ */
-
 ul.message-link-content {
   position: relative !important;
   list-style: none !important;
   display: flex !important;
-  padding: 10px 12px !important;
-  border: 1px solid #DAD7D1 !important;
-  border-radius: 14px !important;
-  background: #fff !important;
-  box-shadow: none !important;
+  padding: 12px !important;
+  margin: 0 40px 8px 40px !important;
+  border: 1px solid var(--marni-bordo) !important;
+  background: #FFFFFF !important;
   cursor: pointer !important;
-  transition: background-color .15s ease !important;
 }
-
-.message-link-content .link-image{
-    max-width: 100% !important;
-}
-
-.message-link-content .message-link-items{
-    border-bottom: none !important
-}
-
-ul.message-link-content:hover { background: #F5F4F1 !important; }
-
-li.message-link-items {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  list-style: none !important;
-  margin: 0 !important;
-  padding: 0 18px 0 0 !important;
-}
-
+ul.message-link-content:hover { border-color: var(--marni-hover) !important; }
+.message-link-content .link-image { max-width: 100% !important; }
+.message-link-content .message-link-items { border-bottom: none !important; }
+li.message-link-items { flex: 1 1 auto !important; min-width: 0 !important; list-style: none !important; margin: 0 !important; padding: 0 18px 0 0 !important; }
 .message-link-item {
   display: grid !important;
   grid-template-columns: 40px 1fr !important;
-  grid-template-areas:
-    "img titolo"
-    "img descrizione" !important;
+  grid-template-areas: "img titolo" "img descrizione" !important;
   align-items: center !important;
   column-gap: 12px !important;
   row-gap: 1px !important;
@@ -420,72 +384,12 @@ li.message-link-items {
   background: transparent !important;
   border: none !important;
 }
-
-.message-link-item .link-image {
-  grid-area: img !important;
-  height: 40px !important;
-  object-fit: cover !important;
-  border-radius: 10px !important;
-  background: #F5F4F1 !important;
-  margin: 0 !important;
-  display: block !important;
-}
-
-.message-link-item .link-title {
-  grid-area: titolo !important;
-  /*font-family: 'Jost', sans-serif !important;*/
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  line-height: 1.3 !important;
-  color: #2A2A2A !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-.message-link-item .link-description {
-  grid-area: descrizione !important;
-  /*font-family: 'Jost', sans-serif !important;*/
-  font-size: 11.5px !important;
-  line-height: 1.35 !important;
-  color: #9A9A9A !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-li.message-link-anchor {
-  position: static !important;
-  list-style: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-li.message-link-anchor button {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  cursor: pointer !important;
-  font-size: 0 !important;
-  z-index: 2 !important;
-}
-
-li.message-link-anchor button .focused,
-li.message-link-anchor button span,
-li.message-link-anchor button a {
-  display: none !important;
-}
-
+.message-link-item .link-image { grid-area: img !important; height: 40px !important; object-fit: cover !important; background: var(--marni-fondo) !important; margin: 0 !important; display: block !important; }
+.message-link-item .link-title { grid-area: titolo !important; font-size: var(--marni-fs) !important; font-weight: 400 !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; margin: 0 !important; padding: 0 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+.message-link-item .link-description { grid-area: descrizione !important; font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin: 0 !important; padding: 0 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+li.message-link-anchor { position: static !important; list-style: none !important; margin: 0 !important; padding: 0 !important; }
+li.message-link-anchor button { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; margin: 0 !important; padding: 0 !important; border: none !important; background: transparent !important; cursor: pointer !important; font-size: 0 !important; z-index: 2 !important; }
+li.message-link-anchor button .focused, li.message-link-anchor button span, li.message-link-anchor button a { display: none !important; }
 ul.message-link-content::after {
   content: "";
   position: absolute !important;
@@ -494,1093 +398,215 @@ ul.message-link-content::after {
   width: 7px !important;
   height: 7px !important;
   margin-top: -4px !important;
-  border-right: 1.5px solid #B4B4B4 !important;
-  border-bottom: 1.5px solid #B4B4B4 !important;
+  border-right: 1px solid var(--marni-ink) !important;
+  border-bottom: 1px solid var(--marni-ink) !important;
   transform: rotate(-45deg) !important;
   pointer-events: none !important;
 }
 
 /* ============================================================
-   COMPONENTI DELLE RISPOSTE
-   Classi usate dai flussi n8n. Gli stili stanno qui, non nel
-   codice: cambiare un colore o una spaziatura si fa in un punto
-   solo, senza toccare i venti flussi.
-
-   Nomenclatura: mr- (Marni Response) + componente + elemento.
+   COMPONENTI DELLE RISPOSTE (classi mr-* generate dai flussi n8n)
+   Il componente Figma porta il nome della classe: .mr-card, .mr-chip…
    ============================================================ */
-
-/* ---------- contenitore della risposta ---------- */
 .mr-wrap, .message-text .mr-wrap {
-  width: 310px !important;
-  max-width: 100% !important;
+  width: 100% !important;
+  max-width: 420px !important;
   box-sizing: border-box !important;
-}
-
-/* ---------- intestazioni e testi ---------- */
-.mr-intro, .message-text .mr-intro {
-  font-size: 13px !important;
-  color: #555 !important;
-  line-height: 1.45 !important;
-  margin-bottom: 10px !important;
-}
-
-.mr-titolo, .message-text .mr-titolo {
-  font-size: 14px !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
   color: var(--marni-ink) !important;
-  margin-bottom: 2px !important;
 }
 
-.mr-sottotitolo, .message-text .mr-sottotitolo {
-  font-size: 11px !important;
-  color: #888 !important;
-  margin-bottom: 6px !important;
-}
+/* testi */
+.mr-intro, .message-text .mr-intro { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; margin: 0 0 8px !important; }
+.mr-titolo, .message-text .mr-titolo { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; margin-bottom: 2px !important; }
+.mr-sottotitolo, .message-text .mr-sottotitolo { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin-bottom: 8px !important; }
+.mr-nota, .message-text .mr-nota { font-size: 12px !important; line-height: 18px !important; color: var(--marni-muto) !important; margin-bottom: 10px !important; }
+.mr-nota--stile, .message-text .mr-nota--stile { color: var(--marni-ink) !important; font-style: normal !important; }
+.mr-criteri, .message-text .mr-criteri { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin: 0 0 12px !important; }
+.mr-avviso, .message-text .mr-avviso { font-size: 12px !important; line-height: 16px !important; color: var(--marni-arancio) !important; margin-bottom: 8px !important; }
+.mr-successo, .message-text .mr-successo { font-size: var(--marni-fs) !important; color: var(--marni-verde) !important; font-weight: 400 !important; margin-bottom: 8px !important; }
+.mr-errore, .message-text .mr-errore { font-size: var(--marni-fs) !important; color: var(--marni-rosso) !important; margin-bottom: 8px !important; }
+.mr-scorri, .message-text .mr-scorri { display: none !important; }
 
-.mr-nota, .message-text .mr-nota {
-  font-size: 12px !important;
-  color: #555 !important;
-  line-height: 1.5 !important;
-  margin-bottom: 10px !important;
-}
-
-.mr-nota--stile, .message-text .mr-nota--stile {
-  font-style: italic !important;
-  color: #666 !important;
-}
-
-.mr-criteri, .message-text .mr-criteri {
-  font-size: 11px !important;
-  color: #999 !important;
-  margin: -6px 0 10px !important;
-}
-
-.mr-avviso, .message-text .mr-avviso {
-  font-size: 11px !important;
-  color: #B06000 !important;
-  margin-bottom: 6px !important;
-}
-
-.mr-successo, .message-text .mr-successo {
-  font-size: 13px !important;
-  color: #1A7F37 !important;
-  font-weight: 600 !important;
-  margin-bottom: 8px !important;
-}
-.mr-errore, .message-text .mr-errore {
-  font-size: 13px !important;
-  color: #B42318 !important;
-  margin-bottom: 8px !important;
-}
-
-/* ---------- carosello ---------- */
+/* griglia prodotti: 3 colonne, 2px di spazio (ProductGrid del Figma) */
 .mr-carosello, .message-text .mr-carosello {
-  display: flex !important;
-  gap: 12px !important;
-  overflow-x: auto !important;
-  padding: 0 0 14px !important;
-  scrollbar-width: auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 2px !important;
+  overflow: visible !important;
+  padding: 0 0 12px !important;
+  margin: 0 -40px 0 -16px !important;
+}
+@media (max-width: 400px) {
+  .mr-carosello, .message-text .mr-carosello { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
 }
 
-.mr-scorri, .message-text .mr-scorri {
-  font-size: 11px !important;
-  color: #999 !important;
-  text-align: center !important;
-  margin: -4px 0 10px !important;
-}
-
-/* ---------- card prodotto ---------- */
+/* card prodotto */
 .mr-card, .message-text .mr-card {
-  flex: 0 0 210px !important;
-  width: 210px !important;
-  background: #EFEFEF !important;
-  border-radius: 2px !important;
+  flex: none !important;
+  width: auto !important;
+  min-width: 0 !important;
+  background: #FFFFFF !important;
+  border: none !important;
   overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
-
 .mr-card-foto, .message-text .mr-card-foto {
   display: block !important;
-  padding: 16px 18px !important;
-  text-align: center !important;
-  background: #EFEFEF !important;
+  padding: 0 !important;
+  background: var(--marni-fondo) !important;
+  aspect-ratio: 164 / 218 !important;
+  overflow: hidden !important;
 }
-
-.mr-card-foto img, .message-text .mr-card-foto img {
-  width: 100% !important;
-  height: auto !important;
-  display: block !important;
-  margin: 0 auto !important;
-}
-
-.mr-card-corpo, .message-text .mr-card-corpo {
-  background: #FFFFFF !important;
-  padding: 12px !important;
-}
-
-.mr-card-link, .message-text .mr-card-link {
-  text-decoration: none !important;
-  color: var(--marni-ink) !important;
-}
-
+.mr-card-foto img, .message-text .mr-card-foto img { width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; margin: 0 !important; }
+.mr-card-corpo, .message-text .mr-card-corpo { background: #FFFFFF !important; padding: 12px 16px 16px 8px !important; }
+.mr-card-link, .message-text .mr-card-link { text-decoration: none !important; color: var(--marni-ink) !important; }
 .mr-card-nome, .message-text .mr-card-nome {
-  font-size: 14px !important;
-  line-height: 1.35 !important;
-  min-height: 36px !important;
+  font-size: var(--marni-fs) !important;
+  line-height: 16.8px !important;
+  min-height: 34px !important;
   color: var(--marni-ink) !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
 }
+.mr-card-prezzo, .message-text .mr-card-prezzo { font-size: var(--marni-fs) !important; line-height: 16.8px !important; color: var(--marni-ink) !important; font-weight: 400 !important; margin: 8px 0 0 !important; display: flex !important; flex-wrap: wrap !important; gap: 8px !important; align-items: baseline !important; }
+.mr-card-prezzo del, .mr-card-prezzo .mr-prezzo-pieno, .message-text .mr-card-prezzo .mr-prezzo-pieno { font-size: var(--marni-fs) !important; color: var(--marni-muto) !important; text-decoration: line-through !important; font-weight: 400 !important; margin: 0 !important; }
+.mr-card-prezzo .mr-prezzo-scontato, .message-text .mr-card-prezzo .mr-prezzo-scontato { color: var(--marni-ink) !important; }
+.mr-card-sconto, .message-text .mr-card-sconto { color: #27AE61 !important; letter-spacing: .28px !important; }
+.mr-card-nota, .message-text .mr-card-nota { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; }
+.mr-card-desc, .message-text .mr-card-desc { display: none !important; }
+.mr-card-perche, .message-text .mr-card-perche { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; padding: 6px 0 0 !important; }
+.mr-card-categoria, .message-text .mr-card-categoria { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; background: transparent !important; padding: 0 0 4px !important; text-align: left !important; }
 
-.mr-card-prezzo, .message-text .mr-card-prezzo {
-  font-size: 15px !important;
-  color: var(--marni-ink) !important;
-  font-weight: 600 !important;
-  margin: 8px 0 !important;
-}
-
-.mr-card-prezzo del,
-.mr-card-prezzo .mr-prezzo-pieno, .message-text .mr-card-prezzo .mr-prezzo-pieno {
-  font-size: 12px !important;
-  color: #999 !important;
-  text-decoration: line-through !important;
-  font-weight: 400 !important;
-  margin-right: 6px !important;
-}
-
-.mr-card-prezzo .mr-prezzo-scontato, .message-text .mr-card-prezzo .mr-prezzo-scontato {
-  color: var(--marni-red) !important;
-}
-
-.mr-card-nota, .message-text .mr-card-nota {
-  font-size: 11px !important;
-  color: #999 !important;
-  font-weight: 400 !important;
-}
-
-.mr-card-desc, .message-text .mr-card-desc {
-  font-size: 11px !important;
-  color: #777 !important;
-  line-height: 1.35 !important;
-  margin-bottom: 10px !important;
-  min-height: 30px !important;
-}
-
-.mr-card-perche, .message-text .mr-card-perche {
-  font-size: 10px !important;
-  color: #888 !important;
-  line-height: 1.35 !important;
-  padding: 4px 2px 0 !important;
-}
-
-.mr-card-categoria, .message-text .mr-card-categoria {
-  font-size: 10px !important;
-  color: #FFFFFF !important;
-  background: var(--marni-ink) !important;
-  padding: 3px 8px !important;
-  text-align: center !important;
-}
-
-/* ---------- azioni ---------- */
-.mr-azioni, .message-text .mr-azioni {
-  display: flex !important;
-  gap: 6px !important;
-}
-
+/* azioni sulla card (lente, carrello, cuore) */
+.mr-azioni, .message-text .mr-azioni { display: flex !important; gap: 8px !important; margin-top: 8px !important; }
 .mr-btn, .message-text .mr-btn {
-  flex: 1 !important;
-  padding: 8px 0 !important;
+  flex: 0 0 auto !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   background: #FFFFFF !important;
-  border: 1px solid #e0e0e0 !important;
-  border-radius: 100px !important;
+  border: 1px solid var(--marni-bordo) !important;
   cursor: pointer !important;
-  font-size: 15px !important;
-  line-height: 1 !important;
+  font-size: var(--marni-fs) !important;
+  line-height: 18px !important;
   color: var(--marni-ink) !important;
-  transition: background-color .15s ease, border-color .15s ease !important;
+  transition: border-color .15s !important;
 }
+.mr-btn:hover, .message-text .mr-btn:hover { background: #FFFFFF !important; border-color: var(--marni-hover) !important; }
+.mr-btn--scuro, .message-text .mr-btn--scuro { background: #FFFFFF !important; border-color: var(--marni-ink) !important; color: var(--marni-ink) !important; }
+.mr-btn--scuro:hover, .message-text .mr-btn--scuro:hover { background: var(--marni-ink) !important; color: #FFFFFF !important; }
 
-.mr-btn:hover, .message-text .mr-btn:hover {
-  background: var(--marni-bubble) !important;
-}
-
-.mr-btn--scuro, .message-text .mr-btn--scuro {
-  background: var(--marni-ink) !important;
-  border-color: #e0e0e0 !important;
-  color: #FFFFFF !important;
-}
-.mr-btn--scuro:hover, .message-text .mr-btn--scuro:hover {
-  background: #000000 !important;
-}
-
-/* pulsante largo, per le azioni principali */
+/* pulsante largo (azione principale) */
 .mr-btn-largo, .message-text .mr-btn-largo {
   display: block !important;
   width: 100% !important;
-  padding: 12px !important;
-  background: #000 !important;
+  padding: 10px 12px !important;
+  background: var(--marni-ink) !important;
   color: #FFFFFF !important;
-  border: none !important;
-  border-radius: 100px !important;
-  font-size: 13px !important;
+  border: 1px solid var(--marni-ink) !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
   cursor: pointer !important;
   text-align: center !important;
   text-decoration: none !important;
   box-sizing: border-box !important;
 }
-.mr-btn-largo:hover, .message-text .mr-btn-largo:hover {
-  background: #000000 !important;
-}
+.mr-btn-largo:hover, .message-text .mr-btn-largo:hover { background: #333333 !important; }
+.mr-btn-largo--chiaro, .message-text .mr-btn-largo--chiaro { background: #FFFFFF !important; color: var(--marni-ink) !important; border: 1px solid var(--marni-ink) !important; }
+.mr-btn-largo--chiaro:hover, .message-text .mr-btn-largo--chiaro:hover { background: #FFFFFF !important; border-color: var(--marni-hover) !important; color: var(--marni-hover) !important; }
 
-.mr-btn-largo--chiaro, .message-text .mr-btn-largo--chiaro {
-  background: #FFFFFF !important;
-  color: var(--marni-ink) !important;
-  border: 1px solid var(--marni-ink) !important;
-}
-.mr-btn-largo--chiaro:hover, .message-text .mr-btn-largo--chiaro:hover {
-  background: var(--marni-bubble) !important;
-}
-
-/* pulsante testuale, per gli inviti */
+/* pulsante testuale (inviti) = chip */
 .mr-btn-testo, .message-text .mr-btn-testo {
-  padding: 9px 16px !important;
+  padding: 9px 12px !important;
   background: #FFFFFF !important;
   color: var(--marni-ink) !important;
-  border: 1px solid var(--marni-ink) !important;
-  border-radius: 100px !important;
-  font-size: 12px !important;
+  border: 1px solid var(--marni-bordo) !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
   cursor: pointer !important;
 }
-.mr-btn-testo:hover, .message-text .mr-btn-testo:hover {
-  background: var(--marni-bubble) !important;
-}
+.mr-btn-testo:hover, .message-text .mr-btn-testo:hover { border-color: var(--marni-hover) !important; color: var(--marni-hover) !important; background: #FFFFFF !important; }
 
-/* ---------- taglie ---------- */
-.mr-taglie, .message-text .mr-taglie {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 6px !important;
-  margin-bottom: 10px !important;
-}
-
+/* taglie: caselle quadrate */
+.mr-taglie, .message-text .mr-taglie { display: flex !important; flex-wrap: wrap !important; gap: 8px !important; margin: 4px 0 12px !important; }
 .mr-taglia, .message-text .mr-taglia {
-  min-width: 46px !important;
-  padding: 8px 12px !important;
+  min-width: 32px !important;
+  padding: 6px 8px !important;
   background: #FFFFFF !important;
   color: var(--marni-ink) !important;
-  border: 1px solid var(--marni-ink) !important;
-  border-radius: 100px !important;
-  font-size: 12px !important;
+  border: 1px solid var(--marni-bordo) !important;
+  font-size: var(--marni-fs) !important;
+  line-height: 18px !important;
+  text-align: center !important;
   cursor: pointer !important;
 }
-.mr-taglia:hover, .message-text .mr-taglia:hover {
-  background: var(--marni-bubble) !important;
-}
+.mr-taglia:hover, .message-text .mr-taglia:hover { border-color: var(--marni-hover) !important; background: #FFFFFF !important; }
+.mr-taglia--esaurita, .message-text .mr-taglia--esaurita { color: var(--marni-bordo) !important; border-color: #E5E5E5 !important; cursor: default !important; text-decoration: line-through !important; }
 
-.mr-taglia--esaurita, .message-text .mr-taglia--esaurita {
-  color: #BBBBBB !important;
-  border-color: var(--marni-border) !important;
-  cursor: default !important;
-  text-decoration: line-through !important;
-}
-
-/* ---------- chip di affinamento ---------- */
-.mr-chips, .message-text .mr-chips {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 6px !important;
-  margin-top: 8px !important;
-}
-
+/* chip: colonna, come nel Figma (AI_Prompt) */
+.mr-chips, .message-text .mr-chips { display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; margin: 8px 0 4px !important; }
 .mr-chip, .message-text .mr-chip {
-  padding: 7px 13px !important;
+  padding: 9px 12px !important;
   background: #FFFFFF !important;
   color: var(--marni-ink) !important;
-  border: 1px solid var(--marni-border) !important;
-  border-radius: 100px !important;
-  font-size: 12px !important;
+  border: 1px solid var(--marni-bordo) !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  text-align: left !important;
   cursor: pointer !important;
 }
-.mr-chip:hover, .message-text .mr-chip:hover {
-  background: var(--marni-bubble) !important;
-}
-
-.mr-chip--scuro, .message-text .mr-chip--scuro {
-  background: var(--marni-ink) !important;
-  color: #FFFFFF !important;
-  border-color: var(--marni-ink) !important;
-}
-
-/* ---------- riquadri ---------- */
-.mr-box, .message-text .mr-box {
-  border: 1px solid var(--marni-border) !important;
-  border-radius: 2px !important;
-  padding: 14px !important;
-  margin-bottom: 12px !important;
-}
-
-.mr-box--pulito, .message-text .mr-box--pulito {
-  border: none !important;
-  padding: 0 !important;
-}
-
-.mr-sezione, .message-text .mr-sezione {
-  border-top: 1px solid #EEEEEE !important;
-  margin-top: 10px !important;
-  padding-top: 10px !important;
-}
-
-/* ---------- righe (carrello, ordini) ---------- */
-.mr-riga, .message-text .mr-riga {
-  display: flex !important;
-  gap: 10px !important;
-  align-items: center !important;
-  padding: 10px 0 !important;
-  border-bottom: 1px solid #F0F0F0 !important;
-}
-.mr-riga:last-child, .message-text .mr-riga:last-child {
-  border-bottom: none !important;
-}
-
-.mr-riga-foto, .message-text .mr-riga-foto {
-  width: 54px !important;
-  height: 54px !important;
-  object-fit: cover !important;
-  border-radius: 2px !important;
-  background: var(--marni-bubble) !important;
-  flex: 0 0 54px !important;
-}
-
-.mr-riga-testo, .message-text .mr-riga-testo {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-}
-.mr-riga-nome, .message-text .mr-riga-nome {
-  font-size: 13px !important;
-  color: var(--marni-ink) !important;
-  line-height: 1.35 !important;
-}
-.mr-riga-meta, .message-text .mr-riga-meta {
-  font-size: 11px !important;
-  color: #999 !important;
-  margin-top: 2px !important;
-}
-.mr-riga-prezzo, .message-text .mr-riga-prezzo {
-  font-size: 13px !important;
-  color: var(--marni-ink) !important;
-  font-weight: 600 !important;
-  white-space: nowrap !important;
-}
-
-.mr-totale, .message-text .mr-totale {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: baseline !important;
-  padding: 12px 0 10px !important;
-  border-top: 1px solid var(--marni-border) !important;
-  font-size: 14px !important;
-  color: var(--marni-ink) !important;
-}
-.mr-totale b, .message-text .mr-totale b {
-  font-weight: 600 !important;
-}
-
-/* ---------- stati ---------- */
-.mr-stato, .message-text .mr-stato {
-  display: inline-block !important;
-  padding: 4px 10px !important;
-  border-radius: 100px !important;
-  font-size: 11px !important;
-  font-weight: 500 !important;
-}
-.mr-stato--corso, .message-text .mr-stato--corso {
-  background: #FFF4E5 !important;
-  color: #B06000 !important;
-}
-.mr-stato--spedito, .message-text .mr-stato--spedito {
-  background: #E7F3FF !important;
-  color: #0B5CAD !important;
-}
-.mr-stato--consegnato, .message-text .mr-stato--consegnato {
-  background: #E8F5EC !important;
-  color: #1A7F37 !important;
-}
-.mr-stato--annullato, .message-text .mr-stato--annullato {
-  background: #FBEAEA !important;
-  color: #B42318 !important;
-}
-
-/* ---------- mappa e negozi ---------- */
-.mr-negozio, .message-text .mr-negozio {
-  border: 1px solid var(--marni-border) !important;
-  border-radius: 2px !important;
-  padding: 12px !important;
-  margin-bottom: 8px !important;
-}
-.mr-negozio-nome, .message-text .mr-negozio-nome {
-  font-size: 14px !important;
-  color: var(--marni-ink) !important;
-  font-weight: 500 !important;
-}
-.mr-negozio-distanza, .message-text .mr-negozio-distanza {
-  font-size: 11px !important;
-  color: #999 !important;
-  float: right !important;
-}
-.mr-negozio-indirizzo, .message-text .mr-negozio-indirizzo {
-  font-size: 12px !important;
-  color: #666 !important;
-  line-height: 1.4 !important;
-  margin-top: 4px !important;
-}
-.mr-negozio-aperto, .message-text .mr-negozio-aperto {
-  font-size: 11px !important;
-  color: #1A7F37 !important;
-  margin-top: 4px !important;
-}
-.mr-negozio-chiuso, .message-text .mr-negozio-chiuso {
-  font-size: 11px !important;
-  color: #999 !important;
-  margin-top: 4px !important;
-}
-
-/* spiegazione della palette armocromatica */
-.mr-box-palette, .message-text .mr-box-palette {
-  font-size: 12px !important;
-  color: #555 !important;
-  line-height: 1.5 !important;
-  margin: -4px 0 12px !important;
-  padding: 10px 12px !important;
-  background: #F7F7F7 !important;
-  border-left: 3px solid var(--marni-ink) !important;
-}
-
-/* ============================================================
-   ANNULLA GLI STILI DEL WIDGET SULLE NOSTRE CARD
-   Il widget applica i suoi stili ai link e alle immagini dentro
-   i messaggi: sulle card devono valere i nostri.
-   ============================================================ */
-
-.message-text .mr-card a,
-.message-text .mr-card-link,
-.message-text .mr-card-link:visited,
-.message-text .mr-card-nome {
-  color: var(--marni-ink) !important;
-  text-decoration: none !important;
-}
-
-.message-text .mr-card img {
-  max-width: 100% !important;
-  height: auto !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-
-.message-text .mr-card button,
-.message-text .mr-azioni button {
-  margin: 0 !important;
-  box-shadow: none !important;
-  min-width: 0 !important;
-  height: auto !important;
-  line-height: 1 !important;
-  font-family: futura-pt !important;
-}
-
-/* il contenitore del messaggio non deve limitare il carosello */
-.message-text .mr-wrap,
-.message-text .mr-carosello {
-  max-width: 100% !important;
-}
-
-/* carosello piu' compatto, usato dal flusso categoria */
-.mr-carosello--stretto, .message-text .mr-carosello--stretto {
-  gap: 10px !important;
-  padding-bottom: 8px !important;
-}
-
-/* ============================================================
-   SCHEDA PRODOTTO
-   Usata dal prezzo e dal dettaglio: una sola card grande invece
-   del carosello.
-   ============================================================ */
-
-.mr-scheda, .message-text .mr-scheda {
-  max-width: 320px !important;
-  border: 1px solid #E5E5E5 !important;
-  border-radius: 2px !important;
-  overflow: hidden !important;
-}
-
-.mr-scheda-foto, .message-text .mr-scheda-foto {
-  display: block !important;
-}
-.mr-scheda-foto img, .message-text .mr-scheda-foto img {
-  width: 100% !important;
-  height: auto !important;
-  display: block !important;
-}
-
-.mr-scheda-corpo, .message-text .mr-scheda-corpo {
-  padding: 14px !important;
-}
-
-.mr-scheda-nome, .message-text .mr-scheda-nome {
-  font-size: 14px !important;
-  color: var(--marni-ink) !important;
-  line-height: 1.35 !important;
-  margin-bottom: 3px !important;
-}
-
-.mr-scheda-meta, .message-text .mr-scheda-meta {
-  font-size: 11px !important;
-  color: #999 !important;
-  margin-bottom: 10px !important;
-}
-
-/* ---------- prezzo in evidenza ---------- */
-.mr-prezzo-riga, .message-text .mr-prezzo-riga {
-  display: flex !important;
-  align-items: baseline !important;
-  gap: 8px !important;
-  margin-bottom: 4px !important;
-}
-
-.mr-prezzo-grande, .message-text .mr-prezzo-grande {
-  font-size: 20px !important;
-  color: var(--marni-ink) !important;
-  font-weight: 600 !important;
-  margin-bottom: 10px !important;
-}
-
-.mr-prezzo-grande.mr-prezzo-scontato,
-.message-text .mr-prezzo-grande.mr-prezzo-scontato {
-  color: var(--marni-red) !important;
-  margin-bottom: 0 !important;
-}
-
-.mr-risparmio, .message-text .mr-risparmio {
-  font-size: 12px !important;
-  color: var(--marni-red) !important;
-  margin-bottom: 10px !important;
-}
-
-/* ---------- disponibilita' e consegna ---------- */
-.mr-disponibile, .message-text .mr-disponibile {
-  font-size: 12px !important;
-  color: #1A7F37 !important;
-  margin-bottom: 4px !important;
-}
-
-.mr-consegna, .message-text .mr-consegna {
-  font-size: 12px !important;
-  color: #555 !important;
-  margin-bottom: 10px !important;
-}
-
-.mr-etichetta, .message-text .mr-etichetta {
-  font-size: 11px !important;
-  color: #777 !important;
-  margin-bottom: 6px !important;
-}
-
-/* ---------- azioni della scheda ---------- */
-.mr-azioni--spaziate, .message-text .mr-azioni--spaziate {
-  margin-bottom: 8px !important;
-  margin-top: 1rem !important;
-}
-
-.mr-btn-azione, .message-text .mr-btn-azione {
-  flex: 1 !important;
-  padding: 10px 0 !important;
-  background: #FFFFFF !important;
-  color: var(--marni-ink) !important;
-  border: 1px solid var(--marni-ink) !important;
-  border-radius: 100px !important;
-  font-size: 14px !important;
-  cursor: pointer !important;
-}
-.mr-btn-azione:hover, .message-text .mr-btn-azione:hover {
-  background: var(--marni-bubble) !important;
-}
-
-.mr-btn-azione--principale, .message-text .mr-btn-azione--principale {
-  flex: 2 !important;
-  background: #000 !important;
-  color: #FFFFFF !important;
-  border: none !important;
-  font-size: 13px !important;
-}
-.mr-btn-azione--principale:hover,
-.message-text .mr-btn-azione--principale:hover {
-  background: #000000 !important;
-}
-
-.mr-btn-secondario, .message-text .mr-btn-secondario {
-  flex: 1 !important;
-  padding: 8px 0 !important;
-  background: #F4F4F4 !important;
-  color: var(--marni-ink) !important;
-  border: 1px solid #DDDDDD !important;
-  border-radius: 100px !important;
-  font-size: 12px !important;
-  cursor: pointer !important;
-}
-.mr-btn-secondario:hover, .message-text .mr-btn-secondario:hover {
-  background: var(--marni-bubble) !important;
-}
-
-/* ---------- varie ---------- */
-.mr-sotto, .message-text .mr-sotto {
-  margin-top: 10px !important;
-}
-
-.mr-link, .message-text .mr-link {
-  font-size: 12px !important;
-  color: var(--marni-ink) !important;
-  text-decoration: underline !important;
-}
-
-/* ---------- disponibilita' e taglie ---------- */
-.mr-esaurite, .message-text .mr-esaurite {
-  font-size: 11px !important;
-  color: #AAAAAA !important;
-  margin-top: 8px !important;
-}
-
-.mr-misure, .message-text .mr-misure {
-  font-size: 11px !important;
-  color: #777 !important;
-  margin-top: 10px !important;
-  padding-top: 8px !important;
-  border-top: 1px solid #EEEEEE !important;
-}
-
-.mr-dettaglio, .message-text .mr-dettaglio {
-  font-size: 11px !important;
-  color: #777 !important;
-  margin-top: 4px !important;
-}
-.mr-dettaglio--sopra, .message-text .mr-dettaglio--sopra {
-  margin-top: 8px !important;
-}
-
-.mr-etichetta--sopra, .message-text .mr-etichetta--sopra {
-  margin: 12px 0 6px !important;
-}
-
-.mr-grigio, .message-text .mr-grigio {
-  color: #999 !important;
-}
-
-.mr-riga-semplice, .message-text .mr-riga-semplice {
-  display: flex !important;
-}
-
-.mr-link--piccolo, .message-text .mr-link--piccolo {
-  font-size: 11px !important;
-}
-
-/* ============================================================
-   CARRELLO
-   Condiviso fra l'aggiunta e la visualizzazione.
-   ============================================================ */
-
-.mr-carrello, .message-text .mr-carrello {
-  max-width: 340px !important;
-  border: 1px solid #E5E5E5 !important;
-  border-radius: 2px !important;
-  overflow: hidden !important;
-  border-bottom-left-radius: 12px !important;
-  border-bottom-right-radius: 12px !important;
-}
-
-.mr-carrello-testata, .message-text .mr-carrello-testata {
-  background: #000 !important;
-  color: #FFFFFF !important;
-  padding: 10px 14px !important;
-  font-size: 14px !important;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-}
-
-.mr-carrello .mr-riga, .message-text .mr-carrello .mr-riga {
-  padding: 10px 14px !important;
-}
-
-.mr-rimuovi, .message-text .mr-rimuovi {
-  background: none !important;
-  border: none !important;
-  color: #999 !important;
-  font-size: 18px !important;
-  cursor: pointer !important;
-  flex-shrink: 0 !important;
-  line-height: 1 !important;
-}
-.mr-rimuovi:hover, .message-text .mr-rimuovi:hover {
-  color: var(--marni-ink) !important;
-}
-
-.mr-carrello .mr-totale, .message-text .mr-carrello .mr-totale {
-  padding: 12px 14px !important;
-  border-top: none !important;
-}
-
-.mr-piede, .message-text .mr-piede {
-  padding: 0 14px 14px !important;
-}
-
-.mr-vuoto, .message-text .mr-vuoto {
-  padding: 14px !important;
-  font-size: 14px !important;
-  color: var(--marni-ink) !important;
-}
-
-.mr-forte, .message-text .mr-forte {
-  font-weight: 600 !important;
-}
-
-/* ============================================================
-   VARIANTI
-   ============================================================ */
-
-.mr-intro--stretta, .message-text .mr-intro--stretta {
-  margin-bottom: 8px !important;
-}
-
-.mr-sottotitolo--sopra, .message-text .mr-sottotitolo--sopra {
-  margin-top: 10px !important;
-}
-
-.mr-avviso--grande, .message-text .mr-avviso--grande {
-  font-size: 12px !important;
-  margin-bottom: 10px !important;
-}
-
-.mr-errore--leggero, .message-text .mr-errore--leggero {
-  font-size: 12px !important;
-  font-weight: 400 !important;
-  margin-bottom: 10px !important;
-}
-
-.mr-btn-testo--scuro, .message-text .mr-btn-testo--scuro {
-  background: var(--marni-ink) !important;
-  color: #FFFFFF !important;
-  border-color: var(--marni-ink) !important;
-  font-size: 13px !important;
-}
-.mr-btn-testo--scuro:hover, .message-text .mr-btn-testo--scuro:hover {
-  background: #000000 !important;
-}
-
-.mr-taglia--piccola, .message-text .mr-taglia--piccola {
-  min-width: 40px !important;
-  padding: 6px 9px !important;
-  border-color: var(--marni-border) !important;
-}
-
-/* ---------- scheda prodotto: formato ampio ---------- */
-.mr-scheda-foto--ampia, .message-text .mr-scheda-foto--ampia {
-  text-align: center !important;
-}
-
-.mr-scheda-foto{
-  border-radius: 12px !important;
-}
-
-.mr-scheda-corpo--aperto, .message-text .mr-scheda-corpo--aperto {
-  padding: 12px 2px 0 !important;
-}
-
-.mr-scheda-nome--grande, .message-text .mr-scheda-nome--grande {
-  font-size: 15px !important;
-  font-weight: 600 !important;
-  margin-bottom: 0 !important;
-}
-
-.mr-descrizione, .message-text .mr-descrizione {
-  font-size: 12px !important;
-  color: #555 !important;
-  line-height: 1.5 !important;
-  margin-bottom: 12px !important;
-}
-
-.mr-composizione, .message-text .mr-composizione {
-  font-size: 11px !important;
-  color: #777 !important;
-  line-height: 1.45 !important;
-  margin-bottom: 8px !important;
-}
-
-/* ============================================================
-   LOOK E OUTFIT
-   ============================================================ */
-
-/* card senza sfondo: usata nei look, dove la categoria sta sopra */
-.mr-card--nuda, .message-text .mr-card--nuda {
-  background: transparent !important;
-  border-radius: 0 !important;
-}
-
-.mr-motivazione, .message-text .mr-motivazione {
-  font-size: 12px !important;
-  color: #555 !important;
-  line-height: 1.5 !important;
-  margin-bottom: 10px !important;
-}
-
-.mr-totale-look, .message-text .mr-totale-look {
-  font-size: 13px !important;
-  color: var(--marni-ink) !important;
-  margin-top: 8px !important;
-  padding-top: 8px !important;
-  border-top: 1px solid #EEEEEE !important;
-}
-
-.mr-titolo--spaziato, .message-text .mr-titolo--spaziato {
-  margin-bottom: 6px !important;
-}
-
-.mr-criteri--sotto, .message-text .mr-criteri--sotto {
-  margin: 0 0 8px !important;
-}
-
-.mr-nota--sopra, .message-text .mr-nota--sopra {
-  font-size: 13px !important;
-  margin: 12px 0 8px !important;
-}
-
-/* ---------- invito ad accedere ---------- */
-.mr-invito, .message-text .mr-invito {
-  max-width: 320px !important;
-  border: 1px solid #E5E5E5 !important;
-  border-radius: 2px !important;
-  padding: 16px !important;
-  text-align: center !important;
-}
-
-.mr-btn-accedi, .message-text .mr-btn-accedi {
-  display: inline-block !important;
-  background: var(--marni-ink) !important;
-  color: #FFFFFF !important;
-  text-decoration: none !important;
-  padding: 10px 20px !important;
-  border-radius: 100px !important;
-  font-size: 13px !important;
-}
-.mr-btn-accedi:hover, .message-text .mr-btn-accedi:hover {
-  background: #000000 !important;
-}
-
-.mr-spazio, .message-text .mr-spazio {
-  margin-bottom: 6px !important;
-}
-
-/* ============================================================
-   NEGOZI — dettagli aggiuntivi
-   ============================================================ */
-
-.mr-negozio-testa, .message-text .mr-negozio-testa {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: baseline !important;
-}
-
-.mr-negozio-orari, .message-text .mr-negozio-orari {
-  font-size: 11px !important;
-  color: #777 !important;
-  margin-top: 4px !important;
-  line-height: 1.5 !important;
-}
-
-.mr-negozio-azioni, .message-text .mr-negozio-azioni {
-  display: flex !important;
-  gap: 8px !important;
-  margin-top: 8px !important;
-}
-
-.mr-btn-mappa, .message-text .mr-btn-mappa {
-  flex: 1 !important;
-  text-align: center !important;
-  padding: 7px 0 !important;
-  background: #000 !important;
-  color: #FFFFFF !important;
-  text-decoration: none !important;
-  border-radius: 100px !important;
-  font-size: 12px !important;
-}
-.mr-btn-mappa--chiaro, .message-text .mr-btn-mappa--chiaro {
-  background: transparent !important;
-  color: var(--marni-ink) !important;
-  border: 1px solid #000 !important;
-}
-
-/* etichetta piccola su fondo scuro (flagship, outlet) */
-.mr-tag, .message-text .mr-tag {
-  font-size: 10px !important;
-  color: #FFFFFF !important;
-  background: var(--marni-ink) !important;
-  padding: 1px 6px !important;
-  border-radius: 100px !important;
-  margin-top: 2px !important;
-  display: inline-block !important;
-}
-.mr-tag--rosso, .message-text .mr-tag--rosso {
-  background: var(--marni-red) !important;
-}
-
-/* ============================================================
-   CAPO DI RIFERIMENTO
-   Il capo acquistato da cui parte l'abbinamento.
-   ============================================================ */
-
-.mr-capobase, .message-text .mr-capobase {
-  display: flex !important;
-  gap: 10px !important;
-  background: #F7F7F7 !important;
-  padding: 10px !important;
-  border-radius: 2px !important;
-  margin-bottom: 12px !important;
-}
-
-.mr-capobase-foto, .message-text .mr-capobase-foto {
-  width: 64px !important;
-  height: auto !important;
-  flex-shrink: 0 !important;
-  background: #EFEFEF !important;
-}
-
-.mr-capobase-nome, .message-text .mr-capobase-nome {
-  font-size: 12px !important;
-  line-height: 1.3 !important;
-  margin-top: 2px !important;
-  color: var(--marni-ink) !important;
-}
-
-.mr-capobase-meta, .message-text .mr-capobase-meta {
-  font-size: 11px !important;
-  color: #888 !important;
-  margin-top: 2px !important;
-}
-
-/* ---------- varianti dei testi ---------- */
-.mr-etichetta-piccola, .message-text .mr-etichetta-piccola {
-  font-size: 11px !important;
-  color: #888 !important;
-}
-
-.mr-sottotitolo--largo, .message-text .mr-sottotitolo--largo {
-  font-size: 12px !important;
-  margin-bottom: 14px !important;
-}
-
-.mr-sottotitolo--sezione, .message-text .mr-sottotitolo--sezione {
-  font-size: 12px !important;
-  margin: 16px 0 6px !important;
-}
-
-.mr-chip--piccolo, .message-text .mr-chip--piccolo {
-  padding: 6px 11px !important;
-  font-size: 11px !important;
-  background: #F4F4F4 !important;
-  border-color: #DDDDDD !important;
-}
-
-/* ============================================================
-   ORDINI
-   ============================================================ */
-
-.mr-ordine, .message-text .mr-ordine {
-  border: 1px solid #E5E5E5 !important;
-  border-radius: 2px !important;
-  overflow: hidden !important;
-}
-
-.mr-ordine-testata, .message-text .mr-ordine-testata {
-  background: #F7F7F7 !important;
-  padding: 10px 14px !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-}
-
-.mr-ordine-numero, .message-text .mr-ordine-numero {
-  font-size: 13px !important;
-  color: var(--marni-ink) !important;
-  font-weight: 600 !important;
-}
-
-.mr-ordine-data, .message-text .mr-ordine-data {
-  font-size: 11px !important;
-  color: #888 !important;
-}
-
-.mr-ordine-righe, .message-text .mr-ordine-righe {
-  padding: 8px 14px !important;
-}
-
-.mr-ordine-capo, .message-text .mr-ordine-capo {
-  font-size: 12px !important;
-  color: #333 !important;
-  padding: 3px 0 !important;
-}
-
-.mr-ordine .mr-totale, .message-text .mr-ordine .mr-totale {
-  padding: 10px 14px !important;
-  border-top: 1px solid #F0F0F0 !important;
-  font-size: 13px !important;
-}
-
-/* ---------- varianti ---------- */
-.mr-wrap--largo, .message-text .mr-wrap--largo {
-  width: auto !important;
-  max-width: 360px !important;
-}
-
-.mr-piede-nota, .message-text .mr-piede-nota {
-  padding: 10px 14px !important;
-  font-size: 11px !important;
-  color: #888 !important;
-}
-
-/* ============================================================
-   COLORI
-   ============================================================ */
-
-.mr-colori, .message-text .mr-colori {
-  font-size: 13px !important;
-  color: var(--marni-ink) !important;
-}
-
-.mr-colore-riga, .message-text .mr-colore-riga {
-  margin: 4px 0 !important;
-}
-
-/* il pallino colorato: forma qui, colore inline perche' dinamico */
-.mr-pallino, .message-text .mr-pallino {
-  display: inline-block !important;
-  width: 16px !important;
-  height: 16px !important;
-  border-radius: 50% !important;
-  border: 1px solid #CCCCCC !important;
-  vertical-align: middle !important;
-  margin-right: 6px !important;
-}
-
-.mr-chip--colore, .message-text .mr-chip--colore {
-  display: inline-flex !important;
-  align-items: center !important;
-  padding: 7px 12px !important;
-  background: #F4F4F4 !important;
-  border-color: #DDDDDD !important;
-  margin: 0 6px 6px 0 !important;
-}
-
-.mr-conteggio, .message-text .mr-conteggio {
-  color: #999 !important;
-  margin-left: 4px !important;
-}
-
-/* ---------- elenco ordini ---------- */
-.mr-ordine--elenco, .message-text .mr-ordine--elenco {
-  margin-bottom: 10px !important;
-}
-
-.mr-ordine-stato-box, .message-text .mr-ordine-stato-box {
-  text-align: right !important;
-}
+.mr-chip:hover, .message-text .mr-chip:hover { border-color: var(--marni-hover) !important; color: var(--marni-hover) !important; background: #FFFFFF !important; }
+.mr-chip--scuro, .message-text .mr-chip--scuro { background: var(--marni-ink) !important; color: #FFFFFF !important; border-color: var(--marni-ink) !important; }
+/* chip di affinamento (colori/prezzi): in riga, quelle sono filtri */
+.mr-chips--filtri, .message-text .mr-chips--filtri { flex-direction: row !important; flex-wrap: wrap !important; }
+
+/* riquadri e sezioni */
+.mr-box, .message-text .mr-box { border: 1px solid var(--marni-bordo) !important; padding: 12px !important; margin-bottom: 12px !important; background: #FFFFFF !important; }
+.mr-box--pulito, .message-text .mr-box--pulito { border: none !important; padding: 0 !important; }
+.mr-sezione, .message-text .mr-sezione { border-top: 1px solid #E5E5E5 !important; margin-top: 12px !important; padding-top: 12px !important; }
+
+/* righe (carrello, ordini) */
+.mr-riga, .message-text .mr-riga { display: flex !important; gap: 12px !important; align-items: center !important; padding: 12px 0 !important; border-bottom: 1px solid #E5E5E5 !important; }
+.mr-riga:last-child, .message-text .mr-riga:last-child { border-bottom: none !important; }
+.mr-riga-foto, .message-text .mr-riga-foto { width: 56px !important; height: 72px !important; object-fit: cover !important; background: var(--marni-fondo) !important; flex: 0 0 56px !important; }
+.mr-riga-testo, .message-text .mr-riga-testo { flex: 1 1 auto !important; min-width: 0 !important; }
+.mr-riga-nome, .message-text .mr-riga-nome { font-size: var(--marni-fs) !important; line-height: 16.8px !important; color: var(--marni-ink) !important; }
+.mr-riga-meta, .message-text .mr-riga-meta { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin-top: 4px !important; }
+.mr-riga-prezzo, .message-text .mr-riga-prezzo { font-size: var(--marni-fs) !important; color: var(--marni-ink) !important; font-weight: 400 !important; white-space: nowrap !important; }
+.mr-totale, .message-text .mr-totale { display: flex !important; justify-content: space-between !important; align-items: baseline !important; padding: 12px 0 !important; border-top: 1px solid var(--marni-ink) !important; font-size: var(--marni-fs) !important; color: var(--marni-ink) !important; }
+.mr-totale b, .message-text .mr-totale b { font-weight: 400 !important; }
+
+/* stati ordine: testo + quadratino colorato, niente pillole */
+.mr-stato, .message-text .mr-stato { display: inline-flex !important; align-items: center !important; gap: 8px !important; padding: 0 !important; background: transparent !important; font-size: 12px !important; line-height: 16px !important; font-weight: 400 !important; }
+.mr-stato::before, .message-text .mr-stato::before { content: ""; width: 6px; height: 6px; background: currentColor; flex: none; }
+.mr-stato--corso, .message-text .mr-stato--corso { color: var(--marni-arancio) !important; }
+.mr-stato--spedito, .message-text .mr-stato--spedito { color: var(--marni-ink) !important; }
+.mr-stato--consegnato, .message-text .mr-stato--consegnato { color: var(--marni-verde) !important; }
+.mr-stato--annullato, .message-text .mr-stato--annullato { color: var(--marni-rosso) !important; }
+
+/* negozi */
+.mr-negozio, .message-text .mr-negozio { border: 1px solid var(--marni-bordo) !important; padding: 12px !important; margin-bottom: 8px !important; background: #FFFFFF !important; position: relative !important; }
+.mr-negozio-nome, .message-text .mr-negozio-nome { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; font-weight: 400 !important; padding-right: 24px !important; }
+.mr-negozio-distanza, .message-text .mr-negozio-distanza { font-size: var(--marni-fs) !important; color: var(--marni-ink) !important; float: none !important; display: block !important; margin-top: 8px !important; }
+.mr-negozio-indirizzo, .message-text .mr-negozio-indirizzo { font-size: var(--marni-fs) !important; color: var(--marni-ink) !important; line-height: var(--marni-lh) !important; margin-top: 4px !important; }
+.mr-negozio-aperto, .mr-negozio-chiuso, .message-text .mr-negozio-aperto, .message-text .mr-negozio-chiuso { display: inline-flex !important; align-items: center !important; gap: 8px !important; font-size: 12px !important; line-height: 16px !important; margin-top: 8px !important; }
+.mr-negozio-aperto::before, .mr-negozio-chiuso::before, .message-text .mr-negozio-aperto::before, .message-text .mr-negozio-chiuso::before { content: ""; width: 6px; height: 6px; background: currentColor; }
+.mr-negozio-aperto, .message-text .mr-negozio-aperto { color: var(--marni-verde) !important; }
+.mr-negozio-chiuso, .message-text .mr-negozio-chiuso { color: var(--marni-arancio) !important; }
+
+/* palette armocromia */
+.mr-box-palette, .message-text .mr-box-palette { font-size: 12px !important; line-height: 18px !important; color: var(--marni-ink) !important; margin: 0 0 12px !important; padding: 12px !important; background: #FFFFFF !important; border: 1px solid var(--marni-bordo) !important; border-left: 1px solid var(--marni-bordo) !important; }
+
+/* link dentro le risposte */
+.message-text a { color: var(--marni-ink) !important; text-decoration: underline !important; }
+.message-text .mr-card a, .message-text .mr-card-link, .message-text .mr-card-link:visited, .message-text .mr-card-nome { color: var(--marni-ink) !important; text-decoration: none !important; }
+.message-text img { border-radius: 0 !important; }
