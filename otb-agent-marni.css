@@ -167,6 +167,10 @@ ul.bot-language li .flag-icon,
 .container-message-display .loading-message-body .message-content .message-waiting { background: transparent !important; }
 .container-message-display .other-message-multimedia:empty { display: none !important; }
 
+/* messaggio fatto solo di chip (continuazioni): niente quadratino */
+.container-message-display .other-message .message-text > .p:has(> .mr-chips:only-child)::before,
+.container-message-display .other-message .message-text > .p:has(> div > .mr-chips:only-child)::before { display: none !important; }
+
 /* icona "AI" accanto ai messaggi del bot: non prevista dal design */
 .container-message-display .other-message svg.icon-baloon,
 .container-message-display .other-message .other-message-avatar,
@@ -432,7 +436,7 @@ ul.message-link-content::after {
   gap: 2px !important;
   overflow: visible !important;
   padding: 0 0 12px !important;
-  margin: 0 -40px 0 -40px !important;
+  margin: 0 -40px 0 -16px !important;
 }
 @media (max-width: 400px) {
   .mr-carosello, .message-text .mr-carosello { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
@@ -482,8 +486,13 @@ ul.message-link-content::after {
 .mr-azioni, .message-text .mr-azioni { display: flex !important; gap: 8px !important; margin-top: 8px !important; }
 .mr-btn, .message-text .mr-btn {
   flex: 0 0 auto !important;
-  min-width: 32px !important;
-  padding: 6px 8px !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   background: #FFFFFF !important;
   border: 1px solid var(--marni-bordo) !important;
   cursor: pointer !important;
@@ -493,8 +502,8 @@ ul.message-link-content::after {
   transition: border-color .15s !important;
 }
 .mr-btn:hover, .message-text .mr-btn:hover { background: #FFFFFF !important; border-color: var(--marni-hover) !important; }
-.mr-btn--scuro, .message-text .mr-btn--scuro { background: var(--marni-ink) !important; border-color: var(--marni-ink) !important; color: #FFFFFF !important; }
-.mr-btn--scuro:hover, .message-text .mr-btn--scuro:hover { background: #333333 !important; }
+.mr-btn--scuro, .message-text .mr-btn--scuro { background: #FFFFFF !important; border-color: var(--marni-ink) !important; color: var(--marni-ink) !important; }
+.mr-btn--scuro:hover, .message-text .mr-btn--scuro:hover { background: var(--marni-ink) !important; color: #FFFFFF !important; }
 
 /* pulsante largo (azione principale) */
 .mr-btn-largo, .message-text .mr-btn-largo {
