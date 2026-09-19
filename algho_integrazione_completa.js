@@ -164,9 +164,13 @@ window.askGeoAndFindStore = function () {
   function setCtx(v) {
     try { if (window.algho && window.algho.setContext) { window.algho.setContext(v); } } catch (e) {}
   }
+  // avviso al cliente dentro la chat: mai un alert() del browser
+  function avvisa(testo) {
+    try { if (window.algho && window.algho.sendBotMessage) { window.algho.sendBotMessage(testo); } } catch (e) {}
+  }
   // se la geolocalizzazione non e' supportata, avviso senza generare loop di messaggi
   if (!navigator.geolocation) {
-    alert('La geolocalizzazione non e disponibile. Scrivi il nome della tua citta.');
+    avvisa('La geolocalizzazione non e\' disponibile. Scrivimi il nome della tua citta\'.');
     return;
   }
   navigator.geolocation.getCurrentPosition(
@@ -178,8 +182,8 @@ window.askGeoAndFindStore = function () {
       send('Negozio Marni piu vicino a me');
     },
     function (err) {
-      // ERRORE/NEGATO: avviso nativo, NON rilancio la richiesta citta' (evito loop)
-      alert('Non riesco a rilevare la tua posizione. Scrivi il nome della tua citta (es. Milano).');
+      // ERRORE/NEGATO: avviso in chat, NON rilancio la richiesta citta' (evito loop)
+      avvisa('Non riesco a rilevare la tua posizione. Scrivimi il nome della tua citta\' (es. Milano).');
     },
     { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
   );
@@ -516,6 +520,10 @@ document.body.appendChild(script);
   }
 
   // ---------- invio del messaggio proattivo ----------
+  // L'agente si presenta con un invito e OFFRE una chip: e' il cliente a
+  // scegliere. Prima lo script inviava da solo un messaggio "del cliente"
+  // (sendUserMessage), che compariva in chat come se l'avesse scritto lui
+  // (ticket MCR-4523). Ora la richiesta parte solo al clic sulla chip.
   function proponi(tipo, messaggio, contesto, invito) {
     if (giaFatto(tipo)) return false;
     if (!pronto()) return false;
@@ -528,21 +536,25 @@ document.body.appendChild(script);
       // apro il pannello: showChat mostra il widget, open lo espande
       if (window.algho.showChat) window.algho.showChat();
       if (window.algho.open) window.algho.open();
-      // Prima l'agente si presenta con un invito, poi parte la richiesta vera.
-      // sendBotMessage fa parlare l'agente senza simulare un messaggio del cliente.
-      window.__alghoInvioAutomatico = true;
-      if (invito && window.algho.sendBotMessage) {
-        window.algho.sendBotMessage(invito);
-        setTimeout(function () {
-          try { window.algho.sendUserMessage(messaggio); } catch (e) {}
-          window.__alghoInvioAutomatico = false;
-        }, 900);
-      } else {
-        window.algho.sendUserMessage(messaggio);
-        window.__alghoInvioAutomatico = false;
+      if (!window.algho.sendBotMessage) return false;
+      var testo = invito || messaggio;
+      var chips = '';
+      if (invito && messaggio) {
+        chips = '<div class="mr-chips">' +
+          '<button class="mr-chip" onclick="window.algho.sendUserMessage(' + attr(messaggio) + ')">' + esc(CHIP.si) + '</button>' +
+          '<button class="mr-chip" onclick="window.algho.sendBotMessage(' + attr(CHIP.noRisposta) + ')">' + esc(CHIP.no) + '</button>' +
+          '</div>';
       }
+      window.algho.sendBotMessage('<p>' + esc(testo) + '</p>' + chips);
       return true;
     } catch (e) { return false; }
+  }
+  function esc(t) {
+    return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  // valore JS dentro un attributo onclick: apici singoli, escape di ' e "
+  function attr(t) {
+    return "'" + String(t).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;') + "'";
   }
 
   // ---------- riconoscimento della pagina ----------
@@ -605,11 +617,11 @@ document.body.appendChild(script);
   // Frase con cui l'agente apre: e' lui a prendere l'iniziativa, non il cliente.
   var INVITI = {
     it: {
-      account:  'Bentornato. Vuole che le mostri qualcosa in linea con i suoi acquisti?',
-      ordini:   'Posso mostrarle a che punto sono i suoi ordini, se le fa comodo.',
-      carrello: 'Vuole che le suggerisca come completare quello che ha nel carrello?',
-      wishlist: 'Posso aiutarla a scegliere fra i capi che ha salvato.',
-      prodotto: 'Le interessa vedere come abbinare questo capo?'
+      account:  'Bentornato. Vuoi che ti mostri qualcosa in linea con i tuoi acquisti?',
+      ordini:   'Posso mostrarti a che punto sono i tuoi ordini, se ti fa comodo.',
+      carrello: 'Vuoi che ti suggerisca come completare quello che hai nel carrello?',
+      wishlist: 'Posso aiutarti a scegliere fra i capi che hai salvato.',
+      prodotto: 'Ti interessa vedere come abbinare questo capo?'
     },
     en: {
       account:  'Welcome back. Shall I show you something in line with your purchases?',
@@ -633,14 +645,23 @@ document.body.appendChild(script);
       prodotto: 'Mochten Sie sehen, wie man dieses Teil kombiniert?'
     },
     es: {
-      account:  'Bienvenido de nuevo. Le muestro algo acorde a sus compras?',
-      ordini:   'Puedo mostrarle en que punto estan sus pedidos.',
-      carrello: 'Quiere sugerencias para completar su cesta?',
-      wishlist: 'Puedo ayudarle a elegir entre sus favoritos.',
-      prodotto: 'Quiere ver como combinar esta prenda?'
+      account:  'Bienvenido de nuevo. Te muestro algo acorde a tus compras?',
+      ordini:   'Puedo mostrarte en que punto estan tus pedidos.',
+      carrello: 'Quieres sugerencias para completar tu cesta?',
+      wishlist: 'Puedo ayudarte a elegir entre tus favoritos.',
+      prodotto: 'Quieres ver como combinar esta prenda?'
     }
   };
   var INV = INVITI[LINGUA] || INVITI.en;
+  // le due chip dell'invito, nella lingua della pagina
+  var CHIPS = {
+    it: { si: 'Si, mostrami',     no: 'No, grazie',  noRisposta: 'Va bene. Sono qui se ti serve qualcosa.' },
+    en: { si: 'Yes, show me',     no: 'No, thanks',  noRisposta: 'All right. I am here if you need anything.' },
+    fr: { si: 'Oui, montrez-moi', no: 'Non, merci',  noRisposta: 'Tres bien. Je suis la si besoin.' },
+    de: { si: 'Ja, zeigen',       no: 'Nein, danke', noRisposta: 'In Ordnung. Ich bin da, wenn Sie mich brauchen.' },
+    es: { si: 'Si, muestrame',    no: 'No, gracias', noRisposta: 'De acuerdo. Aqui estoy si necesitas algo.' }
+  };
+  var CHIP = CHIPS[LINGUA] || CHIPS.en;
 
   // ---------- id del prodotto in pagina ----------
   function idProdotto() {
