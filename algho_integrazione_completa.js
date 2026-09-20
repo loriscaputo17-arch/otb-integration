@@ -189,8 +189,18 @@ window.askGeoAndFindStore = function () {
 };
 
 // ---------- 3. Caricamento widget Algho ----------
+// Lingua del widget = lingua della pagina (it-it, en-gb, fr-fr...). Senza questo
+// attributo Algho riceve sempre userLang=it e risponde in italiano anche a chi
+// scrive in inglese (SDA e flussi n8n leggono userLang). Lingue fuori lista -> en.
+function linguaPagina() {
+  var l = (document.documentElement.lang || '').toLowerCase().slice(0, 2);
+  if (!l) { var m = window.location.pathname.match(/^\/([a-z]{2})-[a-z]{2}\//i); l = m ? m[1].toLowerCase() : 'it'; }
+  return /^(it|en|fr|de|es)$/.test(l) ? l : 'en';
+}
+
 var tag = document.createElement("algho-viewer");
 tag.setAttribute("bot-id", "077b660a2a26b329e9de6a8b60758320");
+tag.setAttribute("language", linguaPagina());
 tag.setAttribute("widget", "true");
 tag.setAttribute("audio", "false");
 tag.setAttribute("voice", "false");
@@ -1029,4 +1039,83 @@ window.__alghoDiagnostica = function () {
 
   // per i flussi: window.marniVai(url) porta il cliente su una pagina del sito
   window.marniVai = function (href) { if (stessoSito(href)) vai(href); else window.open(href, '_blank'); };
+})();
+
+// ---------- 9. RICOMINCIA — bottone nell'header del widget ----------
+// Svuota la conversazione (storico + stato lato Algho) e riparte dal saluto:
+// il cliente non deve chiudere e riaprire la chat per cambiare argomento.
+(function Ricomincia() {
+  var TESTO = { it: 'Ricomincia', en: 'Start over', fr: 'Recommencer', de: 'Neu starten', es: 'Empezar de nuevo' };
+  var lingua = linguaPagina();
+
+  function inserisci(radice) {
+    var chiusura = radice.querySelector('.header-chat .header-close');
+    if (!chiusura || chiusura.querySelector('.mr-ricomincia')) return;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mr-ricomincia';
+    b.textContent = TESTO[lingua] || TESTO.it;
+    b.setAttribute('aria-label', b.textContent);
+    b.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      try {
+        if (window.algho && window.algho.resetChatHistory) window.algho.resetChatHistory();
+        else if (window.algho && window.algho.clearChatHistory) window.algho.clearChatHistory();
+      } catch (e) {}
+    });
+    chiusura.insertBefore(b, chiusura.firstChild);
+  }
+
+  var att = 0;
+  var t = setInterval(function () {
+    att++;
+    var host = document.querySelector('algho-viewer');
+    var radice = host && host.shadowRoot;
+    if (!radice) { if (att > 120) clearInterval(t); return; }
+    inserisci(radice);
+    if (att > 120) clearInterval(t); // l'header viene ricreato quando il pannello si riapre: si continua a controllare per un minuto
+  }, 500);
+  // ...e a ogni riapertura del pannello
+  document.addEventListener('click', function () { setTimeout(function () { var h = document.querySelector('algho-viewer'); if (h && h.shadowRoot) inserisci(h.shadowRoot); }, 600); }, true);
+})();
+
+// ---------- 10. PULIZIA TESTO — residui di tag nelle risposte da documentazione ----------
+// Algho spezza le risposte SDA in paragrafi e a volte lascia in testa al testo
+// un frammento di tag ("p>", ">", "</p>"). Lo togliamo appena il messaggio
+// compare, prima che il cliente lo legga.
+(function PuliziaTesto() {
+  var RESIDUO = /^\s*(?:<\/?p>|<\/?br\s*\/?>|p>|>|\*\s)+/;
+
+  function pulisci(nodo) {
+    var testi = [];
+    if (nodo.nodeType === 3) testi.push(nodo);
+    else if (nodo.querySelectorAll) {
+      nodo.querySelectorAll('.other-message .message-text').forEach(function (m) {
+        var w = document.createTreeWalker(m, NodeFilter.SHOW_TEXT);
+        var n; while ((n = w.nextNode())) testi.push(n);
+      });
+    }
+    testi.forEach(function (t) {
+      if (RESIDUO.test(t.textContent)) t.textContent = t.textContent.replace(RESIDUO, '');
+    });
+  }
+
+  function osserva(radice) {
+    if (radice.__marniPulizia) return;
+    radice.__marniPulizia = true;
+    new MutationObserver(function (muts) {
+      muts.forEach(function (mu) {
+        mu.addedNodes.forEach(pulisci);
+        if (mu.type === 'characterData') pulisci(mu.target);
+      });
+    }).observe(radice, { childList: true, subtree: true, characterData: true });
+  }
+
+  var att = 0;
+  var t = setInterval(function () {
+    att++;
+    var host = document.querySelector('algho-viewer');
+    if (host && host.shadowRoot) { clearInterval(t); osserva(host.shadowRoot); }
+    else if (att > 120) clearInterval(t);
+  }, 500);
 })();
