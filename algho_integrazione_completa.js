@@ -257,10 +257,41 @@ document.body.appendChild(script);
     if (window.algho && window.algho.setAJWT) {
       impostaIdentitaAlgho();
       clearInterval(timer);
+      // P47 (2026-09-21): il login puo' avvenire senza ricaricare la pagina
+      // (accesso via popup/AJAX): senza questo controllo la conversazione gia'
+      // aperta restava "ospite" fino al reload. impostaIdentitaAlgho() manda il
+      // token solo se l'identita' e' cambiata.
+      setInterval(function () { try { impostaIdentitaAlgho(); } catch (e) {} }, 5000);
     } else if (tentativi >= maxTentativi) {
       clearInterval(timer);
     }
   }, 500);
+})();
+
+// ---------- 4b. Eventi GA4 per le azioni della chat (P47) ----------
+// Il clic sul carrello nelle card e' l'unica azione del cliente che parte dal
+// widget: si registra come add_to_cart nel dataLayer (fonte "chat"). Gli altri
+// eventi (rimozioni, look, handover) attendono la mappa KPI di OTB (#45).
+(function EventiGA4() {
+  function push(ev) {
+    try { window.dataLayer = window.dataLayer || []; window.dataLayer.push(ev); } catch (e) {}
+  }
+  document.addEventListener('click', function (e) {
+    try {
+      var path = e.composedPath ? e.composedPath() : [];
+      for (var i = 0; i < path.length; i++) {
+        var el = path[i];
+        if (!el || !el.getAttribute) continue;
+        var titolo = el.getAttribute('title') || '';
+        var onclick = el.getAttribute('onclick') || '';
+        if (/mr-btn/.test(el.className || '') && /carrello|bag|panier|warenkorb|cesta/i.test(titolo)) {
+          var m = onclick.match(/setContext\(['"]([A-Z0-9]{8,})['"]\)/i);
+          push({ event: 'add_to_cart', source: 'chat', items: [{ item_id: m ? m[1] : '' }] });
+          return;
+        }
+      }
+    } catch (err) {}
+  }, true);
 })();
 
 // ---------- 5. LIFE SIGNAL — anima il notch (dentro shadow DOM di algho-viewer) ----------
@@ -1093,8 +1124,15 @@ window.__alghoDiagnostica = function () {
     b.addEventListener('click', function (ev) {
       ev.preventDefault();
       try {
+        // P47 (2026-09-21): lo stato della conversazione lato n8n e' legato allo
+        // userId di Algho: senza cambiarlo, "Ricomincia" svuotava solo la chat e
+        // genere, taglia e colore restavano applicati alle ricerche successive.
+        if (window.algho && window.algho.setUserId) window.algho.setUserId('mr-' + Date.now().toString(36));
         if (window.algho && window.algho.resetChatHistory) window.algho.resetChatHistory();
         else if (window.algho && window.algho.clearChatHistory) window.algho.clearChatHistory();
+        // l'identita' del cliente loggato va rimandata sulla nuova conversazione
+        _ultimaIdentita = '';
+        setTimeout(function () { try { impostaIdentitaAlgho(); } catch (e) {} }, 500);
       } catch (e) {}
     });
     chiusura.insertBefore(b, chiusura.firstChild);
