@@ -322,75 +322,72 @@ button.button { background: var(--marni-ink) !important; color: #FFFFFF !importa
 
 /* ============================================================
    SCHERMATA DI BENVENUTO
+   Testi e privacy arrivano dallo script (attributi start-message,
+   privacy-message, invert-privacy del viewer): qui solo il layout.
+   Tutto in flusso e centrato in verticale: niente posizioni assolute,
+   cosi' su schermi bassi i blocchi si impilano invece di sovrapporsi.
+   Ordine: titolo + sottotitolo (start-message) -> bottone -> privacy.
    ============================================================ */
 .chat-player-start {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
-  justify-content: flex-start !important;
-  min-height: 460px !important;
-  padding: 96px 28px 28px !important;
+  justify-content: center !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  padding: 32px 28px !important;
   box-sizing: border-box !important;
   text-align: center !important;
   background: #FFFFFF !important;
+  overflow: auto !important;
 }
-.chat-player-permission {
+/* Algho posiziona il blocco con top:50% + translateY(-50%): va azzerato,
+   altrimenti il contenuto sale sopra il bordo su schermi bassi */
+.chat-player-permission, .chat-player-go {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   width: 100% !important;
-  position: relative !important;
+  position: static !important;
+  top: auto !important; left: auto !important;
+  transform: none !important;
+  margin: 0 !important;
 }
-.chat-player-permission::before {
-  content: "Ciao, sono Marni Agent";
-  order: 2;
-  display: block;
-  font-size: 24px;
-  line-height: 32px;
-  font-weight: 400;
-  color: var(--marni-ink);
-  margin: 0 0 12px;
+.chat-player-permission::before, .chat-player-permission::after { content: none !important; }
+/* start-message: prima riga = titolo, dopo l'a-capo = sottotitolo */
+.chat-player-permission-text {
+  display: block !important;
+  white-space: pre-line !important;
+  max-width: 300px !important;
+  margin: 0 auto 32px !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+  text-align: center !important;
 }
-.chat-player-permission::after {
-  content: "Sono qui per aiutarti con ordini, resi, prodotti e consigli di stile.";
-  order: 3;
-  display: block;
-  max-width: 260px;
-  font-size: var(--marni-fs);
-  line-height: var(--marni-lh);
-  color: var(--marni-ink);
-  margin: 0 auto 40px;
-}
-.chat-player-go {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  width: 100% !important;
-  position: relative !important;
-}
-.chat-player-permission-text { display: none !important; }
+.chat-player-permission-text::first-line { font-size: 24px; line-height: 40px; }
+/* contenitore del bottone: in flusso, senza l'icona animata */
 .animated-icon-play-container {
-  position: relative !important;
-  width: 0 !important;
-  height: 0 !important;
-  overflow: visible !important;
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
   border: none !important;
   background: transparent !important;
-   margin: 0 !important;
+  overflow: visible !important;
 }
+.animated-icon-play-container > svg,
 .animated-icon-play-container .animated-icon { display: none !important; }
-.animated-icon-play-container .animated-button { filter: none !important; }
-.chat-player-toolbar { padding: 0 !important; align-items: center !important; margin-left: 1rem; }
+.chat-player-toolbar { padding: 0 !important; margin: 0 !important; }
 .chat-player-toolbar button { margin-top: 0 !important; }
 
-/* pulsante "Inizia la conversazione": pieno nero, squadrato */
+/* pulsante "Inizia la conversazione": pieno nero, squadrato, in flusso */
 .chat-player-start .animated-button {
-  position: absolute !important;
-  top: 200px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
+  position: static !important;
+  transform: none !important;
   width: 220px !important;
   height: 40px !important;
+  margin: 0 !important;
   border: 1px solid var(--marni-ink) !important;
   background: var(--marni-ink) !important;
   color: #FFFFFF !important;
@@ -398,6 +395,7 @@ button.button { background: var(--marni-ink) !important; color: #FFFFFF !importa
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer !important;
+  filter: none !important;
 }
 .chat-player-start .animated-button:hover { background: #333333 !important; }
 .chat-player-start .animated-button svg { display: none !important; }
@@ -407,19 +405,22 @@ button.button { background: var(--marni-ink) !important; color: #FFFFFF !importa
   line-height: var(--marni-lh);
   color: #FFFFFF;
 }
-.chat-player-privacy { max-width: 260px !important; margin: 0 auto !important; }
-.chat-player-privacy p {
+/* privacy (privacy-message, HTML): sotto il bottone grazie a invert-privacy */
+.chat-player-privacy {
+  max-width: 260px !important;
+  margin: 24px auto 0 !important;
   font-size: 12px !important;
   line-height: 18px !important;
   color: var(--marni-ink) !important;
-  margin: 0 0 24px !important;
 }
+.chat-player-privacy p { font-size: 12px !important; line-height: 18px !important; color: var(--marni-ink) !important; margin: 0 !important; }
 .chat-player-privacy a { color: var(--marni-ink) !important; text-decoration: underline !important; }
 .chat-player-start::after { content: none !important; }
 @media (max-height: 620px) {
-  .chat-player-start { min-height: 400px !important; padding-top: 56px !important; }
-  .chat-player-permission::after { margin-bottom: 28px !important; }
-  .chat-player-start .animated-button { top: 280px !important; }
+  .chat-player-start { padding: 16px 20px !important; }
+  .chat-player-permission-text { margin-bottom: 20px !important; }
+  .chat-player-permission-text::first-line { font-size: 20px; line-height: 28px; }
+  .chat-player-privacy { margin-top: 16px !important; }
 }
 
 /* ============================================================

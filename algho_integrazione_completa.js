@@ -209,6 +209,35 @@ tag.setAttribute("theme-style", "light");
 tag.setAttribute("theme-css", "https://loriscaputo17-arch.github.io/otb-integration/otb-agent-marni.css?v=" + Math.floor(Date.now()/300000));
 tag.setAttribute("widget-border-color", "#000000");
 tag.setAttribute("z-index", "9999");
+// Schermata iniziale: testi e privacy vengono dal widget (prop native del viewer:
+// start-message, privacy-message, privacy-url, invert-privacy), non dal CSS.
+// start-message e' solo testo: la prima riga e' il titolo (::first-line nel CSS),
+// dopo l'a-capo il sottotitolo. privacy-message accetta HTML.
+// hide-menu toglie il menu a sinistra del campo di scrittura.
+(function () {
+  var lingua = linguaPagina();
+  var m = window.location.pathname.match(/^\/([a-z]{2}-[a-z]{2})\//i);
+  var locale = m ? m[1].toLowerCase() : (lingua === 'it' ? 'it-it' : 'en-gb');
+  var urlPrivacy = '/' + locale + '/help?content=privacy-policy';
+  var TESTI = {
+    it: { inizio: 'Ciao, sono Marni Agent\nSono qui per aiutarti con ordini, resi, prodotti e consigli di stile.',
+          privacy: 'Continuando accetti la <a href="' + urlPrivacy + '" target="_blank">Privacy Policy</a> di Marni.' },
+    en: { inizio: 'Hi, I am Marni Agent\nI am here to help you with orders, returns, products and style advice.',
+          privacy: 'By continuing you accept Marni\'s <a href="' + urlPrivacy + '" target="_blank">Privacy Policy</a>.' },
+    fr: { inizio: 'Bonjour, je suis Marni Agent\nJe suis l\u00e0 pour vous aider avec vos commandes, retours, produits et conseils de style.',
+          privacy: 'En continuant, vous acceptez la <a href="' + urlPrivacy + '" target="_blank">Politique de confidentialit\u00e9</a> de Marni.' },
+    de: { inizio: 'Hallo, ich bin Marni Agent\nIch helfe Ihnen bei Bestellungen, Retouren, Produkten und Stilfragen.',
+          privacy: 'Mit dem Fortfahren akzeptieren Sie die <a href="' + urlPrivacy + '" target="_blank">Datenschutzerkl\u00e4rung</a> von Marni.' },
+    es: { inizio: 'Hola, soy Marni Agent\nEstoy aqu\u00ed para ayudarte con pedidos, devoluciones, productos y consejos de estilo.',
+          privacy: 'Al continuar aceptas la <a href="' + urlPrivacy + '" target="_blank">Pol\u00edtica de privacidad</a> de Marni.' }
+  };
+  var t = TESTI[lingua] || TESTI.en;
+  tag.setAttribute("start-message", t.inizio);
+  tag.setAttribute("privacy-message", t.privacy);
+  tag.setAttribute("privacy-url", urlPrivacy);
+  tag.setAttribute("invert-privacy", "true");
+  tag.setAttribute("hide-menu", "true");
+})();
 document.body.appendChild(tag);
 
 var script = document.createElement("script");
