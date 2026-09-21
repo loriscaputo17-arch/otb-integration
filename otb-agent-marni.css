@@ -52,6 +52,14 @@
   color: var(--marni-ink) !important;
 }
 
+@media (max-height: 620px) {
+  .widget .chat, .widget.floating .chat{
+    width: auto !important;
+    height: auto !important;
+    
+  }
+}
+
 .widget .chat, .widget.floating .chat{
   width: 37% !important;
   height: 82% !important;
