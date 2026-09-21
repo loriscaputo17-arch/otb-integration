@@ -52,12 +52,6 @@
   color: var(--marni-ink) !important;
 }
 
-.widget .chat, .widget.floating .chat{
-  width: 37% !important;
-  height: 82% !important;
-  margin: 0 !important;
-}
-
 @media (min-height: 800px) {
     .widget .chat, .widget.floating .chat {
       width: 37% !important;
