@@ -55,9 +55,8 @@
 .widget .chat, .widget.floating .chat{
   width: 37% !important;
   height: 82% !important;
-  margin-bottom: 0 !important;
+  margin: 0 !important;
 }
-
 
 .chat .chat-container,
 .chat-panel-container,
@@ -249,10 +248,6 @@ ul.bot-language li .flag-icon,
 }
 .suggestion-item .suggestion-item-text .focused { color: inherit !important; }
 .focus:not(:has(svg)):focus-visible { box-shadow: none !important; }
-
-.toolbar-item{
-  display: none !important;
-}
 
 /* ============================================================
    INPUT — nessun riquadro, solo la riga sotto
