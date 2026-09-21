@@ -58,13 +58,11 @@
   margin: 0 !important;
 }
 
-@media (max-height: 620px) {
+@media (min-height: 620px) {
     .widget .chat, .widget.floating .chat {
-      height: 100% !important;
-      top: 0 !important;
-      bottom: 0 !important;
-      width: 100% !important; 
-      left: 0 !important;
+      width: 37% !important;
+        height: 82% !important;
+        margin: 0 !important;
     }
   }
 
