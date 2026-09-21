@@ -376,6 +376,7 @@ button.button { background: var(--marni-ink) !important; color: #FFFFFF !importa
   overflow: visible !important;
   border: none !important;
   background: transparent !important;
+   margin: 0 !important;
 }
 .animated-icon-play-container .animated-icon { display: none !important; }
 .animated-icon-play-container .animated-button { filter: none !important; }
@@ -385,7 +386,7 @@ button.button { background: var(--marni-ink) !important; color: #FFFFFF !importa
 /* pulsante "Inizia la conversazione": pieno nero, squadrato */
 .chat-player-start .animated-button {
   position: absolute !important;
-  top: 330px !important;
+  top: 200px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
   width: 220px !important;
