@@ -50,6 +50,7 @@
   font-size: var(--marni-fs) !important;
   line-height: var(--marni-lh) !important;
   color: var(--marni-ink) !important;
+   border: 1px solid #E0E0E0 !important;
 }
 
 /* desktop (≥ 992px, stessa soglia del sito): pannello 37% × 82% */
