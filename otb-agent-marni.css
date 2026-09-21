@@ -59,12 +59,12 @@
 }
 
 @media (max-height: 620px) {
-  .widget .chat, .widget.floating .chat{
-    width: auto !important;
-    height: auto !important;
-    
+    .widget .chat, .widget.floating .chat {
+      height: 100% !important;
+      top: 0 !important;
+      bottom: 0 !important;
+    }
   }
-}
 
 .chat .chat-container,
 .chat-panel-container,
