@@ -51,6 +51,14 @@
   line-height: var(--marni-lh) !important;
   color: var(--marni-ink) !important;
 }
+
+.widget .chat, .widget.floating .chat{
+  width: 37% !important;
+  height: 82% !important;
+  margin-bottom: 0 !important;
+}
+
+
 .chat .chat-container,
 .chat-panel-container,
 .chat-panel-window,
@@ -89,6 +97,8 @@
   align-items: center !important;
   gap: 16px !important;
   color: var(--marni-ink) !important;
+  left: auto !important;
+  top: auto !important;
 }
 .chat-body .header-title::before {
   content: "Assistente AI";
@@ -240,20 +250,27 @@ ul.bot-language li .flag-icon,
 .suggestion-item .suggestion-item-text .focused { color: inherit !important; }
 .focus:not(:has(svg)):focus-visible { box-shadow: none !important; }
 
+.toolbar-item{
+  display: none !important;
+}
+
 /* ============================================================
    INPUT — nessun riquadro, solo la riga sotto
    ============================================================ */
 .container-message-manager-component,
 .container-message-manager {
   background: #FFFFFF !important;
-  border-top: 1px solid #000000 !important;
+  border-top: 1px solid #0000001f !important;
+  margin-top: 0 !important;
+  padding: 12px 20px;
 }
-.toolbar-message-manager { padding: 12px 24px 24px !important; gap: 8px !important; }
+.toolbar-message-manager { padding: 0 !important; gap: 8px !important; margin-bottom: 0 !important; }
 .chat-body .toolbar-item .toolbar-message-keyboard {
   border: none !important;
   border-bottom: 1px solid var(--marni-riga) !important;
   background: #FFFFFF !important;
-  padding: 12px 8px !important;
+  padding: 4px 4px !important;
+  width: auto !important;
 }
 .chat-body .toolbar-item .toolbar-message-keyboard.focus-within { border-bottom-color: var(--marni-ink) !important; }
 .message-text-box input.message-input {
@@ -262,6 +279,11 @@ ul.bot-language li .flag-icon,
   color: var(--marni-ink) !important;
   background: transparent !important;
 }
+
+.chat-body .toolbar-item .toolbar-message-keyboard .message-text-box{
+  padding: 0 !important;
+}
+
 .message-text-box input.message-input::placeholder { color: var(--marni-muto) !important; opacity: 1 !important; }
 .toolbar-message-keyboard button svg { color: var(--marni-bordo) !important; }
 .toolbar-message-keyboard.focus-within button svg { color: var(--marni-ink) !important; }
@@ -449,10 +471,9 @@ ul.message-link-content::after {
 .mr-carosello, .message-text .mr-carosello {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 2px !important;
   overflow: visible !important;
   padding: 0 0 12px !important;
-  margin: 0 -40px 0 -16px !important;
+  margin: 0 -120px 0 -40px !important;
 }
 @media (max-width: 400px) {
   .mr-carosello, .message-text .mr-carosello { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
@@ -468,6 +489,7 @@ ul.message-link-content::after {
   overflow: hidden !important;
   display: flex !important;
   flex-direction: column !important;
+  position: relative;
 }
 .mr-card-foto, .message-text .mr-card-foto {
   display: block !important;
@@ -497,6 +519,16 @@ ul.message-link-content::after {
 .mr-card-desc, .message-text .mr-card-desc { display: none !important; }
 .mr-card-perche, .message-text .mr-card-perche { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; padding: 6px 0 0 !important; }
 .mr-card-categoria, .message-text .mr-card-categoria { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; background: transparent !important; padding: 0 0 4px !important; text-align: left !important; }
+
+.mr-card-categoria{
+  display: none !important;
+}
+
+.mr-azioni{
+  position: absolute;
+  bottom: 30%;
+  top: 7%;
+}
 
 /* azioni sulla card (lente, carrello, cuore) */
 .mr-azioni, .message-text .mr-azioni { display: flex !important; gap: 8px !important; margin-top: 8px !important; }
