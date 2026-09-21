@@ -90,7 +90,7 @@
   padding: 0 24px !important;
   box-sizing: border-box !important;
 }
-.chat-body .header-chat { border-bottom: none !important; padding: 0 !important; }
+.chat-body .header-chat { border-bottom: none !important; padding: 0 !important; align-items: center;}
 .chat-body .header-title {
   display: flex !important;
   align-items: center !important;
@@ -252,10 +252,13 @@ ul.bot-language li .flag-icon,
 /* ============================================================
    INPUT — nessun riquadro, solo la riga sotto
    ============================================================ */
+
+.container-message-manager-component{
+  border-top: 1px solid #0000001f !important;
+}
 .container-message-manager-component,
 .container-message-manager {
   background: #FFFFFF !important;
-  border-top: 1px solid #0000001f !important;
   margin-top: 0 !important;
   padding: 12px 20px;
 }
@@ -521,8 +524,8 @@ ul.message-link-content::after {
 
 .mr-azioni{
   position: absolute;
+  right: 7px;
   bottom: 30%;
-  top: 7%;
 }
 
 /* azioni sulla card (lente, carrello, cuore) */
