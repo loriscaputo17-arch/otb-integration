@@ -109,7 +109,7 @@
 .chat-body .header-container,
 .chat-body .header-chat {
   background: #FFFFFF !important;
-  border-bottom: 1px solid #000000 !important;
+  border-bottom: 1px solid #E0E0E0 !important;
   min-height: 68px !important;
   padding: 0 24px !important;
   box-sizing: border-box !important;
