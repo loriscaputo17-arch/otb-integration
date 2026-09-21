@@ -537,7 +537,12 @@ document.body.appendChild(script);
     if (giaFatto(tipo)) return false;
     if (!pronto()) return false;
     if (chatAperta() || conversazioneAvviata()) return false;
+    // MCR-4550: mai riaprire dopo una chiusura esplicita, e una sola apertura
+    // automatica per sessione. Sulle altre pagine resta il life signal del bubble.
+    if (window.marniChatChiusaDalCliente && window.marniChatChiusaDalCliente()) return false;
+    try { if (sessionStorage.getItem('marni_proattivo_aperto') === '1') return false; } catch (e) {}
     segnaFatto(tipo);
+    try { sessionStorage.setItem('marni_proattivo_aperto', '1'); } catch (e) {}
     try {
       if (contesto && window.algho.setContext) window.algho.setContext(contesto);
       // teniamo l'agente allineato alla pagina corrente
@@ -1117,5 +1122,44 @@ window.__alghoDiagnostica = function () {
     var host = document.querySelector('algho-viewer');
     if (host && host.shadowRoot) { clearInterval(t); osserva(host.shadowRoot); }
     else if (att > 120) clearInterval(t);
+  }, 500);
+})();
+
+// ---------- 11. CHIUSURA PERSISTENTE (MCR-4550) ----------
+// Il widget salva in sessionStorage solo lo stato "aperto": chiusa la chat con
+// la X, alla pagina dopo ricompariva aperta. Qui la chiusura esplicita del
+// cliente viene ricordata per tutta la sessione e rispettata a ogni pagina;
+// il flag si azzera quando e' il cliente a riaprire dal bubble.
+(function ChiusuraPersistente() {
+  var CHIAVE = 'marni_chat_chiusa';
+  function leggi() { try { return sessionStorage.getItem(CHIAVE) === '1'; } catch (e) { return false; } }
+  function scrivi(v) { try { if (v) sessionStorage.setItem(CHIAVE, '1'); else sessionStorage.removeItem(CHIAVE); } catch (e) {} }
+  window.marniChatChiusaDalCliente = leggi;
+
+  function aggancia(radice) {
+    if (radice.__marniChiusura) return;
+    radice.__marniChiusura = true;
+    radice.addEventListener('click', function (ev) {
+      var t = ev.target;
+      if (!t || !t.closest) return;
+      if (t.closest('.header-close button.chat-button')) { scrivi(true); return; }   // X del pannello
+      if (t.closest('.chat-widget')) scrivi(false);                                    // bubble: riapre lui
+    }, true);
+  }
+
+  // il widget ripristina "aperto" a ogni caricamento: se il cliente aveva chiuso, si richiude
+  var richiuso = false;
+  function applica() {
+    if (richiuso || !leggi()) return;
+    if (!(window.algho && typeof window.algho.close === 'function')) return;
+    try { window.algho.close(); richiuso = true; } catch (e) {}
+  }
+
+  var att = 0;
+  var t = setInterval(function () {
+    att++;
+    var host = document.querySelector('algho-viewer');
+    if (host && host.shadowRoot) { aggancia(host.shadowRoot); applica(); }
+    if (richiuso || att > 60) clearInterval(t);
   }, 500);
 })();
