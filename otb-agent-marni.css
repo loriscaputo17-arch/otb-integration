@@ -276,12 +276,14 @@ ul.bot-language li .flag-icon,
 /* ============================================================
    INPUT — nessun riquadro, solo la riga sotto
    ============================================================ */
-
+.chat-body .container-message-manager .toolbar-message-manager .toolbar-item{
+   display: none !important;
+}
 .container-message-manager-component{
   border-top: 1px solid #0000001f !important;
   background: #FFFFFF !important;
   margin-top: 0 !important;
-  padding: 12px 20px;
+  padding: 0 !important;
   width: auto !important;
 }
 
