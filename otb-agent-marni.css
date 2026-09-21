@@ -100,7 +100,8 @@
 .chat-body .header-title button { background: transparent !important; color: var(--marni-ink) !important; }
 .chat-button svg, .header-chat svg { color: var(--marni-ink) !important; fill: currentColor !important; }
 /* "Ricomincia": pulsante testuale nell'header, prima della X (inserito dallo script) */
-.chat-body .header-close { display: flex !important; align-items: center !important; gap: 12px !important; }
+.chat-body .header-close { display: flex !important; align-items: center !important; justify-content: flex-end !important; gap: 12px !important; pointer-events: none !important; }
+.chat-body .header-close > * { pointer-events: auto !important; }
 .chat-body .header-close .mr-ricomincia {
   background: transparent !important;
   border: none !important;
