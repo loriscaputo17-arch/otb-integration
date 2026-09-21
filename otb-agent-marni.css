@@ -52,11 +52,32 @@
   color: var(--marni-ink) !important;
 }
 
-@media (min-height: 800px) {
+/* desktop (≥ 992px, stessa soglia del sito): pannello 37% × 82% */
+  @media (min-width: 992px) {
     .widget .chat, .widget.floating .chat {
       width: 37% !important;
-        height: 82% !important;
-        margin: 0 !important;
+      height: 82% !important;
+      margin: 0 !important;
+    }
+  }
+  /* desktop basso (finestra < 620px di altezza): tutta l'altezza */
+  @media (min-width: 992px) and (max-height: 620px) {
+    .widget .chat, .widget.floating .chat {
+      width: 100% !important;
+      height: 100% !important;
+      top: 0 !important; bottom: 0 !important; left: 0 !important;
+    }
+  }
+  /* mobile e tablet (< 992px): schermo intero */
+  @media (max-width: 991px) {
+    .widget .chat, .widget.floating .chat {
+      position: fixed !important;
+      width: auto !important;
+      height: auto !important;
+      left: 0 !important; right: 0 !important; top: 0 !important; bottom: 0 !important;
+      margin: 0 !important;
+      max-width: none !important;
+      max-height: none !important;
     }
   }
 
