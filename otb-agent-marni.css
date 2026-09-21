@@ -378,7 +378,7 @@ button.button { background: var(--marni-ink) !important; color: #FFFFFF !importa
 }
 .animated-icon-play-container > svg,
 .animated-icon-play-container .animated-icon { display: none !important; }
-.chat-player-toolbar { padding: 0 !important; margin: 0 !important; }
+.chat-player-toolbar { padding: 0 !important; margin: 0 !important; gap: 1rem !important; width: 96% !important; justify-content: space-between !important; top: 10px !important; left: 10px !important; }
 .chat-player-toolbar button { margin-top: 0 !important; }
 
 /* pulsante "Inizia la conversazione": pieno nero, squadrato, in flusso */
