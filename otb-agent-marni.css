@@ -255,8 +255,12 @@ ul.bot-language li .flag-icon,
 
 .container-message-manager-component{
   border-top: 1px solid #0000001f !important;
+  background: #FFFFFF !important;
+  margin-top: 0 !important;
+  padding: 12px 20px;
+  width: auto !important;
 }
-.container-message-manager-component,
+
 .container-message-manager {
   background: #FFFFFF !important;
   margin-top: 0 !important;
@@ -268,7 +272,7 @@ ul.bot-language li .flag-icon,
   border-bottom: 1px solid var(--marni-riga) !important;
   background: #FFFFFF !important;
   padding: 4px 4px !important;
-  width: auto !important;
+  width: 100% !important;
 }
 .chat-body .toolbar-item .toolbar-message-keyboard.focus-within { border-bottom-color: var(--marni-ink) !important; }
 .message-text-box input.message-input {
