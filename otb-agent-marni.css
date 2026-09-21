@@ -486,7 +486,9 @@ ul.message-link-content::after {
 .mr-intro, .message-text .mr-intro { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; margin: 0 0 8px !important; }
 .mr-titolo, .message-text .mr-titolo { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; margin-bottom: 2px !important; }
 .mr-sottotitolo, .message-text .mr-sottotitolo { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin-bottom: 8px !important; }
-.mr-nota, .message-text .mr-nota { font-size: 12px !important; line-height: 18px !important; color: var(--marni-muto) !important; margin-bottom: 10px !important; }
+/* nota, motivazione e sezione: stesso stile del testo del messaggio (mr-titolo) */
+.mr-nota, .message-text .mr-nota,
+.mr-motivazione, .message-text .mr-motivazione { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; margin-bottom: 10px !important; }
 .mr-nota--stile, .message-text .mr-nota--stile { color: var(--marni-ink) !important; font-style: normal !important; }
 .mr-criteri, .message-text .mr-criteri { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin: 0 0 12px !important; }
 .mr-avviso, .message-text .mr-avviso { font-size: 12px !important; line-height: 16px !important; color: var(--marni-arancio) !important; margin-bottom: 8px !important; }
@@ -544,6 +546,8 @@ ul.message-link-content::after {
 .mr-card-sconto, .message-text .mr-card-sconto { color: #27AE61 !important; letter-spacing: .28px !important; }
 .mr-card-nota, .message-text .mr-card-nota { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; }
 .mr-card-desc, .message-text .mr-card-desc { display: none !important; }
+/* componenti dismessi il 21/09 (tolti dai flussi; qui per sicurezza) */
+.mr-card-perche, .message-text .mr-card-perche, .mr-criteri--sotto, .message-text .mr-criteri--sotto { display: none !important; }
 .mr-card-perche, .message-text .mr-card-perche { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; padding: 6px 0 0 !important; }
 .mr-card-categoria, .message-text .mr-card-categoria { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; background: transparent !important; padding: 0 0 4px !important; text-align: left !important; }
 
@@ -577,13 +581,15 @@ ul.message-link-content::after {
   transition: border-color .15s !important;
 }
 .mr-btn:hover, .message-text .mr-btn:hover { background: #FFFFFF !important; border-color: var(--marni-hover) !important; }
-/* Icone delle azioni sulle card: gli emoji dei flussi (lente, borsa, cuore)
-   vengono nascosti e sostituiti da tratti monocromi coerenti con il Figma. */
+/* Icone delle azioni sulle card: gli emoji dei flussi vengono nascosti e
+   sostituiti da tratti monocromi coerenti con il Figma. Dal 21/09 sulle card
+   resta il solo bottone carrello (Dettagli e Preferiti sono tolti dai flussi):
+   l'icona base e' la borsa; le regole nth-of-type restano per compatibilita'. */
 .mr-azioni .mr-btn, .message-text .mr-azioni .mr-btn { font-size: 0 !important; line-height: 0 !important; position: relative !important; }
 .mr-azioni .mr-btn::before, .message-text .mr-azioni .mr-btn::before {
   content: "" !important; display: block !important; width: 16px !important; height: 16px !important;
   background: currentColor !important;
-  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><circle cx='11' cy='11' r='6.5'/><path d='M16 16l5 5'/></svg>") center / contain no-repeat !important; mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><circle cx='11' cy='11' r='6.5'/><path d='M16 16l5 5'/></svg>") center / contain no-repeat !important;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M5 8h14l-1 12H6L5 8z'/><path d='M9 8V6a3 3 0 0 1 6 0v2'/></svg>") center / contain no-repeat !important; mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M5 8h14l-1 12H6L5 8z'/><path d='M9 8V6a3 3 0 0 1 6 0v2'/></svg>") center / contain no-repeat !important;
 }
 .mr-azioni .mr-btn:nth-of-type(2)::before, .message-text .mr-azioni .mr-btn:nth-of-type(2)::before { -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M5 8h14l-1 12H6L5 8z'/><path d='M9 8V6a3 3 0 0 1 6 0v2'/></svg>") !important; mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M5 8h14l-1 12H6L5 8z'/><path d='M9 8V6a3 3 0 0 1 6 0v2'/></svg>") !important; }
 .mr-azioni .mr-btn:nth-of-type(3)::before, .message-text .mr-azioni .mr-btn:nth-of-type(3)::before { -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M12 20s-7-4.4-7-9.5A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 2.5C19 15.6 12 20 12 20z'/></svg>") !important; mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M12 20s-7-4.4-7-9.5A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 2.5C19 15.6 12 20 12 20z'/></svg>") !important; }
@@ -659,7 +665,7 @@ ul.message-link-content::after {
 /* riquadri e sezioni */
 .mr-box, .message-text .mr-box { border: 1px solid var(--marni-bordo) !important; padding: 12px !important; margin-bottom: 12px !important; background: #FFFFFF !important; }
 .mr-box--pulito, .message-text .mr-box--pulito { border: none !important; padding: 0 !important; }
-.mr-sezione, .message-text .mr-sezione { border-top: 1px solid #E5E5E5 !important; margin-top: 12px !important; padding-top: 12px !important; }
+.mr-sezione, .message-text .mr-sezione { border-top: 1px solid #E5E5E5 !important; margin-top: 12px !important; padding-top: 12px !important; font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; }
 
 /* righe (carrello, ordini) */
 .mr-riga, .message-text .mr-riga { display: flex !important; gap: 12px !important; align-items: center !important; padding: 12px 0 !important; border-bottom: 1px solid #E5E5E5 !important; }
