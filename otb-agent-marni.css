@@ -517,6 +517,18 @@ ul.message-link-content::after {
   transition: border-color .15s !important;
 }
 .mr-btn:hover, .message-text .mr-btn:hover { background: #FFFFFF !important; border-color: var(--marni-hover) !important; }
+/* Icone delle azioni sulle card: gli emoji dei flussi (lente, borsa, cuore)
+   vengono nascosti e sostituiti da tratti monocromi coerenti con il Figma. */
+.mr-azioni .mr-btn, .message-text .mr-azioni .mr-btn { font-size: 0 !important; line-height: 0 !important; position: relative !important; }
+.mr-azioni .mr-btn::before, .message-text .mr-azioni .mr-btn::before {
+  content: "" !important; display: block !important; width: 16px !important; height: 16px !important;
+  background: currentColor !important;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><circle cx='11' cy='11' r='6.5'/><path d='M16 16l5 5'/></svg>") center / contain no-repeat !important; mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><circle cx='11' cy='11' r='6.5'/><path d='M16 16l5 5'/></svg>") center / contain no-repeat !important;
+}
+.mr-azioni .mr-btn:nth-of-type(2)::before, .message-text .mr-azioni .mr-btn:nth-of-type(2)::before { -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M5 8h14l-1 12H6L5 8z'/><path d='M9 8V6a3 3 0 0 1 6 0v2'/></svg>") !important; mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M5 8h14l-1 12H6L5 8z'/><path d='M9 8V6a3 3 0 0 1 6 0v2'/></svg>") !important; }
+.mr-azioni .mr-btn:nth-of-type(3)::before, .message-text .mr-azioni .mr-btn:nth-of-type(3)::before { -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M12 20s-7-4.4-7-9.5A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 2.5C19 15.6 12 20 12 20z'/></svg>") !important; mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M12 20s-7-4.4-7-9.5A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 2.5C19 15.6 12 20 12 20z'/></svg>") !important; }
+.mr-azioni .mr-btn-azione, .message-text .mr-azioni .mr-btn-azione { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; }
+.mr-azioni .mr-btn-azione::before { content: none !important; }
 .mr-btn--scuro, .message-text .mr-btn--scuro { background: #FFFFFF !important; border-color: var(--marni-ink) !important; color: var(--marni-ink) !important; }
 .mr-btn--scuro:hover, .message-text .mr-btn--scuro:hover { background: var(--marni-ink) !important; color: #FFFFFF !important; }
 
