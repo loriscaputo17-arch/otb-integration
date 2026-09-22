@@ -229,7 +229,13 @@ ul.bot-language li .flag-icon,
 /* ============================================================
    CHIP / SUGGERIMENTI — colonna, 1px #CCCCCC, 9px 12px
    ============================================================ */
+/* I chip di Algho ("Completa il look", "Prodotti simili") arrivavano sovrapposti
+   al testo del messaggio: il widget li posiziona in assoluto. Qui restano nel
+   flusso, sotto la risposta, con sfondo pieno. (22/09) */
 .suggestion-list {
+  position: static !important;
+  inset: auto !important;
+  background: #FFFFFF !important;
   list-style: none !important;
   display: flex !important;
   flex-direction: column !important;
