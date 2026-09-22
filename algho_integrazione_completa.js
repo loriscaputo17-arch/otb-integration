@@ -1311,8 +1311,11 @@ window.__alghoDiagnostica = function () {
 
     // il titolo: la frase che il flusso ha scritto sopra le scelte
     var intro = blocco.previousElementSibling;
-    var titolo = (intro && /mr-intro|mr-etichetta/.test(intro.className) ? intro.textContent : '').trim();
+    var dentro = blocco.querySelector('.mr-etichetta');   // i colori portano l'etichetta dentro il blocco
+    var titolo = ((dentro ? dentro.textContent : '') ||
+                  (intro && /mr-intro|mr-etichetta/.test(intro.className) ? intro.textContent : '')).trim();
     if (!titolo) titolo = tipo === 'colore' ? T.colore : T.taglia;
+    titolo = titolo.replace(/:\s*$/, '');
     if (intro && /mr-intro|mr-etichetta/.test(intro.className)) intro.style.display = 'none';
 
     var elenco = blocco.cloneNode(true);
