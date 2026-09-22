@@ -1230,3 +1230,133 @@ window.__alghoDiagnostica = function () {
     if (richiuso || att > 60) clearInterval(t);
   }, 500);
 })();
+
+
+// ---------- 12. SCELTA TAGLIA / COLORE IN UN PANNELLO DAL BASSO ----------
+// "Aggiungi al carrello" chiede la taglia, e le taglie arrivavano come bottoni
+// dentro il messaggio: in una chat lunga finivano sopra la piega e su mobile si
+// perdevano. Qui il blocco viene spostato in un pannello che sale dal basso
+// (disegno Figma "add to cart"), con il resto della chat in ombra.
+// Il messaggio resta in cronologia con un bottone per riaprire il pannello.
+// I bottoni sono gli STESSI creati dai flussi: l'azione non cambia.
+(function PannelloScelta() {
+  var TESTI = {
+    it: { taglia: 'Scegli la taglia', colore: 'Scegli il colore', guida: 'Guida alle taglie', chiudi: 'Chiudi', riapri: 'Scegli la taglia', riapriC: 'Scegli il colore', esaurita: 'Esaurita' },
+    en: { taglia: 'Choose your size', colore: 'Choose the colour', guida: 'Size guide', chiudi: 'Close', riapri: 'Choose your size', riapriC: 'Choose the colour', esaurita: 'Sold out' },
+    fr: { taglia: 'Choisissez la taille', colore: 'Choisissez la couleur', guida: 'Guide des tailles', chiudi: 'Fermer', riapri: 'Choisissez la taille', riapriC: 'Choisissez la couleur', esaurita: 'Épuisée' },
+    de: { taglia: 'Größe wählen', colore: 'Farbe wählen', guida: 'Größentabelle', chiudi: 'Schließen', riapri: 'Größe wählen', riapriC: 'Farbe wählen', esaurita: 'Ausverkauft' },
+    es: { taglia: 'Elige la talla', colore: 'Elige el color', guida: 'Guía de tallas', chiudi: 'Cerrar', riapri: 'Elige la talla', riapriC: 'Elige el color', esaurita: 'Agotada' }
+  };
+  var T = TESTI[linguaPagina()] || TESTI.en;
+
+  function urlGuidaTaglie() {
+    var m = window.location.pathname.match(/^\/([a-z]{2}-[a-z]{2})\//i);
+    return '/' + (m ? m[1].toLowerCase() : 'it-it') + '/help?content=help-size-guide';
+  }
+
+  function chiudi(radice) {
+    var p = radice.querySelector('.mr-sheet');
+    if (p) p.classList.remove('mr-sheet--aperto');
+    var o = radice.querySelector('.mr-sheet-velo');
+    if (o) o.classList.remove('mr-sheet-velo--aperto');
+  }
+
+  // crea (una sola volta) il pannello e il velo dentro la chat
+  function contenitore(radice) {
+    var corpo = radice.querySelector('.chat-body') || radice.querySelector('.chat');
+    if (!corpo) return null;
+    var p = radice.querySelector('.mr-sheet');
+    if (p) return p;
+
+    var velo = document.createElement('div');
+    velo.className = 'mr-sheet-velo';
+    velo.addEventListener('click', function () { chiudi(radice); });
+    corpo.appendChild(velo);
+
+    p = document.createElement('div');
+    p.className = 'mr-sheet';
+    p.innerHTML =
+      '<div class="mr-sheet-testa">' +
+        '<div class="mr-sheet-titolo"></div>' +
+        '<button class="mr-sheet-chiudi" aria-label="' + T.chiudi + '">✕</button>' +
+      '</div>' +
+      '<div class="mr-sheet-corpo"></div>' +
+      '<div class="mr-sheet-piede"><a class="mr-sheet-guida" target="_blank" href="' + urlGuidaTaglie() + '">' + T.guida + '</a></div>';
+    p.querySelector('.mr-sheet-chiudi').addEventListener('click', function () { chiudi(radice); });
+    corpo.appendChild(p);
+    return p;
+  }
+
+  function apri(radice, titolo, elenco, conGuida) {
+    var p = contenitore(radice);
+    if (!p) return;
+    p.querySelector('.mr-sheet-titolo').textContent = titolo;
+    var corpo = p.querySelector('.mr-sheet-corpo');
+    corpo.innerHTML = '';
+    corpo.appendChild(elenco);
+    p.querySelector('.mr-sheet-piede').style.display = conGuida ? '' : 'none';
+    // il clic su una scelta esegue l'azione del flusso e chiude il pannello
+    elenco.addEventListener('click', function (ev) {
+      var b = ev.target && ev.target.closest ? ev.target.closest('button') : null;
+      if (b && !b.disabled) setTimeout(function () { chiudi(radice); }, 50);
+    }, true);
+    radice.querySelector('.mr-sheet-velo').classList.add('mr-sheet-velo--aperto');
+    p.classList.add('mr-sheet--aperto');
+  }
+
+  // sposta il blocco delle scelte dal messaggio al pannello
+  function prendi(radice, blocco, tipo) {
+    if (!blocco || blocco.dataset.mrSheet === '1') return;
+    blocco.dataset.mrSheet = '1';
+
+    // il titolo: la frase che il flusso ha scritto sopra le scelte
+    var intro = blocco.previousElementSibling;
+    var titolo = (intro && /mr-intro|mr-etichetta/.test(intro.className) ? intro.textContent : '').trim();
+    if (!titolo) titolo = tipo === 'colore' ? T.colore : T.taglia;
+    if (intro && /mr-intro|mr-etichetta/.test(intro.className)) intro.style.display = 'none';
+
+    var elenco = blocco.cloneNode(true);
+    elenco.classList.add('mr-sheet-elenco');
+    // le taglie esaurite restano visibili ma non selezionabili
+    Array.prototype.forEach.call(elenco.querySelectorAll('.mr-taglia--esaurita'), function (b) {
+      b.disabled = true;
+      if (b.tagName === 'BUTTON' && !/•/.test(b.textContent)) b.textContent = b.textContent.trim() + '  ·  ' + T.esaurita;
+    });
+
+    // al posto del blocco, nel messaggio resta un bottone per riaprire
+    var riapri = document.createElement('button');
+    riapri.className = 'mr-btn-largo mr-sheet-riapri';
+    riapri.textContent = tipo === 'colore' ? T.riapriC : T.riapri;
+    riapri.addEventListener('click', function () { apri(radice, titolo, elenco.cloneNode(true), tipo === 'taglia'); });
+    blocco.parentNode.insertBefore(riapri, blocco);
+    blocco.style.display = 'none';
+
+    apri(radice, titolo, elenco, tipo === 'taglia');
+  }
+
+  function scansiona(radice) {
+    // taglie: solo quando sono una scelta da fare (bottoni cliccabili)
+    Array.prototype.forEach.call(radice.querySelectorAll('.mr-taglie'), function (b) {
+      if (b.querySelector('button:not([disabled])')) prendi(radice, b, 'taglia');
+    });
+    // colori: stessa cosa, l'elenco delle varianti
+    Array.prototype.forEach.call(radice.querySelectorAll('.mr-colori'), function (b) {
+      if (b.querySelector('button')) prendi(radice, b, 'colore');
+    });
+  }
+
+  function osserva(radice) {
+    if (radice.__mrSheetOsserva) return;
+    radice.__mrSheetOsserva = true;
+    var zona = radice.querySelector('.container-message-display') || radice;
+    var mo = new MutationObserver(function () { scansiona(radice); });
+    mo.observe(zona, { childList: true, subtree: true });
+    scansiona(radice);
+  }
+
+  var t = setInterval(function () {
+    var host = document.querySelector('algho-viewer');
+    if (host && host.shadowRoot && host.shadowRoot.querySelector('.chat-body')) { osserva(host.shadowRoot); }
+  }, 800);
+  setTimeout(function () { clearInterval(t); }, 120000);
+})();
