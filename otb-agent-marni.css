@@ -522,7 +522,10 @@ ul.message-link-content::after {
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   overflow: visible !important;
   padding: 0 0 12px !important;
-  margin: 0 -120px 0 -40px !important;
+  /* a tutta larghezza dentro la chat: il paragrafo ha 40px di rientro a
+     sinistra e 64px a destra, e la bolla altri 46px (max-width: 100% - 46px).
+     Con -120px la terza colonna finiva fuori dal pannello (MCR-4589). */
+  margin: 0 -110px 0 -40px !important;
 }
 @media (max-width: 400px) {
   .mr-carosello, .message-text .mr-carosello { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
@@ -575,14 +578,20 @@ ul.message-link-content::after {
   display: none !important;
 }
 
-.mr-azioni{
-  position: absolute;
-  right: 7px;
-  bottom: 30%;
+/* azioni sulla card (resta il solo carrello): angolo in alto a destra, sopra
+   la foto. Prima era ancorato al 30% dell'altezza e finiva sul nome del capo
+   con le card piu' corte (MCR-4589/4591). */
+.mr-azioni, .message-text .mr-azioni {
+  display: flex !important;
+  gap: 8px !important;
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  bottom: auto !important;
+  left: auto !important;
+  margin: 0 !important;
+  z-index: 2 !important;
 }
-
-/* azioni sulla card (lente, carrello, cuore) */
-.mr-azioni, .message-text .mr-azioni { display: flex !important; gap: 8px !important; margin-top: 8px !important; }
 .mr-btn, .message-text .mr-btn {
   flex: 0 0 auto !important;
   width: 32px !important;
