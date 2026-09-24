@@ -552,7 +552,7 @@ ul.message-link-content::after {
 .mr-card-prezzo del, .mr-card-prezzo .mr-prezzo-pieno, .message-text .mr-card-prezzo .mr-prezzo-pieno { font-size: var(--marni-fs) !important; color: var(--marni-muto) !important; text-decoration: line-through !important; font-weight: 400 !important; margin: 0 !important; }
 .mr-card-prezzo .mr-prezzo-scontato, .message-text .mr-card-prezzo .mr-prezzo-scontato { color: var(--marni-ink) !important; }
 .mr-card-sconto, .message-text .mr-card-sconto { color: #27AE61 !important; letter-spacing: .28px !important; }
-.mr-card-nota, .message-text .mr-card-nota { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; }
+.mr-card-nota, .message-text .mr-card-nota { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin-top: 4px !important; }
 .mr-card-desc, .message-text .mr-card-desc { display: none !important; }
 /* componenti dismessi il 21/09 (tolti dai flussi; qui per sicurezza) */
 .mr-card-perche, .message-text .mr-card-perche, .mr-criteri--sotto, .message-text .mr-criteri--sotto { display: none !important; }
@@ -979,4 +979,3 @@ ul.message-link-content::after {
 .mr-ordine-totale, .message-text .mr-ordine-totale { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; }
 /* capo annullato dentro la griglia di un ordine */
 .mr-card--annullata, .message-text .mr-card--annullata { opacity: 0.55 !important; }
-.mr-card-nota, .message-text .mr-card-nota { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin-top: 4px !important; }
