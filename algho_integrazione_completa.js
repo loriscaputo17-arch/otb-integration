@@ -1385,6 +1385,29 @@ window.__alghoDiagnostica = function () {
     de: 'Guten Tag! Frag nach deiner Bestellung, entdecke die Kollektionen oder kaufe ein personalisiertes Outfit.'
   };
 
+  var CHIP = {
+    it: [['Esplora nuovi arrivi', 'Mostrami le novit\u00e0 della collezione'],
+         ['Outfit da sera', 'Vorrei un outfit da sera'],
+         ['Look per il rientro in ufficio', 'Vorrei un look per l\u2019ufficio'],
+         ['Look completi', 'Mostrami dei look completi']],
+    en: [['Explore new arrivals', 'Show me the new arrivals'],
+         ['Evening outfit', 'I would like an evening outfit'],
+         ['Back-to-office look', 'I would like a look for the office'],
+         ['Complete looks', 'Show me some complete looks']],
+    fr: [['D\u00e9couvrir les nouveaut\u00e9s', 'Montrez-moi les nouveaut\u00e9s'],
+         ['Tenue de soir\u00e9e', 'Je voudrais une tenue de soir\u00e9e'],
+         ['Look pour le bureau', 'Je voudrais un look pour le bureau'],
+         ['Looks complets', 'Montrez-moi des looks complets']],
+    es: [['Explora las novedades', 'Mu\u00e9strame las novedades'],
+         ['Look de noche', 'Quiero un look de noche'],
+         ['Look para la oficina', 'Quiero un look para la oficina'],
+         ['Looks completos', 'Mu\u00e9strame looks completos']],
+    de: [['Neuheiten entdecken', 'Zeig mir die Neuheiten'],
+         ['Abend-Outfit', 'Ich m\u00f6chte ein Abend-Outfit'],
+         ['Look f\u00fcr das B\u00fcro', 'Ich m\u00f6chte einen Look f\u00fcrs B\u00fcro'],
+         ['Komplette Looks', 'Zeig mir komplette Looks']]
+  };
+
   function lingua() {
     var l = '';
     try { l = String(document.documentElement.lang || '').slice(0, 2).toLowerCase(); } catch (e) {}
@@ -1403,8 +1426,27 @@ window.__alghoDiagnostica = function () {
     if (primo.querySelector('[class*="mr-"]')) { primo.__mrBenvenuto = true; return; }
     if (messaggi.length > 1) return; // non e' piu' il solo messaggio di apertura
     primo.__mrBenvenuto = true;
+    var lg = lingua();
     var p = primo.querySelector('p') || primo;
-    p.textContent = TESTI[lingua()];
+    p.textContent = TESTI[lg];
+    // le quattro proposte del Figma: sono semplici messaggi, come i chip dei flussi
+    try {
+      if (!primo.querySelector('.mr-chips')) {
+        var box = document.createElement('div');
+        box.className = 'mr-chips';
+        (CHIP[lg] || CHIP.it).forEach(function (c) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'mr-chip';
+          b.textContent = c[0];
+          b.addEventListener('click', function () {
+            try { if (window.algho && window.algho.sendUserMessage) window.algho.sendUserMessage(c[1]); } catch (e) {}
+          });
+          box.appendChild(b);
+        });
+        (primo.querySelector('p') ? primo : primo).appendChild(box);
+      }
+    } catch (e) {}
   }
 
   function osserva(radice) {
