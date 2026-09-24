@@ -1368,62 +1368,11 @@ window.__alghoDiagnostica = function () {
 })();
 
 // ============================================================
-// 13. BENVENUTO MARNI (P84, MCR-4586 / Figma "ChatsuPDP")
-// Algho apre ogni conversazione con la sua frase di sistema
-// ("Ciao. Rivolgimi domande precise..."), che non e' il tono del
-// brand e non e' configurabile dal nostro lato. Il primo messaggio
-// del bot — quello che arriva prima di qualunque domanda e che non
-// contiene markup dei flussi (classi mr-*) — viene riscritto con il
-// testo del Figma, nella lingua della chat.
+// 13. BENVENUTO MARNI — non serve piu' (P92, 24/09/2026)
+// Il messaggio di benvenuto ora e' configurato sul bot in Algho
+// (Impostazioni > Messaggio di benvenuto), quindi lo script non lo
+// riscrive piu': il testo sta in un posto solo.
 // ============================================================
-(function BenvenutoMarni() {
-  var TESTI = {
-    it: 'Buongiorno! Richiedi informazioni sul tuo ordine, esplora le collezioni o acquista outfit personalizzati.',
-    en: 'Hello! Ask about your order, explore the collections or shop a personalised outfit.',
-    fr: 'Bonjour ! Demandez des informations sur votre commande, explorez les collections ou achetez une tenue personnalisée.',
-    es: '¡Hola! Consulta tu pedido, explora las colecciones o compra un look personalizado.',
-    de: 'Guten Tag! Frag nach deiner Bestellung, entdecke die Kollektionen oder kaufe ein personalisiertes Outfit.'
-  };
-
-  function lingua() {
-    var l = '';
-    try { l = String(document.documentElement.lang || '').slice(0, 2).toLowerCase(); } catch (e) {}
-    if (!l) { try { l = String((navigator.language || 'it')).slice(0, 2).toLowerCase(); } catch (e) { l = 'it'; } }
-    return TESTI[l] ? l : 'it';
-  }
-
-  function scansiona(radice) {
-    var messaggi = radice.querySelectorAll('.message-text');
-    if (!messaggi.length) return;
-    // solo all'apertura: se il cliente ha gia' scritto, non si tocca nulla
-    if (radice.querySelector('.my-message, .user-message')) return;
-    var primo = messaggi[0];
-    if (primo.__mrBenvenuto) return;
-    // i messaggi dei flussi hanno sempre markup mr-*: quelli non si toccano
-    if (primo.querySelector('[class*="mr-"]')) { primo.__mrBenvenuto = true; return; }
-    if (messaggi.length > 1) return; // non e' piu' il solo messaggio di apertura
-    primo.__mrBenvenuto = true;
-    // Qui si riscrive solo il TESTO del benvenuto: le proposte sotto la frase
-    // sono quelle configurate nel composer di Algho, non se ne aggiungono altre.
-    var p = primo.querySelector('p') || primo;
-    p.textContent = TESTI[lingua()];
-  }
-
-  function osserva(radice) {
-    if (radice.__mrBenvenutoOsserva) return;
-    radice.__mrBenvenutoOsserva = true;
-    var zona = radice.querySelector('.container-message-display') || radice;
-    var mo = new MutationObserver(function () { scansiona(radice); });
-    mo.observe(zona, { childList: true, subtree: true });
-    scansiona(radice);
-  }
-
-  var t = setInterval(function () {
-    var host = document.querySelector('algho-viewer');
-    if (host && host.shadowRoot && host.shadowRoot.querySelector('.chat-body')) { osserva(host.shadowRoot); }
-  }, 800);
-  setTimeout(function () { clearInterval(t); }, 180000);
-})();
 
 // ============================================================
 // 14. EVENTI GA4 PER I KPI (P88)
