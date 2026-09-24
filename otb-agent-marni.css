@@ -688,7 +688,7 @@ ul.message-link-content::after {
 
 /* stati ordine: testo + quadratino colorato, niente pillole */
 .mr-stato, .message-text .mr-stato { display: inline-flex !important; align-items: center !important; gap: 8px !important; padding: 0 !important; background: transparent !important; font-size: 12px !important; line-height: 16px !important; font-weight: 400 !important; }
-.mr-stato::before, .message-text .mr-stato::before { content: ""; width: 6px; height: 6px; background: currentColor; flex: none; }
+.mr-stato::before, .message-text .mr-stato::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
 .mr-stato--corso, .message-text .mr-stato--corso { color: var(--marni-arancio) !important; }
 .mr-stato--spedito, .message-text .mr-stato--spedito { color: var(--marni-ink) !important; }
 .mr-stato--consegnato, .message-text .mr-stato--consegnato { color: var(--marni-verde) !important; }
@@ -700,7 +700,7 @@ ul.message-link-content::after {
 .mr-negozio-distanza, .message-text .mr-negozio-distanza { font-size: var(--marni-fs) !important; color: var(--marni-ink) !important; float: none !important; display: block !important; margin-top: 8px !important; }
 .mr-negozio-indirizzo, .message-text .mr-negozio-indirizzo { font-size: var(--marni-fs) !important; color: var(--marni-ink) !important; line-height: var(--marni-lh) !important; margin-top: 4px !important; }
 .mr-negozio-aperto, .mr-negozio-chiuso, .message-text .mr-negozio-aperto, .message-text .mr-negozio-chiuso { display: inline-flex !important; align-items: center !important; gap: 8px !important; font-size: 12px !important; line-height: 16px !important; margin-top: 8px !important; }
-.mr-negozio-aperto::before, .mr-negozio-chiuso::before, .message-text .mr-negozio-aperto::before, .message-text .mr-negozio-chiuso::before { content: ""; width: 6px; height: 6px; background: currentColor; }
+.mr-negozio-aperto::before, .mr-negozio-chiuso::before, .message-text .mr-negozio-aperto::before, .message-text .mr-negozio-chiuso::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
 .mr-negozio-aperto, .message-text .mr-negozio-aperto { color: var(--marni-verde) !important; }
 .mr-negozio-chiuso, .message-text .mr-negozio-chiuso { color: var(--marni-arancio) !important; }
 /* azioni negozio: "Apri in Maps" + "Chiama" affiancati */
@@ -979,3 +979,9 @@ ul.message-link-content::after {
 .mr-ordine-totale, .message-text .mr-ordine-totale { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; }
 /* capo annullato dentro la griglia di un ordine */
 .mr-card--annullata, .message-text .mr-card--annullata { opacity: 0.55 !important; }
+
+/* etichetta Flagship/Outlet nella scheda negozio: discreta, non una pillola */
+.mr-tag, .message-text .mr-tag { display: inline-block !important; margin-top: 4px !important; font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; background: transparent !important; border: none !important; padding: 0 !important; }
+.mr-tag--rosso, .message-text .mr-tag--rosso { color: var(--marni-rosso) !important; }
+/* indirizzo su due righe (P80) */
+.mr-negozio-indirizzo br { line-height: inherit; }
