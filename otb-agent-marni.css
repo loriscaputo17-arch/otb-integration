@@ -882,7 +882,7 @@ ul.message-link-content::after {
   padding: 16px 20px !important;
   border-bottom: 1px solid #E5E5E5 !important;
 }
-.chat-panel-container .language-filter { padding: 8px 20px 0 !important; }
+.chat-panel-container .language-filter { padding: 8px 0px 0 !important; }
 .chat-panel-container .language-filter .language-input-filter {
   border: none !important;
   border-bottom: 1px solid var(--marni-riga) !important;
@@ -917,7 +917,7 @@ ul.message-link-content::after {
 }
 
 .chat-panel-window li.language-item .flag-text:hover{
-   border: none !important;
+   border: transparent !important;
 }
 
 .chat-panel-container .language-filter{
