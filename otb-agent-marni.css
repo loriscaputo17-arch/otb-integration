@@ -913,15 +913,13 @@ ul.message-link-content::after {
   color: var(--marni-ink) !important;
 }
 
-/* totale del carrello: stessa riga del Figma, senza bordo pesante */
+/* totale del carrello: riquadro con bordo, una riga sola (Risposta dell'addtocart) */
 .mr-box-totale, .message-text .mr-box-totale {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: baseline !important;
-  border: none !important;
-  border-top: 1px solid var(--marni-ink) !important;
-  padding: 12px 0 !important;
-  margin-bottom: 4px !important;
+  display: block !important;
+  border: 1px solid var(--marni-bordo) !important;
+  background: #FFFFFF !important;
+  padding: 12px !important;
+  margin: 12px 0 !important;
   font-size: var(--marni-fs) !important;
   line-height: var(--marni-lh) !important;
   color: var(--marni-ink) !important;
