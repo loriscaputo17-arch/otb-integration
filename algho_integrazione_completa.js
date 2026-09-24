@@ -1424,3 +1424,142 @@ window.__alghoDiagnostica = function () {
   }, 800);
   setTimeout(function () { clearInterval(t); }, 180000);
 })();
+
+// ============================================================
+// 14. EVENTI GA4 PER I KPI (P88)
+// Dal file KPI di Marni: adoption, chip usage, topic distribution,
+// containment, handover, CTR sui prodotti. Qui si spingono gli eventi
+// nel dataLayer; la lettura e i calcoli restano a GA4/BI.
+// Ogni risposta dei flussi porta un elemento invisibile .mr-meta con
+// intento, scope e argomento (tassonomia Odity): da li' si ricava
+// l'argomento della conversazione senza doverlo indovinare dal testo.
+// ============================================================
+(function EventiKPI() {
+  var SESSIONE = 'marni_kpi_';
+  function push(nome, dati) {
+    try {
+      window.dataLayer = window.dataLayer || [];
+      var ev = { event: 'marni_chat_' + nome, source: 'chat' };
+      for (var k in dati) { if (Object.prototype.hasOwnProperty.call(dati, k)) ev[k] = dati[k]; }
+      window.dataLayer.push(ev);
+    } catch (e) {}
+  }
+  function unaVolta(chiave) {
+    try {
+      if (sessionStorage.getItem(SESSIONE + chiave)) return false;
+      sessionStorage.setItem(SESSIONE + chiave, '1');
+      return true;
+    } catch (e) { return true; }
+  }
+  function radice() {
+    var host = document.querySelector('algho-viewer');
+    return host ? host.shadowRoot : null;
+  }
+  function lingua() {
+    try { return String(document.documentElement.lang || '').slice(0, 2).toLowerCase() || 'it'; } catch (e) { return 'it'; }
+  }
+  function paese() {
+    try { var m = location.pathname.match(/^\/([a-z]{2})-([a-z]{2})(\/|$)/i); return m ? m[2].toUpperCase() : ''; } catch (e) { return ''; }
+  }
+  function dispositivo() {
+    try { return window.matchMedia('(max-width: 991px)').matches ? 'mobile' : 'desktop'; } catch (e) { return ''; }
+  }
+  var BASE = function () { return { lingua: lingua(), paese: paese(), dispositivo: dispositivo() }; };
+
+  // ---------- apertura della chat ----------
+  function segnaApertura(origine) {
+    if (!unaVolta('open')) return;
+    var d = BASE(); d.origine = origine || 'utente';
+    push('open', d);
+  }
+  try {
+    ['open', 'showChat'].forEach(function (m) {
+      if (window.algho && typeof window.algho[m] === 'function') {
+        var orig = window.algho[m].bind(window.algho);
+        window.algho[m] = function () { segnaApertura(window.__alghoInvioAutomatico ? 'proattivo' : 'utente'); return orig.apply(null, arguments); };
+      }
+    });
+  } catch (e) {}
+
+  // ---------- messaggi del cliente ----------
+  try {
+    if (window.algho && typeof window.algho.sendUserMessage === 'function') {
+      var origSend = window.algho.sendUserMessage.bind(window.algho);
+      window.algho.sendUserMessage = function (msg) {
+        try {
+          segnaApertura('utente');
+          var d = BASE(); d.automatico = !!window.__alghoInvioAutomatico;
+          if (unaVolta('primo_messaggio')) push('start', d);
+          push('user_message', d);
+        } catch (e) {}
+        return origSend.apply(null, arguments);
+      };
+    }
+  } catch (e) {}
+
+  // ---------- clic dentro la chat: chip, prodotti, carrello, operatore ----------
+  document.addEventListener('click', function (e) {
+    try {
+      var path = e.composedPath ? e.composedPath() : [];
+      for (var i = 0; i < path.length; i++) {
+        var el = path[i];
+        if (!el || !el.getAttribute) continue;
+        var cls = String(el.className || '');
+        var testo = String(el.textContent || '').trim().slice(0, 80);
+
+        // proposte di benvenuto del composer e chip dei flussi
+        if (/\bmr-chip\b/.test(cls) || /suggestion-item-text/.test(cls)) {
+          var d = BASE(); d.etichetta = testo;
+          d.tipo = /suggestion-item-text/.test(cls) ? 'quick_help' : 'chip';
+          push('chip_click', d);
+          if (/operator|operatore|conseiller|asesor|berater/i.test(testo)) push('handover_request', BASE());
+          return;
+        }
+        // card con freccia (vai al carrello, modulo di reso, pagine di aiuto)
+        if (/\bmr-card-azione\b/.test(cls)) {
+          var d2 = BASE(); d2.etichetta = testo; d2.url = el.getAttribute('href') || '';
+          push('card_click', d2);
+          return;
+        }
+        // scheda prodotto aperta dalla chat (CTR sulle raccomandazioni)
+        if (/\bmr-card-link\b/.test(cls) || /\bmr-card-foto\b/.test(cls)) {
+          var href = el.getAttribute('href') || '';
+          var mid = href.match(/-([A-Z0-9]{10,})\.html/i);
+          var d3 = BASE(); d3.item_id = mid ? mid[1] : ''; d3.url = href;
+          push('product_click', d3);
+          return;
+        }
+      }
+    } catch (err) {}
+  }, true);
+
+  // ---------- risposte dell'agente: argomento, handover, errori ----------
+  function leggiRisposte(rad) {
+    try {
+      var meta = rad.querySelectorAll('.mr-meta');
+      for (var i = 0; i < meta.length; i++) {
+        var m = meta[i];
+        if (m.__mrLetto) continue;
+        m.__mrLetto = true;
+        var d = BASE();
+        d.intento = m.getAttribute('data-intento') || '';
+        d.scope = m.getAttribute('data-scope') || '';
+        d.argomento = m.getAttribute('data-argomento') || '';
+        push('answer', d);
+      }
+    } catch (e) {}
+  }
+  function osserva(rad) {
+    if (rad.__mrKpiOsserva) return;
+    rad.__mrKpiOsserva = true;
+    var zona = rad.querySelector('.container-message-display') || rad;
+    var mo = new MutationObserver(function () { leggiRisposte(rad); });
+    mo.observe(zona, { childList: true, subtree: true });
+    leggiRisposte(rad);
+  }
+  var t = setInterval(function () {
+    var rad = radice();
+    if (rad && rad.querySelector('.chat-body')) osserva(rad);
+  }, 1000);
+  setTimeout(function () { clearInterval(t); }, 300000);
+})();

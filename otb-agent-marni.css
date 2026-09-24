@@ -1075,3 +1075,5 @@ ul.message-link-content::after {
 .chat-panel-container .chat-player-header-close .chat-button { width: 24px !important; height: 24px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; padding: 0 !important; border: none !important; }
 .chat-panel-container .chat-player-header-close .chat-button svg { display: none !important; }
 .chat-panel-container .chat-player-header-close .chat-button::before { content: "\2715"; font-size: 15px; line-height: 1; color: var(--marni-ink); }
+/* metadato invisibile per i KPI (intento + argomento Odity) */
+.mr-meta, .message-text .mr-meta { display: none !important; }
