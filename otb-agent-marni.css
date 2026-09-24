@@ -578,12 +578,19 @@ ul.message-link-content::after {
   display: none !important;
 }
 
-/* azioni sulla card (resta il solo carrello): angolo in alto a destra, sopra
-   la foto. Prima era ancorato al 30% dell'altezza e finiva sul nome del capo
-   con le card piu' corte (MCR-4589/4591). */
+/* azioni: fuori dalle card restano nel flusso (erano in absolute e finivano
+   sopra il testo: le CTA "spaccate" di MCR-4591) */
 .mr-azioni, .message-text .mr-azioni {
   display: flex !important;
+  flex-wrap: wrap !important;
   gap: 8px !important;
+  position: static !important;
+  margin: 12px 0 4px !important;
+}
+.mr-azioni--spaziate, .message-text .mr-azioni--spaziate { flex-direction: column !important; align-items: flex-start !important; }
+/* sulla card resta il solo carrello: angolo in alto a destra, sopra la foto.
+   Prima era ancorato al 30% dell'altezza e finiva sul nome del capo (MCR-4589). */
+.mr-card .mr-azioni, .message-text .mr-card .mr-azioni {
   position: absolute !important;
   top: 8px !important;
   right: 8px !important;
@@ -592,6 +599,27 @@ ul.message-link-content::after {
   margin: 0 !important;
   z-index: 2 !important;
 }
+/* bottoni di azione testuali ("Boutique a Milano", "Parla con un operatore"):
+   erano senza stile e uscivano come bottoni di sistema */
+.mr-btn-azione, .message-text .mr-btn-azione {
+  display: inline-block !important;
+  width: auto !important;
+  min-width: 0 !important;
+  padding: 9px 12px !important;
+  background: #FFFFFF !important;
+  color: var(--marni-ink) !important;
+  border: 1px solid var(--marni-bordo) !important;
+  border-radius: 0 !important;
+  font-family: inherit !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  letter-spacing: var(--marni-ls) !important;
+  text-align: left !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+}
+.mr-btn-azione:hover, .message-text .mr-btn-azione:hover { border-color: var(--marni-hover) !important; color: var(--marni-hover) !important; background: #FFFFFF !important; }
+.mr-btn-azione--principale, .message-text .mr-btn-azione--principale { border-color: var(--marni-ink) !important; }
 .mr-btn, .message-text .mr-btn {
   flex: 0 0 auto !important;
   width: 32px !important;
