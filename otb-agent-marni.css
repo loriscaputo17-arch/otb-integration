@@ -121,9 +121,6 @@
   align-items: center !important;
   gap: 16px !important;
   color: var(--marni-ink) !important;
-  /* Algho la posiziona in absolute: in flusso il titolo sta a sinistra e la
-     lingua finisce a destra, accanto alla X, come nel Figma (ChatsuPDP) */
-  position: static !important;
   flex: 1 1 auto !important;
   justify-content: space-between !important;
   left: auto !important;
