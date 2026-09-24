@@ -865,3 +865,115 @@ ul.message-link-content::after {
   line-height: var(--marni-lh) !important;
   color: var(--marni-ink) !important;
 }
+
+/* ------------------------------------------------------------------ */
+/* Figma: card-azione, totale carrello, freccia Maps, scheda ordine    */
+/* ------------------------------------------------------------------ */
+
+/* card-azione: riquadro con miniatura, testo e freccia (Resi.png, carrello) */
+.mr-card-azione, .message-text .mr-card-azione {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 12px !important;
+  margin: 12px 0 !important;
+  background: #FFFFFF !important;
+  border: 1px solid var(--marni-bordo) !important;
+  border-radius: 0 !important;
+  color: var(--marni-ink) !important;
+  font-family: inherit !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  text-align: left !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+}
+.mr-card-azione:hover, .message-text .mr-card-azione:hover { border-color: var(--marni-hover) !important; background: #FFFFFF !important; color: var(--marni-ink) !important; }
+.mr-card-azione-foto, .message-text .mr-card-azione-foto {
+  width: 48px !important;
+  height: 48px !important;
+  flex: 0 0 48px !important;
+  object-fit: cover !important;
+  background: var(--marni-fondo) !important;
+  display: block !important;
+}
+.mr-card-azione-testo, .message-text .mr-card-azione-testo {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+}
+.mr-card-azione-freccia, .message-text .mr-card-azione-freccia {
+  flex: 0 0 auto !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  color: var(--marni-ink) !important;
+}
+
+/* totale del carrello: stessa riga del Figma, senza bordo pesante */
+.mr-box-totale, .message-text .mr-box-totale {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: baseline !important;
+  border: none !important;
+  border-top: 1px solid var(--marni-ink) !important;
+  padding: 12px 0 !important;
+  margin-bottom: 4px !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+}
+.mr-box-totale .mr-forte, .message-text .mr-box-totale .mr-forte { font-weight: 400 !important; white-space: nowrap !important; }
+
+/* negozi: freccia "apri in Maps" in alto a destra della scheda */
+.mr-negozio-maps, .message-text .mr-negozio-maps {
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+  width: 20px !important;
+  height: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  color: var(--marni-ink) !important;
+  text-decoration: none !important;
+}
+.mr-negozio-maps:hover, .message-text .mr-negozio-maps:hover { color: var(--marni-hover) !important; }
+
+/* scheda ordine (Ordini.png): titolo fuori, riquadro con stato, consegna, tracking, totale */
+.mr-ordine-titolo, .message-text .mr-ordine-titolo { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; }
+.mr-ordine-data, .message-text .mr-ordine-data { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin-bottom: 8px !important; }
+.mr-ordine-box, .message-text .mr-ordine-box {
+  border: 1px solid var(--marni-bordo) !important;
+  background: #FFFFFF !important;
+  padding: 12px !important;
+  margin-bottom: 12px !important;
+}
+.mr-ordine-stato, .message-text .mr-ordine-stato { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; margin-bottom: 8px !important; }
+.mr-ordine-consegna, .message-text .mr-ordine-consegna {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 8px !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-arancio) !important;
+  margin-bottom: 8px !important;
+}
+.mr-ordine-consegna::before, .message-text .mr-ordine-consegna::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; position: relative; top: -2px; }
+.mr-ordine-consegna--ok, .message-text .mr-ordine-consegna--ok { color: var(--marni-verde) !important; }
+.mr-ordine-consegna--ko, .message-text .mr-ordine-consegna--ko { color: var(--marni-rosso) !important; }
+.mr-ordine-tracking, .message-text .mr-ordine-tracking {
+  display: inline-block !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+  text-decoration: underline !important;
+  margin-bottom: 8px !important;
+}
+.mr-ordine-tracking:hover, .message-text .mr-ordine-tracking:hover { color: var(--marni-hover) !important; }
+.mr-ordine-totale, .message-text .mr-ordine-totale { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; }
