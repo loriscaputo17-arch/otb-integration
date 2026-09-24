@@ -1056,3 +1056,13 @@ ul.message-link-content::after {
   cursor: pointer !important;
 }
 .mr-rimuovi:hover, .message-text .mr-rimuovi:hover { border-color: var(--marni-hover) !important; color: var(--marni-hover) !important; background: #FFFFFF !important; }
+
+/* schermata di apertura: stessa testata della chat (Figma "ChatsuPDP") —
+   titolo a sinistra, lingua e impostazioni a destra, X di chiusura in fondo.
+   Prima il titolo non c'era e la chiusura stava al centro. */
+.chat-panel-container .chat-player-toolbar { justify-content: flex-start !important; gap: 14px !important; padding-right: 34px !important; box-sizing: border-box !important; }
+.chat-panel-container .chat-player-toolbar::before { content: "Assistente AI"; font-size: var(--marni-fs); line-height: var(--marni-lh); color: var(--marni-ink); margin-right: auto; }
+.chat-panel-container .chat-player-header-close { display: flex !important; justify-content: flex-end !important; padding: 10px 10px 0 0 !important; }
+.chat-panel-container .chat-player-header-close .chat-button { width: 24px !important; height: 24px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; padding: 0 !important; border: none !important; }
+.chat-panel-container .chat-player-header-close .chat-button svg { display: none !important; }
+.chat-panel-container .chat-player-header-close .chat-button::before { content: "\2715"; font-size: 15px; line-height: 1; color: var(--marni-ink); }
