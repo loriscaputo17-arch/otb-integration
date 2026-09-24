@@ -59,6 +59,10 @@
       width: 33% !important;   /* Figma 24/09: il pannello occupa circa un terzo */
       height: 82% !important;
       margin: 0 !important;
+       right: 0 !important;
+        left: initial !important;
+        bottom: 0 !important;
+        top: initial !important;
     }
   }
   /* desktop basso (finestra < 620px di altezza): tutta l'altezza */
