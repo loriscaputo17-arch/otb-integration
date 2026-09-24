@@ -977,3 +977,6 @@ ul.message-link-content::after {
 }
 .mr-ordine-tracking:hover, .message-text .mr-ordine-tracking:hover { color: var(--marni-hover) !important; }
 .mr-ordine-totale, .message-text .mr-ordine-totale { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; }
+/* capo annullato dentro la griglia di un ordine */
+.mr-card--annullata, .message-text .mr-card--annullata { opacity: 0.55 !important; }
+.mr-card-nota, .message-text .mr-card-nota { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin-top: 4px !important; }
