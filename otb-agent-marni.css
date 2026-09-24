@@ -56,7 +56,7 @@
 /* desktop (≥ 992px, stessa soglia del sito): pannello 37% × 82% */
   @media (min-width: 992px) {
     .widget .chat, .widget.floating .chat {
-      width: 37% !important;
+      width: 33% !important;   /* Figma 24/09: il pannello occupa circa un terzo */
       height: 82% !important;
       margin: 0 !important;
     }
@@ -817,3 +817,51 @@ ul.message-link-content::after {
 }
 /* nel messaggio resta il bottone per riaprire la scelta */
 .mr-sheet-riapri { margin-top: 8px !important; }
+
+/* ============================================================
+   PANNELLO LINGUA (Figma "Seleziona lingua")
+   Titolo, campo Filtra con la sola riga, elenco con pastiglia
+   grigia e nome della lingua: niente bordi ne' pillole colorate.
+   ============================================================ */
+.chat-panel-window .language-title,
+.chat-panel-container .language-title {
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+  font-weight: 400 !important;
+  padding: 16px 20px !important;
+  border-bottom: 1px solid #E5E5E5 !important;
+}
+.chat-panel-container .language-filter { padding: 8px 20px 0 !important; }
+.chat-panel-container .language-filter .language-input-filter {
+  border: none !important;
+  border-bottom: 1px solid var(--marni-riga) !important;
+  padding: 10px 0 !important;
+  font-size: var(--marni-fs) !important;
+  color: var(--marni-ink) !important;
+}
+.chat-panel-window ul.bot-language li.language-item,
+.chat-panel-window li.language-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 10px 20px !important;
+  background: #FFFFFF !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+.chat-panel-window li.language-item:hover { background: #F7F7F7 !important; }
+.chat-panel-window li.language-item .flag-icon {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 100% !important;
+  overflow: hidden !important;
+  background: #E5E5E5 !important;
+  border: none !important;
+  flex: 0 0 34px !important;
+}
+.chat-panel-window li.language-item .flag-text {
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+}
