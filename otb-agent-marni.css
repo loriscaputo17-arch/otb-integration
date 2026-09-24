@@ -912,6 +912,14 @@ ul.message-link-content::after {
   color: var(--marni-ink) !important;
 }
 
+.chat-panel-window li.language-item .flag-text:hover{
+   border: none !important;
+}
+
+.chat-panel-container .language-filter{
+   height: auto !important;
+}
+
 /* ------------------------------------------------------------------ */
 /* Figma: card-azione, totale carrello, freccia Maps, scheda ordine    */
 /* ------------------------------------------------------------------ */
