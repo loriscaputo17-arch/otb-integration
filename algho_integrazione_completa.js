@@ -1127,8 +1127,11 @@ window.__alghoDiagnostica = function () {
         // P47 (2026-09-21): lo stato della conversazione lato n8n e' legato allo
         // userId di Algho: senza cambiarlo, "Ricomincia" svuotava solo la chat e
         // genere, taglia e colore restavano applicati alle ricerche successive.
+        // P84 (2026-09-24, MCR-4586): setUserId apre gia' una conversazione nuova e
+        // ripulisce la finestra; chiamando anche resetChatHistory il messaggio di
+        // benvenuto veniva stampato due volte ("double incipit").
         if (window.algho && window.algho.setUserId) window.algho.setUserId('mr-' + Date.now().toString(36));
-        if (window.algho && window.algho.resetChatHistory) window.algho.resetChatHistory();
+        else if (window.algho && window.algho.resetChatHistory) window.algho.resetChatHistory();
         else if (window.algho && window.algho.clearChatHistory) window.algho.clearChatHistory();
         // l'identita' del cliente loggato va rimandata sulla nuova conversazione
         _ultimaIdentita = '';
