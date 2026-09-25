@@ -199,7 +199,7 @@ function linguaPagina() {
 }
 
 var tag = document.createElement("algho-viewer");
-tag.setAttribute("bot-id", "077b660a2a26b329e9de6a8b60758320");
+tag.setAttribute("bot-id", "4b3aed95d31a91a91e0b4d53e80abb93"); // PRODUZIONE (25/09/2026)
 tag.setAttribute("language", linguaPagina());
 tag.setAttribute("widget", "true");
 tag.setAttribute("audio", "false");
@@ -245,7 +245,7 @@ script.setAttribute("id", "algho-viewer-module");
 script.setAttribute("type", "text/javascript");
 script.setAttribute("defer", "defer");
 script.setAttribute("charset", "UTF-8");
-script.setAttribute("src", "https://staging-fe.alghoncloud.com/algho-viewer.min.js");
+script.setAttribute("src", "https://virtualassistant.alghoncloud.com/algho-viewer.min.js"); // PRODUZIONE (25/09/2026)
 document.body.appendChild(script);
 
 // ---------- 4. Imposta l'AJWT QUANDO Algho e' pronto ----------
