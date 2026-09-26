@@ -1055,8 +1055,16 @@ window.__alghoDiagnostica = function () {
 // I flussi rispondono con link e bottoni verso pagine del sito (scheda prodotto,
 // carrello, preferiti, ordini, boutique, categoria, regali, ricerca). Il clic del
 // cliente e' la conferma richiesta dai casi d'uso: da qui in poi l'agente lo
-// PORTA sulla pagina nella stessa scheda, invece di aprirne una nuova. I link
-// esterni (Maps, documenti) restano in nuova scheda.
+// PORTA sulla pagina. I link esterni (Maps, documenti) restano in nuova scheda.
+//
+// 26/09/2026 (MCR, "Perdita della conversazione durante il reindirizzamento alla
+// pagina prodotto"): la pagina si apre in una NUOVA scheda, non piu' nella stessa.
+// Il viewer di Algho non ripristina lo storico quando la pagina si ricarica (la
+// conversazione esiste lato server, ma in modalita' widget non viene riletta), percio'
+// navigare nella stessa scheda azzerava la chat: il cliente perdeva la ricerca appena
+// fatta e doveva ricominciare. Con la nuova scheda la conversazione resta aperta dov'e'.
+// Finche' Algho non ripristina lo storico in modalita' widget questa e' la soluzione:
+// va rivista quando lo storico sopravvive al cambio pagina.
 (function NavigazioneGuidata() {
   var HOST_SITO = /(^|\.)marni\.com$/i;
   var ESTERNI = /google\.[a-z.]+\/maps|maps\.apple|\.pdf(\?|$)/i;
@@ -1070,11 +1078,13 @@ window.__alghoDiagnostica = function () {
 
   function vai(href) {
     try {
-      // il pannello resta aperto dopo la navigazione: il widget rilegge il suo stato
-      // da sessionStorage, e la conversazione prosegue sulla pagina di arrivo
+      // il flusso sa su che pagina si trova il cliente anche quando la apriamo a parte
       if (window.algho && window.algho.setCurrentUrl) window.algho.setCurrentUrl(href);
     } catch (e) {}
-    window.location.assign(href);
+    // nuova scheda: la chat resta aperta con tutta la conversazione (vedi nota in testa)
+    var w = null;
+    try { w = window.open(href, '_blank', 'noopener'); } catch (e) {}
+    if (!w) window.location.assign(href); // popup bloccato: meglio la pagina che niente
   }
 
   function aggancia(radice) {
@@ -1085,6 +1095,9 @@ window.__alghoDiagnostica = function () {
       if (!a) return;
       var href = a.getAttribute('href') || '';
       if (!href || href.charAt(0) === '#' || /^(javascript|mailto|tel):/i.test(href)) return;
+      // il link chiede lui la nuova scheda (card prodotto, bottoni dei flussi): lo lasciamo
+      // fare al browser, cosi' la conversazione non si perde
+      if ((a.getAttribute('target') || '').toLowerCase() === '_blank') return;
       if (!stessoSito(a.href)) return;
       if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button !== 0) return; // il cliente vuole una nuova scheda
       ev.preventDefault();
@@ -1103,7 +1116,7 @@ window.__alghoDiagnostica = function () {
   }, 500);
 
   // per i flussi: window.marniVai(url) porta il cliente su una pagina del sito
-  window.marniVai = function (href) { if (stessoSito(href)) vai(href); else window.open(href, '_blank'); };
+  window.marniVai = function (href) { if (stessoSito(href)) vai(href); else { try { window.open(href, '_blank', 'noopener'); } catch (e) {} } };
 })();
 
 // ---------- 9. RICOMINCIA — bottone nell'header del widget ----------
