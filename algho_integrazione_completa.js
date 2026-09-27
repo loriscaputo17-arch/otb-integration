@@ -1508,6 +1508,9 @@ window.__alghoDiagnostica = function () {
         d.scope = m.getAttribute('data-scope') || '';
         d.argomento = m.getAttribute('data-argomento') || '';
         push('answer', d);
+        // P174 (MCR-4565): il passaggio al servizio clienti va contato anche
+        // quando lo propone l'agente, non solo quando il cliente clicca la chip
+        if (d.intento === 'operatore') push('handover_request', BASE());
       }
     } catch (e) {}
   }
@@ -1637,4 +1640,106 @@ window.__alghoDiagnostica = function () {
     if (host && host.shadowRoot && host.shadowRoot.querySelector('.chat-body')) osserva(host.shadowRoot);
   }, 800);
   setTimeout(function () { clearInterval(t); }, 300000);
+})();
+
+// ============================================================
+// 16. LO STATO DELLA CONVERSAZIONE VIAGGIA CON IL MESSAGGIO (P182)
+// La memoria condivisa dei flussi vive negli "static data" di n8n, che si
+// ricaricano all'inizio di ogni esecuzione e si riscrivono INTERE alla fine:
+// con piu' clienti che scrivono insieme l'ultima esecuzione che chiude cancella
+// le sessioni delle altre. Misurato in produzione, utenti diversi fra loro: una
+// conversazione alla volta 10 su 10 tiene il contesto, otto contemporanee 1 su 8.
+// Dentro n8n non c'e' rimedio possibile (fs e os sono bloccati, una cache di
+// processo non sopravvive, nessun nodo di database nell'istanza).
+//
+// Il rimedio e' qui: i flussi attaccano alla risposta un riassunto invisibile
+// dello stato, noi lo teniamo e lo rimandiamo dentro il contesto - l'unico campo
+// nostro che il player ripropone a ogni messaggio (verificato: 8000 caratteri
+// arrivano intatti fino a n8n, e resta attaccato anche ai messaggi successivi).
+// Lato flussi si usa SOLO come riparazione: se la memoria ha il filo si usa
+// quella e non cambia niente.
+//
+// Il contesto serve gia' per l'id del prodotto guardato o cliccato: percio' qui
+// si avvolge setContext e si mandano le due cose insieme, {c: contesto, s: stato}.
+// Nessun dato personale: i flussi non mettono nel riassunto identita', email o
+// numeri d'ordine.
+// ============================================================
+(function statoConIlMessaggio() {
+  var CHIAVE = 'mrStato';
+  var LIMITE = 7000;          // sotto il massimo verificato, con margine
+  var legacy = null;          // il contesto "di sempre": id prodotto o PAGINA:
+  var stato = null;           // il riassunto che ci mandano i flussi
+  var vero = null;            // setContext originale del player
+
+  try { var g = sessionStorage.getItem(CHIAVE); if (g) stato = JSON.parse(g); } catch (e) {}
+
+  function idProdottoDaUrl(u) {
+    var m = String(u || '').match(/-([A-Z0-9]{10,})\.html/i);
+    return m ? m[1].toUpperCase() : '';
+  }
+
+  function componi() {
+    var c = (legacy === null) ? idProdottoDaUrl(window.location.href) : legacy;
+    if (!stato) return c;                       // niente stato: come prima
+    var s;
+    try { s = 'S1:' + JSON.stringify({ c: c, s: stato }); } catch (e) { return c; }
+    if (s.length > LIMITE) return c;            // troppo grosso: meglio il solo contesto
+    return s;
+  }
+
+  function invia() {
+    try { if (vero) vero.call(window.algho, componi()); } catch (e) {}
+  }
+
+  function avvolgi() {
+    if (!window.algho || !window.algho.setContext || window.algho.setContext.__mrAvvolto) return false;
+    vero = window.algho.setContext;
+    var mio = function (v) {
+      var s = String(v == null ? '' : v);
+      // se e' roba nostra la si lascia passare: siamo noi che l'abbiamo composta
+      if (s.slice(0, 3) === 'S1:') { try { return vero.call(window.algho, s); } catch (e) { return; } }
+      legacy = s;               // il contesto del player (prodotto, pagina): si conserva
+      return invia();
+    };
+    mio.__mrAvvolto = true;
+    window.algho.setContext = mio;
+    invia();
+    return true;
+  }
+
+  // il riassunto sta in un elemento invisibile dentro la risposta
+  function raccogli(radice) {
+    try {
+      var nodi = radice.querySelectorAll('.mr-stato[data-s64]');
+      if (!nodi.length) return;
+      var ultimo = nodi[nodi.length - 1];
+      if (ultimo.__mrPreso) return;
+      ultimo.__mrPreso = true;
+      // il riassunto arriva in base64: senza virgolette da proteggere resta
+      // corto e nessun ripulitore di HTML lo storpia
+      var bin = atob(String(ultimo.getAttribute('data-s64') || ''));
+      var arr = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      var d = JSON.parse(new TextDecoder('utf-8').decode(arr));
+      if (!d || typeof d !== 'object') return;
+      stato = d;
+      try { sessionStorage.setItem(CHIAVE, JSON.stringify(d)); } catch (e) {}
+      invia();   // dal prossimo messaggio il filo viaggia con noi
+    } catch (e) {}
+  }
+
+  function osserva(radice) {
+    if (radice.__mrStatoOsserva) return;
+    radice.__mrStatoOsserva = true;
+    var zona = radice.querySelector('.container-message-display') || radice;
+    new MutationObserver(function () { raccogli(radice); }).observe(zona, { childList: true, subtree: true });
+    raccogli(radice);
+  }
+
+  var t = setInterval(function () {
+    avvolgi();
+    var host = document.querySelector('algho-viewer');
+    if (host && host.shadowRoot && host.shadowRoot.querySelector('.chat-body')) osserva(host.shadowRoot);
+  }, 500);
+  setTimeout(function () { clearInterval(t); }, 600000);
 })();
