@@ -1525,3 +1525,116 @@ window.__alghoDiagnostica = function () {
   }, 1000);
   setTimeout(function () { clearInterval(t); }, 300000);
 })();
+
+// ============================================================
+// 15. INIZIO DELLA RISPOSTA IN VISTA (P172, MCR-4611)
+// Algho, appena arriva una risposta, porta la vista in fondo al
+// messaggio. Con le risposte lunghe (schede prodotto, elenchi di
+// taglie, testi di servizio) il cliente si ritrova a leggere dalla
+// fine e deve risalire a mano: e' il difetto del ticket.
+// Il comportamento del player non si puo' cambiare, quindi si riallinea
+// la vista dopo di lui: quando una risposta nuova NON entra tutta nello
+// schermo si porta il suo inizio in alto. Se ci sta tutta non si tocca
+// niente, e se il cliente scorre da solo si smette subito: comanda lui.
+// Vale anche per le risposte che arrivano dal composer e non dai nostri
+// flussi; se il player cambiasse i nomi delle sue classi si ripiega
+// sulla nostra marcatura (.mr-wrap) e non si rompe nulla.
+// ============================================================
+(function () {
+  var MARGINE = 12;     // un filo d'aria sopra la risposta
+  var QUIETE  = 500;    // per quanto l'altezza deve stare ferma prima di lasciare
+  var LIMITE  = 4000;   // tetto massimo: oltre non si insiste
+
+  function zonaDi(radice) {
+    return radice.querySelector('.container-message-display') ||
+           radice.querySelector('.chat-body') || null;
+  }
+
+  // la bolla del player; se un domani cambiasse nome alla classe si
+  // ripiega sulla nostra marcatura: peggiora, ma non si rompe
+  function bolle(radice) {
+    var b = radice.querySelectorAll('.message-container');
+    return b.length ? b : radice.querySelectorAll('.mr-wrap');
+  }
+
+  // il player tiene in coda un contenitore vuoto e lo riempie dopo:
+  // l'ultima bolla utile e' l'ultima che ha davvero del contenuto
+  function ultimaPiena(radice) {
+    var t = bolle(radice);
+    for (var i = t.length - 1; i >= 0; i--) {
+      var el = t[i];
+      if (el.getBoundingClientRect().height > 8 && String(el.textContent || '').trim()) return el;
+    }
+    return null;
+  }
+
+  function allinea(zona, blocco) {
+    var rz = zona.getBoundingClientRect();
+    var rb = blocco.getBoundingClientRect();
+    // se la risposta entra tutta nello schermo va bene com'e': il
+    // comportamento normale del player resta intatto
+    if (rb.height <= rz.height - MARGINE) return;
+    var delta = rb.top - rz.top - MARGINE;
+    if (Math.abs(delta) < 2) return;
+    zona.scrollTop += delta;
+  }
+
+  // si segue la risposta mentre cresce (testo, foto dei prodotti) e si
+  // smette quando l'altezza sta ferma o quando il cliente scorre
+  function segui(zona, blocco) {
+    var avvio = Date.now(), ferma = Date.now(), altezza = -1, mollato = false;
+    function stop() { mollato = true; }
+    zona.addEventListener('wheel', stop, { passive: true });
+    zona.addEventListener('touchmove', stop, { passive: true });
+    zona.addEventListener('keydown', stop, true);
+    function pulisci() {
+      try {
+        zona.removeEventListener('wheel', stop);
+        zona.removeEventListener('touchmove', stop);
+        zona.removeEventListener('keydown', stop, true);
+      } catch (e) {}
+    }
+    (function giro() {
+      if (mollato) { pulisci(); return; }
+      try {
+        var h = Math.round(blocco.getBoundingClientRect().height);
+        if (h !== altezza) { altezza = h; ferma = Date.now(); }
+        allinea(zona, blocco);
+        var scaduto = Date.now() - avvio > LIMITE;
+        var quieta  = Date.now() - ferma > QUIETE && Date.now() - avvio > 300;
+        if (!scaduto && !quieta) { requestAnimationFrame(giro); return; }
+      } catch (e) {}
+      pulisci();
+    })();
+  }
+
+  function scansiona(radice) {
+    var zona = zonaDi(radice);
+    if (!zona) return;
+    if (zona.getBoundingClientRect().height < 50) return;   // chat chiusa
+    var ultimo = ultimaPiena(radice);
+    if (!ultimo || ultimo.__mrInizioVisto) return;
+    ultimo.__mrInizioVisto = true;
+    // prima si lascia finire al player il suo scorrimento, poi si riallinea
+    setTimeout(function () { segui(zona, ultimo); }, 80);
+  }
+
+  function osserva(radice) {
+    if (radice.__mrInizioOsserva) return;
+    radice.__mrInizioOsserva = true;
+    var zona = zonaDi(radice);
+    // i messaggi gia' sullo schermo non si toccano: su una conversazione
+    // ripresa sarebbe uno scatto senza motivo
+    try {
+      Array.prototype.forEach.call(bolle(radice), function (w) { w.__mrInizioVisto = true; });
+    } catch (e) {}
+    var mo = new MutationObserver(function () { scansiona(radice); });
+    mo.observe(zona || radice, { childList: true, subtree: true, characterData: true });
+  }
+
+  var t = setInterval(function () {
+    var host = document.querySelector('algho-viewer');
+    if (host && host.shadowRoot && host.shadowRoot.querySelector('.chat-body')) osserva(host.shadowRoot);
+  }, 800);
+  setTimeout(function () { clearInterval(t); }, 300000);
+})();
