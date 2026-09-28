@@ -1884,6 +1884,28 @@ window.__alghoDiagnostica = function () {
         // mappamondi e due chiusure sovrapposte: finche' c'e' l'avvio, via.
         var corpo = radice.querySelector('.chat-body');
         if (corpo) corpo.classList.toggle('mr-avvio-attivo', avvio);
+        // P198 (MCR-4641): il player non marca la lingua in uso, quindi la
+        // riga con la spunta e il fondo grigio del mockup la segniamo noi.
+        if (lingue) segnaLinguaInUso(pan);
+      });
+    } catch (e) {}
+  }
+
+  // nome inglese della lingua, com'e' scritto nell'attributo "content" del
+  // bottone di ogni riga del pannello
+  var NOME_LINGUA = { it: 'Italian', en: 'English', fr: 'French', de: 'German',
+                      es: 'Spanish', ja: 'Japanese', ko: 'Korean' };
+
+  function segnaLinguaInUso(pan) {
+    try {
+      var host = document.querySelector('algho-viewer');
+      var l = String((host && host.getAttribute('language')) || 'it').slice(0, 2).toLowerCase();
+      var nome = NOME_LINGUA[l];
+      if (!nome) return;
+      pan.querySelectorAll('li.language-item').forEach(function (li) {
+        var b = li.querySelector('button');
+        var c = b && (b.getAttribute('content') || '');
+        li.classList.toggle('mr-lingua-attiva', c === nome);
       });
     } catch (e) {}
   }
