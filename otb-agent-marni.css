@@ -53,11 +53,13 @@
    border: 1px solid #E0E0E0 !important;
 }
 
-/* desktop (≥ 992px, stessa soglia del sito): pannello 37% × 82% */
+/* desktop (≥ 992px, stessa soglia del sito): 60% dell'altezza della finestra,
+   con il rapporto 3:4 chiesto in MCR-4639 (quindi larghezza = 3/4 dell'altezza,
+   cioe' 45vh). Prima era 33% x 82%. */
   @media (min-width: 992px) {
     .widget .chat, .widget.floating .chat {
-      width: 33% !important;   /* Figma 24/09: il pannello occupa circa un terzo */
-      height: 82% !important;
+      width: 45vh !important;
+      height: 60vh !important;
       margin: 0 !important;
        right: 0 !important;
         left: initial !important;
