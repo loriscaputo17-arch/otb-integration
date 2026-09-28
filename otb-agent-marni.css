@@ -1194,3 +1194,12 @@ ul.bot-language li button img.flag-icon { display: none !important; }
   background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22 viewBox=%220 0 18 18%22 fill=%22none%22><path d=%22M7 12.2l-3.2-3.2 1.06-1.06L7 10.08l6.14-6.14L14.2 5 7 12.2z%22 fill=%22%230D0D0D%22/></svg>") center / 18px 18px no-repeat !important;
 }
 .chat-panel-window ul.bot-language li.language-item { padding: 12px 20px !important; }
+
+/* nota nell'intro della ricerca (P190): "ho preferito qualcosa di piu' elegante" */
+.mr-intro .mr-nota-inline, .message-text .mr-intro .mr-nota-inline {
+  display: block !important;
+  margin-top: 4px !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+  color: #777777 !important;
+}
