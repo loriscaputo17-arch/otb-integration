@@ -119,7 +119,7 @@
   box-sizing: border-box !important;
   align-items: center !important;
 }
-.chat-body .header-chat { border-bottom: none !important; padding: 0 !important; align-items: center;}
+.chat-body .header-chat { border-bottom: none !important; padding: 0 !important; align-items: center; position: relative !important;}
 .chat-body .header-title {
   display: flex !important;
   align-items: center !important;
@@ -129,6 +129,7 @@
   justify-content: space-between !important;
   left: auto !important;
   top: auto !important;
+   width: 93% !important;
 }
 .chat-body .header-title::before {
   content: "Assistente AI";
@@ -153,6 +154,7 @@
   line-height: 16px !important;
   letter-spacing: var(--marni-ls) !important;
   cursor: pointer !important;
+   display: none !important;
 }
 .chat-body .header-close .mr-ricomincia:hover { color: var(--marni-hover) !important; border-color: var(--marni-hover) !important; }
 ul.bot-language { padding: 0 !important; margin: 0 !important; }
@@ -162,7 +164,18 @@ ul.bot-language { padding: 0 !important; margin: 0 !important; }
 .chat-body .header-close .chat-button::before { content: "\2715"; font-size: 15px; line-height: 1; color: var(--marni-ink); }
 /* lingua: il segno "文A" del Figma quando la lingua mostrata e' una sola */
 ul.bot-language li:only-child button img.flag-icon { display: none !important; }
-ul.bot-language li:only-child button::before { content: "\6587 A"; font-size: 15px; line-height: 1; color: var(--marni-ink); letter-spacing: 0; }
+
+ul.bot-language li:only-child button::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 18px !important;
+  height: 18px !important;
+  flex-shrink: 0 !important;
+  background-color: var(--marni-ink) !important;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M9 16.5C4.85786 16.5 1.5 13.1421 1.5 9C1.5 4.85786 4.85786 1.5 9 1.5C13.1421 1.5 16.5 4.85786 16.5 9C16.5 13.1421 13.1421 16.5 9 16.5ZM7.28252 14.7506C6.56057 13.2194 6.11799 11.5307 6.02048 9.75H3.04642C3.3435 12.1324 5.03729 14.081 7.28252 14.7506ZM7.52302 9.75C7.63582 11.5791 8.15835 13.2973 9 14.814C9.84165 13.2973 10.3642 11.5791 10.477 9.75H7.52302ZM14.9536 9.75H11.9795C11.882 11.5307 11.4395 13.2194 10.7175 14.7506C12.9627 14.081 14.6565 12.1324 14.9536 9.75ZM3.04642 8.25H6.02048C6.11799 6.46933 6.56057 4.78055 7.28252 3.24942C5.03729 3.919 3.3435 5.86762 3.04642 8.25ZM7.52302 8.25H10.477C10.3642 6.42092 9.84165 4.70269 9 3.18599C8.15835 4.70269 7.63582 6.42092 7.52302 8.25ZM10.7175 3.24942C11.4395 4.78055 11.882 6.46933 11.9795 8.25H14.9536C14.6565 5.86762 12.9627 3.919 10.7175 3.24942Z'/%3E%3C/svg%3E") center / contain no-repeat !important;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M9 16.5C4.85786 16.5 1.5 13.1421 1.5 9C1.5 4.85786 4.85786 1.5 9 1.5C13.1421 1.5 16.5 4.85786 16.5 9C16.5 13.1421 13.1421 16.5 9 16.5ZM7.28252 14.7506C6.56057 13.2194 6.11799 11.5307 6.02048 9.75H3.04642C3.3435 12.1324 5.03729 14.081 7.28252 14.7506ZM7.52302 9.75C7.63582 11.5791 8.15835 13.2973 9 14.814C9.84165 13.2973 10.3642 11.5791 10.477 9.75H7.52302ZM14.9536 9.75H11.9795C11.882 11.5307 11.4395 13.2194 10.7175 14.7506C12.9627 14.081 14.6565 12.1324 14.9536 9.75ZM3.04642 8.25H6.02048C6.11799 6.46933 6.56057 4.78055 7.28252 3.24942C5.03729 3.919 3.3435 5.86762 3.04642 8.25ZM7.52302 8.25H10.477C10.3642 6.42092 9.84165 4.70269 9 3.18599C8.15835 4.70269 7.63582 6.42092 7.52302 8.25ZM10.7175 3.24942C11.4395 4.78055 11.882 6.46933 11.9795 8.25H14.9536C14.6565 5.86762 12.9627 3.919 10.7175 3.24942Z'/%3E%3C/svg%3E") center / contain no-repeat !important;
+}
+
 ul.bot-language li .flag-icon,
 .chat-panel-window li.language-item .flag-icon { border: none !important; }
 .chat-panel-window li.language-item .flag-text { font-size: var(--marni-fs) !important; color: var(--marni-ink) !important; }
