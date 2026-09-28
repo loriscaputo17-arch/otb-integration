@@ -1119,11 +1119,55 @@ window.__alghoDiagnostica = function () {
   window.marniVai = function (href) { if (stessoSito(href)) vai(href); else { try { window.open(href, '_blank', 'noopener'); } catch (e) {} } };
 })();
 
-// ---------- 9. RICOMINCIA — rimosso (P188, 28/09/2026) ----------
-// Marni ha chiesto di togliere la parola "Ricomincia" dall'header: nel Figma
-// in alto a destra ci sono solo il mappamondo e il segno di riduzione.
-// Il bottone non viene piu' inserito. Chi vuole ripartire da capo chiude e
-// riapre la chat, oppure lo si rimette come icona se servira'.
+// ---------- 9. RICOMINCIA — bottone nell'header del widget ----------
+// P191 (28/09/2026): rimesso su richiesta di Loris ("almeno per ora mi serve").
+// Era stato tolto con P188 perche' nel Figma l'header ha solo mappamondo e riduzione.
+// Svuota la conversazione (storico + stato lato Algho) e riparte dal saluto:
+// il cliente non deve chiudere e riaprire la chat per cambiare argomento.
+(function Ricomincia() {
+  var TESTO = { it: 'Ricomincia', en: 'Start over', fr: 'Recommencer', de: 'Neu starten', es: 'Empezar de nuevo' };
+  var lingua = linguaPagina();
+
+  function inserisci(radice) {
+    var chiusura = radice.querySelector('.header-chat .header-close');
+    if (!chiusura || chiusura.querySelector('.mr-ricomincia')) return;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mr-ricomincia';
+    b.textContent = TESTO[lingua] || TESTO.it;
+    b.setAttribute('aria-label', b.textContent);
+    b.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      try {
+        // P47 (2026-09-21): lo stato della conversazione lato n8n e' legato allo
+        // userId di Algho: senza cambiarlo, "Ricomincia" svuotava solo la chat e
+        // genere, taglia e colore restavano applicati alle ricerche successive.
+        // P84 (2026-09-24, MCR-4586): setUserId apre gia' una conversazione nuova e
+        // ripulisce la finestra; chiamando anche resetChatHistory il messaggio di
+        // benvenuto veniva stampato due volte ("double incipit").
+        if (window.algho && window.algho.setUserId) window.algho.setUserId('mr-' + Date.now().toString(36));
+        else if (window.algho && window.algho.resetChatHistory) window.algho.resetChatHistory();
+        else if (window.algho && window.algho.clearChatHistory) window.algho.clearChatHistory();
+        // l'identita' del cliente loggato va rimandata sulla nuova conversazione
+        _ultimaIdentita = '';
+        setTimeout(function () { try { impostaIdentitaAlgho(); } catch (e) {} }, 500);
+      } catch (e) {}
+    });
+    chiusura.insertBefore(b, chiusura.firstChild);
+  }
+
+  var att = 0;
+  var t = setInterval(function () {
+    att++;
+    var host = document.querySelector('algho-viewer');
+    var radice = host && host.shadowRoot;
+    if (!radice) { if (att > 120) clearInterval(t); return; }
+    inserisci(radice);
+    if (att > 120) clearInterval(t); // l'header viene ricreato quando il pannello si riapre: si continua a controllare per un minuto
+  }, 500);
+  // ...e a ogni riapertura del pannello
+  document.addEventListener('click', function () { setTimeout(function () { var h = document.querySelector('algho-viewer'); if (h && h.shadowRoot) inserisci(h.shadowRoot); }, 600); }, true);
+})();
 
 // ---------- 10. PULIZIA TESTO — residui di tag nelle risposte da documentazione ----------
 // Algho spezza le risposte SDA in paragrafi e a volte lascia in testa al testo
@@ -1749,4 +1793,45 @@ window.__alghoDiagnostica = function () {
     if (host && host.shadowRoot) { aggancia(host.shadowRoot); clearInterval(t); }
   }, 600);
   setTimeout(function () { clearInterval(t); }, 300000);
+})();
+
+// ============================================================
+// 18. PANNELLO LINGUA: LA ✕ PER CHIUDERLO (P191)
+// Nel mockup il pannello ha la ✕ in alto a destra. Se il player non ne mette
+// una, la aggiungiamo noi: chiude riportando il clic sul mappamondo, che e' il
+// comando che apre e chiude il pannello.
+// ============================================================
+(function chiusuraPannelloLingua() {
+  function aggiungi(radice) {
+    try {
+      var pan = radice.querySelector('.chat-panel-container, .chat-panel-window');
+      if (!pan || !pan.offsetParent) return;                 // pannello chiuso
+      if (pan.querySelector('.mr-lingua-chiudi')) return;    // gia' messa
+      // se il player ne ha gia' una, la lasciamo stare: ci pensa il CSS a spostarla
+      if (pan.querySelector('[class*="close"], .language-title button')) return;
+      var titolo = pan.querySelector('.language-title') || pan.firstElementChild;
+      if (!titolo) return;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'mr-lingua-chiudi';
+      b.setAttribute('aria-label', 'Chiudi');
+      b.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        try {
+          var apri = radice.querySelector('.header-title ul.bot-language li button') ||
+                     radice.querySelector('ul.bot-language li button');
+          if (apri) apri.click();
+          else pan.style.display = 'none';
+        } catch (err) {}
+      });
+      titolo.appendChild(b);
+    } catch (e) {}
+  }
+
+  var t = setInterval(function () {
+    var host = document.querySelector('algho-viewer');
+    if (host && host.shadowRoot) aggiungi(host.shadowRoot);
+  }, 700);
+  setTimeout(function () { clearInterval(t); }, 600000);
 })();

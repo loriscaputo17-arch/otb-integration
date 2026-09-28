@@ -1203,3 +1203,85 @@ ul.bot-language li button img.flag-icon { display: none !important; }
   line-height: 16px !important;
   color: #777777 !important;
 }
+
+
+/* ============================================================
+   P191 (2026-09-28) — secondo giro di ritocchi
+   ============================================================ */
+
+/* 1. "Ricomincia" torna visibile (era nascosto dal commit precedente) */
+.chat-body .header-close .mr-ricomincia { display: inline-block !important; }
+
+/* 2. mappamondo e segno di riduzione sulla stessa riga: prima il mondo
+      scendeva di un paio di pixel perche' la voce della lingua e' un <li>
+      con la sua altezza di riga */
+.chat-body .header-title ul.bot-language,
+.chat-body .header-title ul.bot-language li,
+.chat-body .header-title ul.bot-language li button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 24px !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 3. niente alone azzurro quando si clicca nel campo di scrittura:
+      e' un box-shadow del player, non un bordo */
+.toolbar-message-keyboard,
+.toolbar-message-keyboard.focus-within,
+.toolbar-message-keyboard:focus-within,
+.container-message-manager .toolbar-message-keyboard {
+  box-shadow: none !important;
+  outline: none !important;
+}
+.message-input:focus, .message-input:focus-visible { outline: none !important; box-shadow: none !important; }
+
+/* 4. la freccia di invio: quella del Figma, grigia */
+.toolbar-message-keyboard .chat-button svg { display: none !important; }
+.toolbar-message-keyboard .chat-button::before {
+  content: "" !important;
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22 viewBox=%220 0 18 18%22 fill=%22none%22><path d=%22M9.74965 5.87132V15H8.24965V5.87132L4.22668 9.8943L3.16602 8.83365L8.99965 3L14.8333 8.83365L13.7726 9.8943L9.74965 5.87132Z%22 fill=%22%238E8E8E%22/></svg>") center / 18px 18px no-repeat !important;
+}
+
+/* 5. pannello lingua: la ✕ in alto a destra e la barra di ricerca di nuovo visibile */
+.chat-panel-container .language-filter { display: block !important; }
+.chat-panel-window .language-title,
+.chat-panel-container .language-title { position: relative !important; }
+.chat-panel-container .language-title button,
+.chat-panel-container .language-title [class*="close"],
+.chat-panel-container > [class*="close"],
+.chat-panel-window > [class*="close"],
+.mr-lingua-chiudi {
+  position: absolute !important;
+  top: 14px !important;
+  right: 16px !important;
+  width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  border: none !important;
+  background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22 viewBox=%220 0 18 18%22 fill=%22none%22><path d=%22M4.7 3.64L9 7.94l4.3-4.3 1.06 1.06L10.06 9l4.3 4.3-1.06 1.06L9 10.06l-4.3 4.3-1.06-1.06L7.94 9l-4.3-4.3 1.06-1.06z%22 fill=%22%230D0D0D%22/></svg>") center / 18px 18px no-repeat !important;
+  font-size: 0 !important;
+  cursor: pointer !important;
+  z-index: 2 !important;
+}
+.chat-panel-container .language-title button svg,
+.chat-panel-container .language-title [class*="close"] svg { display: none !important; }
+
+/* 6. all'hover la riga della lingua non si deve muovere: prima il bordo
+      compariva solo al passaggio e spostava tutto di un pixel */
+.chat-panel-window ul.bot-language li.language-item,
+.chat-panel-window ul.bot-language li.language-item:hover,
+.chat-panel-window ul.bot-language li.language-item:focus,
+.chat-panel-window ul.bot-language li.language-item * ,
+.chat-panel-window ul.bot-language li.language-item *:hover {
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+.chat-panel-window ul.bot-language li.language-item { transition: background-color .12s ease !important; }
