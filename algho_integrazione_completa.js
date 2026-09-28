@@ -1929,3 +1929,45 @@ window.__alghoDiagnostica = function () {
   }, 600);
   setTimeout(function () { clearInterval(t); }, 600000);
 })();
+
+// ============================================================
+// 20. BENVENUTO NELLA LINGUA DELLA PAGINA (P200, MCR-4654)
+// Il messaggio di benvenuto della chat e' impostato sul composer in un'unica
+// lingua (italiano) e compare cosi' su tutti i mercati: su /en-us/ il cliente
+// vede l'header in inglese e il primo messaggio in italiano. Finche' il
+// composer non accetta un testo per lingua, lo traduciamo qui. Si sostituisce
+// solo se il testo e' ESATTAMENTE quello italiano configurato: se un domani
+// arriva gia' tradotto, non tocchiamo niente.
+// ============================================================
+(function benvenutoTradotto() {
+  var BENV = {
+    it: 'Ciao! Richiedi informazioni sul tuo ordine, crea look o lasciati ispirare dalle ultime tendenze.',
+    en: 'Hi! Ask about your order, create looks or get inspired by the latest trends.',
+    fr: 'Bonjour ! Demandez des informations sur votre commande, composez des looks ou laissez-vous inspirer par les derni\u00e8res tendances.',
+    de: 'Hallo! Fragen Sie nach Ihrer Bestellung, stellen Sie Looks zusammen oder lassen Sie sich von den neuesten Trends inspirieren.',
+    es: '\u00a1Hola! Consulta tu pedido, crea looks o d\u00e9jate inspirar por las \u00faltimas tendencias.',
+    ja: '\u3053\u3093\u306b\u3061\u306f\u3002\u3054\u6ce8\u6587\u306e\u78ba\u8a8d\u3001\u30eb\u30c3\u30af\u306e\u4f5c\u6210\u3001\u6700\u65b0\u30c8\u30ec\u30f3\u30c9\u306e\u3054\u63d0\u6848\u3092\u627f\u308a\u307e\u3059\u3002',
+    ko: '\uc548\ub155\ud558\uc138\uc694! \uc8fc\ubb38 \ud655\uc778, \ub8e9 \uc81c\uc548, \ucd5c\uc2e0 \ud2b8\ub80c\ub4dc \uc601\uac10\uc744 \ub3c4\uc640\ub4dc\ub9bd\ub2c8\ub2e4.'
+  };
+  var lingua = linguaPagina();
+  if (lingua === 'it') return;                 // in italiano va gia' bene
+  var nuovo = BENV[lingua];
+  if (!nuovo) return;
+  var ITA = BENV.it.replace(/\s+/g, ' ').trim();
+
+  function traduci(radice) {
+    try {
+      radice.querySelectorAll('.other-message .message-text, .other-message .message-content p').forEach(function (el) {
+        if (el.getAttribute('data-mr-benvenuto')) return;
+        var t = (el.textContent || '').replace(/\s+/g, ' ').trim();
+        if (t === ITA) { el.textContent = nuovo; el.setAttribute('data-mr-benvenuto', '1'); }
+      });
+    } catch (e) {}
+  }
+
+  var t = setInterval(function () {
+    var host = document.querySelector('algho-viewer');
+    if (host && host.shadowRoot) traduci(host.shadowRoot);
+  }, 500);
+  setTimeout(function () { clearInterval(t); }, 600000);
+})();

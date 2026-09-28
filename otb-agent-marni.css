@@ -1496,3 +1496,22 @@ ul.bot-language li button img.flag-icon { display: none !important; }
   width: 16px !important; height: 16px !important;
   background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 16 16%22 fill=%22none%22><path d=%22M6.5 11.56 2.44 7.5 3.5 6.44 6.5 9.44 12.5 3.44 13.56 4.5z%22 fill=%22%230D0D0D%22/></svg>") center / 16px 16px no-repeat !important;
 }
+
+/* ============================================================
+   P201 (28/09/2026, MCR-4652) — la schermata iniziale respira
+   Il disclaimer occupava 106px su 525 di chat (misurato) e schiacciava il
+   messaggio di benvenuto, che restava in una colonna di poche righe con la
+   barra di scorrimento gia' all'apertura. Stesso testo, meno ingombro:
+   corpo piu' piccolo, allineato a sinistra come il resto della chat.
+   ============================================================ */
+.chat-body > .container-warning-message {
+  font-size: 11px !important;
+  line-height: 14px !important;
+  text-align: left !important;
+  padding: 6px 0 !important;
+  margin: 0 20px 8px !important;
+  color: #8E8E8E !important;
+}
+.chat-body > .container-warning-message p { font-size: 11px !important; line-height: 14px !important; margin: 0 !important; }
+/* l'elenco dei messaggi si prende tutto lo spazio che resta */
+.chat-body > .container-message-display { flex: 1 1 auto !important; min-height: 0 !important; }
