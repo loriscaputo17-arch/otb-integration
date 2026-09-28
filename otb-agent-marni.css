@@ -53,13 +53,14 @@
    border: 1px solid #E0E0E0 !important;
 }
 
-/* desktop (≥ 992px, stessa soglia del sito): 60% dell'altezza della finestra,
-   con il rapporto 3:4 chiesto in MCR-4639 (quindi larghezza = 3/4 dell'altezza,
-   cioe' 45vh). Prima era 33% x 82%. */
+/* desktop (≥ 992px, stessa soglia del sito): rapporto 3:4 come chiede
+   MCR-4639, ma piu' grande del 60% del ticket: al 60% Loris l'ha trovata
+   piccola (28/09), quindi 75% dell'altezza della finestra e larghezza 3/4
+   (56vh). Prima di MCR-4639 era 33% x 82%. */
   @media (min-width: 992px) {
     .widget .chat, .widget.floating .chat {
-      width: 45vh !important;
-      height: 60vh !important;
+      width: 56vh !important;
+      height: 75vh !important;
       margin: 0 !important;
        right: 0 !important;
         left: initial !important;
@@ -899,7 +900,7 @@ ul.message-link-content::after {
   padding: 16px 20px !important;
   border-bottom: 1px solid #E5E5E5 !important;
 }
-.chat-panel-container .language-filter { padding: 8px 0px 0 !important; }
+.chat-panel-container .language-filter { padding: 8px 20px 0 !important; }   /* P199: margini laterali come le righe */
 .chat-panel-container .language-filter .language-input-filter {
   border: none !important;
   border-bottom: 1px solid var(--marni-riga) !important;
