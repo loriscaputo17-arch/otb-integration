@@ -931,8 +931,12 @@ ul.message-link-content::after {
   color: var(--marni-ink) !important;
 }
 
+/* P194: quel bordo e' gia' trasparente ma occupa 2px. Toglierlo all'hover
+   faceva rimpicciolire la riga di 4px e spostava in su tutto l'elenco:
+   resta 2px in tutti e due gli stati, semplicemente invisibile. */
+.chat-panel-window li.language-item .flag-text,
 .chat-panel-window li.language-item .flag-text:hover{
-   border: transparent !important;
+   border: 2px solid transparent !important;
 }
 
 .chat-panel-container .language-filter{
@@ -1349,3 +1353,82 @@ ul.bot-language li button img.flag-icon { display: none !important; }
   box-sizing: border-box !important;
   padding-right: var(--mr-ricomincia-w, 0px) !important;
 }
+
+/* ============================================================
+   P194 (28/09/2026) — rifiniture sulla schermata di avvio e sul
+   pannello delle lingue
+   ============================================================ */
+
+/* 1. due "mondi" nella schermata di avvio: quello di destra e' il bottone
+      "Impostazioni" del player, che ha l'icona di un mappamondo. Nella chat
+      non c'e', quindi via anche qui: resta solo la lingua. */
+.chat-panel-container .chat-player-toolbar > button.chat-button[aria-label="Impostazioni"],
+.chat-panel-container .chat-player-toolbar > button.chat-button[content="Impostazioni"] { display: none !important; }
+
+/* 2. la chiusura della schermata di avvio e' la stessa della chat: il trattino */
+.chat-panel-container .chat-player-header-close .chat-button::before {
+  content: "" !important;
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22 viewBox=%220 0 18 18%22 fill=%22none%22><path d=%22M3.75 8.25V9.75H14.25V8.25H3.75Z%22 fill=%22%230D0D0D%22/></svg>") center / 18px 18px no-repeat !important;
+  font-size: 0 !important;
+}
+
+/* 3. la ✕ del pannello lingua finiva a sinistra: il player le mette un "left"
+      suo, e con left e right insieme vince left. Va azzerato. */
+.chat-panel-container .language-title button,
+.chat-panel-container .language-title [class*="close"],
+.chat-panel-container > [class*="close"],
+.chat-panel-window > [class*="close"],
+.mr-lingua-chiudi { left: auto !important; }
+
+/* 4. hover sulla riga della lingua: non deve muovere niente. Le regole di P191
+      erano scritte su "ul.bot-language li.language-item", ma la lista non ha
+      sempre quella classe sull'ul: qui si parte da li.language-item. */
+.chat-panel-window li.language-item,
+.chat-panel-container li.language-item {
+  box-sizing: border-box !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 10px 20px !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+.chat-panel-window li.language-item:hover,
+.chat-panel-window li.language-item:focus,
+.chat-panel-window li.language-item:focus-visible,
+.chat-panel-window li.language-item:active,
+.chat-panel-container li.language-item:hover,
+.chat-panel-container li.language-item:focus,
+.chat-panel-container li.language-item:focus-visible,
+.chat-panel-container li.language-item:active {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 10px 20px !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+.chat-panel-window li.language-item *,
+.chat-panel-window li.language-item *:hover,
+.chat-panel-window li.language-item *:focus,
+.chat-panel-window li.language-item *:active,
+.chat-panel-container li.language-item *,
+.chat-panel-container li.language-item *:hover,
+.chat-panel-container li.language-item *:focus,
+.chat-panel-container li.language-item *:active {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  transform: none !important;
+}
+
+/* 5. la ✕ del pannello lingua e' 40x40 dentro una casella di 24: rientra */
+.chat-panel-container > .chat-panel-close .chat-button,
+.chat-panel-container > .chat-panel-close .chat-button svg {
+  width: 24px !important; height: 24px !important; padding: 0 !important; margin: 0 !important;
+}
+.chat-panel-container > .chat-panel-close .chat-button { display: flex !important; align-items: center !important; justify-content: center !important; }
