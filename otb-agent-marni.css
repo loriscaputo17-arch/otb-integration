@@ -96,10 +96,12 @@
 
 /* ---------- launcher (pallino con la M) ---------- */
 .chat-widget .chat-widget-container {
-  background-image: url('https://www.marni.com/on/demandware.static/Sites-MarniEU-Site/-/default/dwe20b15ae/favicons/safari-pinned-tab.svg') !important;
+  /* P192: fumetto Marni, SVG inline (niente dipendenza dagli static di marni.com,
+     il cui path contiene l'hash di build e puo' sparire a ogni deploy) */
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='387' height='377' viewBox='0 0 387 377' fill='none'><path d='M87.9353 309.334L3.1392 377L3.14383 0C-7.36929 0 12.6591 0 3.14383 0L383.859 0.0110004C364.823 -8.64264e-07 394.372 0.0110004 383.859 0.0110004L383.856 309.334C394.37 309.334 374.338 309.334 383.856 309.334H87.9353ZM74.7677 270.667H345.785V38.6679H41.2109V297.446L74.7677 270.667ZM174.462 135.334H212.534V174.001H174.462V135.334ZM98.3184 135.334H136.39V174.001H98.3184V135.334ZM250.605 135.334H288.677V174.001H250.605V135.334Z' fill='%230D0D0D'/></svg>") !important;
   background-repeat: no-repeat !important;
   background-position: center center !important;
-  background-size: 52% 52% !important;
+  background-size: 48% auto !important;
   background-color: #FFFFFF !important;
   border-radius: 100% !important;
 }
