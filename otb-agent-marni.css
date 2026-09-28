@@ -1175,20 +1175,22 @@ ul.bot-language li button img.flag-icon { display: none !important; }
   border-bottom: none !important;
 }
 /* la riga scelta: fondo tenue e spunta a destra */
-.chat-panel-window li.language-item.active,
-.chat-panel-window li.language-item.selected,
-.chat-panel-window li.language-item[aria-selected="true"],
-.chat-panel-window li.language-item.language-item--selected {
+.chat-panel-window ul.bot-language li.language-item.active,
+.chat-panel-window ul.bot-language li.language-item.selected,
+.chat-panel-window ul.bot-language li.language-item[aria-selected="true"],
+.chat-panel-window ul.bot-language li.language-item.language-item--selected,
+.chat-panel-window ul.bot-language li.language-item[class*="select"] {
   background: #F4F4F4 !important;
 }
-.chat-panel-window li.language-item.active::after,
-.chat-panel-window li.language-item.selected::after,
-.chat-panel-window li.language-item[aria-selected="true"]::after,
-.chat-panel-window li.language-item.language-item--selected::after {
+.chat-panel-window ul.bot-language li.language-item.active::after,
+.chat-panel-window ul.bot-language li.language-item.selected::after,
+.chat-panel-window ul.bot-language li.language-item[aria-selected="true"]::after,
+.chat-panel-window ul.bot-language li.language-item.language-item--selected::after,
+.chat-panel-window ul.bot-language li.language-item[class*="select"]::after {
   content: "" !important;
   margin-left: auto !important;
   width: 18px !important;
   height: 18px !important;
   background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22 viewBox=%220 0 18 18%22 fill=%22none%22><path d=%22M7 12.2l-3.2-3.2 1.06-1.06L7 10.08l6.14-6.14L14.2 5 7 12.2z%22 fill=%22%230D0D0D%22/></svg>") center / 18px 18px no-repeat !important;
 }
-.chat-panel-window li.language-item { padding: 12px 20px !important; }
+.chat-panel-window ul.bot-language li.language-item { padding: 12px 20px !important; }
