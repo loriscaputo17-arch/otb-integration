@@ -1848,11 +1848,20 @@ window.__alghoDiagnostica = function () {
 (function pannelloEHeader() {
   function marca(radice) {
     try {
+      if (!radice.querySelector('.chat-panel-container')) {
+        var c0 = radice.querySelector('.chat-body');
+        if (c0) c0.classList.remove('mr-avvio-attivo');
+      }
       radice.querySelectorAll('.chat-panel-container').forEach(function (pan) {
         var avvio  = !!pan.querySelector('.chat-player-start');
         var lingue = !!pan.querySelector('.language-title, li.language-item');
         pan.classList.toggle('mr-avvio', avvio);
         pan.classList.toggle('mr-lingue', !avvio && lingue);
+        // P195: la schermata di avvio ha un header suo (etichetta, mappamondo,
+        // chiusura). Quello della chat resta visibile sotto e si vedono due
+        // mappamondi e due chiusure sovrapposte: finche' c'e' l'avvio, via.
+        var corpo = radice.querySelector('.chat-body');
+        if (corpo) corpo.classList.toggle('mr-avvio-attivo', avvio);
       });
     } catch (e) {}
   }

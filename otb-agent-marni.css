@@ -1432,3 +1432,14 @@ ul.bot-language li button img.flag-icon { display: none !important; }
   width: 24px !important; height: 24px !important; padding: 0 !important; margin: 0 !important;
 }
 .chat-panel-container > .chat-panel-close .chat-button { display: flex !important; align-items: center !important; justify-content: center !important; }
+
+/* ============================================================
+   P195 (28/09/2026) — un header solo nella schermata di avvio
+   La schermata di avvio ha il suo header (etichetta, mappamondo, chiusura),
+   ma quello della chat resta sotto e si vede lo stesso: da qui i due
+   mappamondi e le due chiusure sovrapposte. Finche' c'e' l'avvio, l'header
+   della chat sparisce.
+   ============================================================ */
+.chat-body.mr-avvio-attivo > .header-container { display: none !important; }
+.chat-body:has(~ .chat-panel .chat-player-start) > .header-container,
+.chat-container:has(.chat-player-start) .chat-body > .header-container { display: none !important; }
