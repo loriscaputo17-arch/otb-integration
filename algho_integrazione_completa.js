@@ -1474,7 +1474,7 @@ window.__alghoDiagnostica = function () {
           var d = BASE(); d.etichetta = testo;
           d.tipo = /suggestion-item-text/.test(cls) ? 'quick_help' : 'chip';
           push('chip_click', d);
-          if (/operator|operatore|conseiller|asesor|berater/i.test(testo)) push('handover_request', BASE());
+          if (/operator|operatore|conseiller|asesor|berater|nostro team|our team|notre \u00e9quipe|nuestro equipo|unserem team/i.test(testo)) push('handover_request', BASE());
           return;
         }
         // card con freccia (vai al carrello, modulo di reso, pagine di aiuto)
@@ -1742,4 +1742,53 @@ window.__alghoDiagnostica = function () {
     if (host && host.shadowRoot && host.shadowRoot.querySelector('.chat-body')) osserva(host.shadowRoot);
   }, 500);
   setTimeout(function () { clearInterval(t); }, 600000);
+})();
+
+// ============================================================
+// 17. NPS ALLA FINE DELLA CHAT (P185)
+// Quando il cliente saluta, i flussi attaccano alla risposta la domanda NPS con
+// gli undici voti. Il clic si gestisce qui: si manda l'evento ai KPI e al posto
+// dei bottoni resta un grazie. Nessun giro in piu' sul server e il cliente non
+// deve scrivere niente.
+// ============================================================
+(function nps() {
+  function manda(voto, radice) {
+    try {
+      var d = { bot: 'marni', voto: voto, pagina: location.pathname };
+      if (window.dataLayer && window.dataLayer.push) window.dataLayer.push({ event: 'nps_score', nps_score: voto, marni: d });
+      if (window.gtag) window.gtag('event', 'nps_score', { value: voto, nps_score: voto });
+    } catch (e) {}
+  }
+
+  function aggancia(radice) {
+    if (radice.__mrNps) return;
+    radice.__mrNps = true;
+    radice.addEventListener('click', function (e) {
+      try {
+        var b = e.target && e.target.closest ? e.target.closest('.mr-nps-voto') : null;
+        if (!b) return;
+        var voto = parseInt(b.getAttribute('data-nps'), 10);
+        if (isNaN(voto)) return;
+        var box = b.closest('.mr-nps');
+        manda(voto, radice);
+        if (box) {
+          var grazie = box.getAttribute('data-grazie') || 'Grazie.';
+          var voti = box.querySelector('.mr-nps-voti');
+          var scala = box.querySelector('.mr-nps-scala');
+          if (voti) voti.remove();
+          if (scala) scala.remove();
+          var p = document.createElement('p');
+          p.className = 'mr-nps-grazie';
+          p.textContent = grazie;
+          box.appendChild(p);
+        }
+      } catch (err) {}
+    }, true);
+  }
+
+  var t = setInterval(function () {
+    var host = document.querySelector('algho-viewer');
+    if (host && host.shadowRoot) { aggancia(host.shadowRoot); clearInterval(t); }
+  }, 600);
+  setTimeout(function () { clearInterval(t); }, 300000);
 })();
