@@ -1806,6 +1806,7 @@ window.__alghoDiagnostica = function () {
     try {
       var pan = radice.querySelector('.chat-panel-container, .chat-panel-window');
       if (!pan || !pan.offsetParent) return;                 // pannello chiuso
+      if (pan.querySelector('.chat-player-start')) return;  // P193: e' la schermata di avvio, non le lingue
       if (pan.querySelector('.mr-lingua-chiudi')) return;    // gia' messa
       // se il player ne ha gia' una, la lasciamo stare: ci pensa il CSS a spostarla
       if (pan.querySelector('[class*="close"], .language-title button')) return;
@@ -1833,5 +1834,45 @@ window.__alghoDiagnostica = function () {
     var host = document.querySelector('algho-viewer');
     if (host && host.shadowRoot) aggiungi(host.shadowRoot);
   }, 700);
+  setTimeout(function () { clearInterval(t); }, 600000);
+})();
+
+// ============================================================
+// 19. PANNELLO: AVVIO O LINGUE (P193)
+// .chat-panel-container e' lo stesso contenitore per la schermata di avvio e
+// per l'elenco delle lingue. Il CSS ha bisogno di distinguerli: lo marchiamo
+// con .mr-avvio / .mr-lingue. Qui misuriamo anche il bottone "Ricomincia",
+// perche' la parola cambia con la lingua e il mappamondo non ci deve finire
+// sopra: la larghezza viaggia in --mr-ricomincia-w.
+// ============================================================
+(function pannelloEHeader() {
+  function marca(radice) {
+    try {
+      radice.querySelectorAll('.chat-panel-container').forEach(function (pan) {
+        var avvio  = !!pan.querySelector('.chat-player-start');
+        var lingue = !!pan.querySelector('.language-title, li.language-item');
+        pan.classList.toggle('mr-avvio', avvio);
+        pan.classList.toggle('mr-lingue', !avvio && lingue);
+      });
+    } catch (e) {}
+  }
+
+  function misuraRicomincia(radice) {
+    try {
+      var b = radice.querySelector('.header-chat .mr-ricomincia');
+      var titolo = radice.querySelector('.header-chat .header-title');
+      if (!titolo) return;
+      var largo = b ? Math.ceil(b.getBoundingClientRect().width) : 0;
+      // 16px di respiro fra mappamondo e "Ricomincia"
+      titolo.style.setProperty('--mr-ricomincia-w', largo ? (largo + 16) + 'px' : '0px');
+    } catch (e) {}
+  }
+
+  var t = setInterval(function () {
+    var host = document.querySelector('algho-viewer');
+    if (!host || !host.shadowRoot) return;
+    marca(host.shadowRoot);
+    misuraRicomincia(host.shadowRoot);
+  }, 600);
   setTimeout(function () { clearInterval(t); }, 600000);
 })();

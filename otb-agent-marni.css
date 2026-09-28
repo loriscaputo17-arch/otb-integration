@@ -1287,3 +1287,65 @@ ul.bot-language li button img.flag-icon { display: none !important; }
   text-decoration: none !important;
 }
 .chat-panel-window ul.bot-language li.language-item { transition: background-color .12s ease !important; }
+
+/* ============================================================
+   P193 (28/09/2026) — la schermata di avvio non e' il pannello lingua
+   Il player usa .chat-panel-container per due cose diverse: il pannello
+   delle lingue (foglio dal basso) e la schermata di avvio (privacy +
+   "Inizia la conversazione"). Le regole del foglio dal basso scritte con
+   P188/P191 si applicavano anche alla schermata di avvio: da qui il
+   contenuto spostato in basso, la ✕ comparsa a sinistra e le icone
+   fuori riga. Lo script marca il pannello con .mr-avvio / .mr-lingue.
+   ============================================================ */
+
+/* 1. avvio: il pannello riempie la finestra della chat, niente foglio dal basso */
+.chat-panel-container.mr-avvio {
+  top: 0 !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+  width: 100% !important; height: 100% !important; max-height: none !important;
+  border: none !important; border-radius: 0 !important; box-shadow: none !important;
+  overflow: hidden !important;
+}
+.chat-panel-container.mr-avvio .chat-panel-window { top: 56px !important; bottom: 0 !important; height: auto !important; }
+/* stesse regole per i browser che arrivano prima dello script */
+.chat-panel-container:has(.chat-player-start) {
+  top: 0 !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+  width: 100% !important; height: 100% !important; max-height: none !important;
+  border: none !important; border-radius: 0 !important; box-shadow: none !important;
+  overflow: hidden !important;
+}
+.chat-panel-container:has(.chat-player-start) .chat-panel-window { top: 56px !important; bottom: 0 !important; height: auto !important; }
+
+/* 2. la ✕ di troppo a sinistra: e' .chat-panel-close, che la regola di P191
+      ([class*="close"]) aveva trasformato in una seconda chiusura. Sulla
+      schermata di avvio la chiusura e' quella in alto a destra. */
+.chat-panel-container.mr-avvio .chat-panel-close,
+.chat-panel-container:has(.chat-player-start) .chat-panel-close { display: none !important; }
+
+/* 3. mappamondo, impostazioni e ✕ sulla stessa riga */
+.chat-panel-container .chat-player-toolbar {
+  top: 14px !important; height: 24px !important; align-items: center !important;
+}
+.chat-panel-container .chat-player-toolbar > *,
+.chat-panel-container .chat-player-toolbar .bot-language,
+.chat-panel-container .chat-player-toolbar .bot-language li,
+.chat-panel-container .chat-player-toolbar button {
+  height: 24px !important; margin: 0 !important; padding: 0 !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  position: relative !important; top: 0 !important;   /* il player spinge il mappamondo giu' di 3px */
+}
+.chat-panel-container .chat-player-header-close { top: 14px !important; padding: 0 !important; }
+.chat-panel-container .chat-player-header-close .chat-button { height: 24px !important; margin: 0 !important; }
+
+/* 4. il disclaimer va sopra il campo di scrittura, non sotto */
+.chat-body { display: flex !important; flex-direction: column !important; }
+.chat-body > .header-container { order: 1 !important; }
+.chat-body > .container-message-display { order: 2 !important; }
+.chat-body > .container-warning-message { order: 3 !important; }
+.chat-body > .container-message-manager-component { order: 4 !important; }
+
+/* 5. il mappamondo non deve finire sopra "Ricomincia": lo script misura il
+      bottone (la parola cambia con la lingua) e scrive --mr-ricomincia-w */
+.chat-body .header-title {
+  box-sizing: border-box !important;
+  padding-right: var(--mr-ricomincia-w, 0px) !important;
+}
