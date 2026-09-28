@@ -1101,3 +1101,94 @@ ul.message-link-content::after {
 .mr-nps-voto:hover{background:#111;color:#fff;border-color:#111}
 .mr-nps-scala{font-size:11px;color:#999;margin:6px 0 0}
 .mr-nps-grazie{font-size:13px;color:#1a7f37;margin:8px 0 0}
+
+
+/* ============================================================
+   P188 (2026-09-28) — RITOCCHI RICHIESTI DA MARNI
+   Header: via la parola "Ricomincia", il mappamondo passa a destra
+   accanto al segno di riduzione, e le due icone diventano quelle del
+   Figma. Card prodotto: il carrello scende nell'angolo in basso a
+   destra e diventa il "+". Pannello lingua: foglio dal basso come nel
+   mockup, con la riga scelta evidenziata e la spunta.
+   ============================================================ */
+
+/* --- header: lo spazio per le due icone lo fa gia' il width:93% qui sopra --- */
+
+/* il mappamondo lo disegna la regola qui sopra (mask sull'icona lingua):
+   qui resta solo la bandierina da nascondere */
+ul.bot-language li button img.flag-icon { display: none !important; }
+
+/* riduzione: il segno "−" del Figma al posto della X */
+.chat-body .header-close .chat-button::before {
+  content: "" !important;
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22 viewBox=%220 0 18 18%22 fill=%22none%22><path d=%22M3.75 8.25V9.75H14.25V8.25H3.75Z%22 fill=%22%230D0D0D%22/></svg>") center / 18px 18px no-repeat !important;
+  font-size: 0 !important;
+}
+
+/* --- card prodotto: il "+" in basso a destra sopra la foto --- */
+.mr-card .mr-azioni, .message-text .mr-card .mr-azioni {
+  top: auto !important;
+  bottom: 8px !important;
+  right: 8px !important;
+}
+.mr-card .mr-azioni .mr-btn, .message-text .mr-card .mr-azioni .mr-btn {
+  width: 28px !important;
+  height: 28px !important;
+  border: none !important;
+  background: transparent !important;
+}
+.mr-card .mr-azioni .mr-btn::before, .message-text .mr-card .mr-azioni .mr-btn::before {
+  -webkit-mask: none !important;
+  mask: none !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22 viewBox=%220 0 18 18%22 fill=%22none%22><rect width=%2218%22 height=%2218%22 fill=%22white%22/><path d=%22M8.25 8.25V3.75H9.75V8.25H14.25V9.75H9.75V14.25H8.25V9.75H3.75V8.25H8.25Z%22 fill=%22%230D0D0D%22/></svg>") center / 18px 18px no-repeat !important;
+}
+
+/* --- pannello lingua: foglio dal basso, come nel mockup --- */
+.chat-panel-container {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  width: 100% !important;
+  max-height: 72% !important;
+  background: #FFFFFF !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, .12) !important;
+  overflow: auto !important;
+  z-index: 30 !important;
+}
+/* nel mockup non c'e' il campo di ricerca: l'elenco parte subito */
+.chat-panel-container .language-filter { display: none !important; }
+.chat-panel-window .language-title,
+.chat-panel-container .language-title {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 18px 20px !important;
+  border-bottom: none !important;
+}
+/* la riga scelta: fondo tenue e spunta a destra */
+.chat-panel-window li.language-item.active,
+.chat-panel-window li.language-item.selected,
+.chat-panel-window li.language-item[aria-selected="true"],
+.chat-panel-window li.language-item.language-item--selected {
+  background: #F4F4F4 !important;
+}
+.chat-panel-window li.language-item.active::after,
+.chat-panel-window li.language-item.selected::after,
+.chat-panel-window li.language-item[aria-selected="true"]::after,
+.chat-panel-window li.language-item.language-item--selected::after {
+  content: "" !important;
+  margin-left: auto !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22 viewBox=%220 0 18 18%22 fill=%22none%22><path d=%22M7 12.2l-3.2-3.2 1.06-1.06L7 10.08l6.14-6.14L14.2 5 7 12.2z%22 fill=%22%230D0D0D%22/></svg>") center / 18px 18px no-repeat !important;
+}
+.chat-panel-window li.language-item { padding: 12px 20px !important; }
