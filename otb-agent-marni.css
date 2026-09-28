@@ -136,7 +136,7 @@
    width: 93% !important;
 }
 .chat-body .header-title::before {
-  content: "Assistente AI";
+  content: var(--mr-titolo, "Assistente AI");   /* P197: lo script la traduce */
   font-size: var(--marni-fs);
   line-height: var(--marni-lh);
   color: var(--marni-ink);
@@ -436,7 +436,7 @@ button.button { background: var(--marni-ink) !important; color: #FFFFFF !importa
 .chat-player-start .animated-button:hover { background: #333333 !important; }
 .chat-player-start .animated-button svg { display: none !important; }
 .chat-player-start .animated-button::after {
-  content: "Inizia la conversazione";
+  content: var(--mr-inizia, "Inizia la conversazione");   /* P197 */
   font-size: var(--marni-fs);
   line-height: var(--marni-lh);
   color: #FFFFFF;
@@ -1091,7 +1091,7 @@ ul.message-link-content::after {
    titolo a sinistra, lingua e impostazioni a destra, X di chiusura in fondo.
    Prima il titolo non c'era e la chiusura stava al centro. */
 .chat-panel-container .chat-player-toolbar { justify-content: flex-start !important; gap: 14px !important; padding-right: 34px !important; box-sizing: border-box !important; }
-.chat-panel-container .chat-player-toolbar::before { content: "Assistente AI"; font-size: var(--marni-fs); line-height: var(--marni-lh); color: var(--marni-ink); margin-right: auto; }
+.chat-panel-container .chat-player-toolbar::before { content: var(--mr-titolo, "Assistente AI"); font-size: var(--marni-fs); line-height: var(--marni-lh); color: var(--marni-ink); margin-right: auto; }
 .chat-panel-container .chat-player-header-close { display: flex !important; justify-content: flex-end !important; padding: 10px 10px 0 0 !important; }
 .chat-panel-container .chat-player-header-close .chat-button { width: 24px !important; height: 24px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; padding: 0 !important; border: none !important; }
 .chat-panel-container .chat-player-header-close .chat-button svg { display: none !important; }
@@ -1445,3 +1445,15 @@ ul.bot-language li button img.flag-icon { display: none !important; }
 .chat-body.mr-avvio-attivo > .header-container { display: none !important; }
 .chat-body:has(~ .chat-panel .chat-player-start) > .header-container,
 .chat-container:has(.chat-player-start) .chat-body > .header-container { display: none !important; }
+
+/* ============================================================
+   P197 (28/09/2026) — "Ricomincia" non si riusciva a cliccare
+   .header-title e' assoluto e largo quanto l'header: essendo posizionato
+   si disegna SOPRA il bottone (che e' statico) e si mangiava il clic.
+   Misurato: al centro di .mr-ricomincia l'elemento in cima era .header-title.
+   Ora il titolo non intercetta il mouse, solo il mappamondo che contiene.
+   ============================================================ */
+.chat-body .header-chat .header-title { pointer-events: none !important; }
+.chat-body .header-chat .header-title ul.bot-language,
+.chat-body .header-chat .header-title ul.bot-language * { pointer-events: auto !important; }
+.chat-body .header-chat .header-close { position: relative !important; z-index: 4 !important; }

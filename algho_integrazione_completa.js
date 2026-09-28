@@ -195,7 +195,9 @@ window.askGeoAndFindStore = function () {
 function linguaPagina() {
   var l = (document.documentElement.lang || '').toLowerCase().slice(0, 2);
   if (!l) { var m = window.location.pathname.match(/^\/([a-z]{2})-[a-z]{2}\//i); l = m ? m[1].toLowerCase() : 'it'; }
-  return /^(it|en|fr|de|es)$/.test(l) ? l : 'en';
+  // P197 (MCR-4644): il sito Marni ha 7 lingue (de, en, es, fr, it, ja, ko):
+  // prima ja e ko ricadevano su 'en' e il cliente giapponese vedeva l'inglese.
+  return /^(it|en|fr|de|es|ja|ko)$/.test(l) ? l : 'en';
 }
 
 var tag = document.createElement("algho-viewer");
@@ -229,7 +231,11 @@ tag.setAttribute("z-index", "9999");
     de: { inizio: 'Hallo, ich bin Marni Agent\nIch helfe Ihnen bei Bestellungen, Retouren, Produkten und Stilfragen.',
           privacy: 'Mit dem Fortfahren akzeptieren Sie die <a href="' + urlPrivacy + '" target="_blank">Datenschutzerkl\u00e4rung</a> von Marni.' },
     es: { inizio: 'Hola, soy Marni Agent\nEstoy aqu\u00ed para ayudarte con pedidos, devoluciones, productos y consejos de estilo.',
-          privacy: 'Al continuar aceptas la <a href="' + urlPrivacy + '" target="_blank">Pol\u00edtica de privacidad</a> de Marni.' }
+          privacy: 'Al continuar aceptas la <a href="' + urlPrivacy + '" target="_blank">Pol\u00edtica de privacidad</a> de Marni.' },
+    ja: { inizio: '\u3053\u3093\u306b\u3061\u306f\u3001Marni Agent \u3067\u3059\n\u3054\u6ce8\u6587\u3001\u8fd4\u54c1\u3001\u5546\u54c1\u3001\u30b9\u30bf\u30a4\u30ea\u30f3\u30b0\u306e\u3054\u76f8\u8ac7\u3092\u627f\u308a\u307e\u3059\u3002',
+          privacy: '\u7d9a\u884c\u3059\u308b\u3068\u3001Marni \u306e<a href="' + urlPrivacy + '" target="_blank">\u30d7\u30e9\u30a4\u30d0\u30b7\u30fc\u30dd\u30ea\u30b7\u30fc</a>\u306b\u540c\u610f\u3057\u305f\u3082\u306e\u3068\u307f\u306a\u3055\u308c\u307e\u3059\u3002' },
+    ko: { inizio: '\uc548\ub155\ud558\uc138\uc694, Marni Agent\uc785\ub2c8\ub2e4\n\uc8fc\ubb38, \ubc18\ud488, \uc81c\ud488, \uc2a4\ud0c0\uc77c \uc0c1\ub2f4\uc744 \ub3c4\uc640\ub4dc\ub9bd\ub2c8\ub2e4.',
+          privacy: '\uacc4\uc18d\ud558\uba74 Marni\uc758 <a href="' + urlPrivacy + '" target="_blank">\uac1c\uc778\uc815\ubcf4 \ucc98\ub9ac\ubc29\uce68</a>\uc5d0 \ub3d9\uc758\ud558\ub294 \uac83\uc73c\ub85c \uac04\uc8fc\ub429\ub2c8\ub2e4.' }
   };
   var t = TESTI[lingua] || TESTI.en;
   tag.setAttribute("start-message", t.inizio);
@@ -237,6 +243,21 @@ tag.setAttribute("z-index", "9999");
   tag.setAttribute("privacy-url", urlPrivacy);
   tag.setAttribute("invert-privacy", "true");
   tag.setAttribute("hide-menu", "true");
+  // P197 (MCR-4644): "Assistente AI" e "Inizia la conversazione" erano scritti
+  // a mano nel CSS, quindi restavano in italiano in tutte le lingue. Ora il
+  // testo viaggia in due variabili CSS e il foglio le usa con content: var().
+  var ETICHETTE = {
+    it: ['Assistente AI', 'Inizia la conversazione'],
+    en: ['AI Assistant', 'Start the conversation'],
+    fr: ['Assistant IA', 'D\u00e9marrer la conversation'],
+    de: ['KI-Assistent', 'Gespr\u00e4ch starten'],
+    es: ['Asistente IA', 'Iniciar la conversaci\u00f3n'],
+    ja: ['AI\u30a2\u30b7\u30b9\u30bf\u30f3\u30c8', '\u4f1a\u8a71\u3092\u59cb\u3081\u308b'],
+    ko: ['AI \uc5b4\uc2dc\uc2a4\ud134\ud2b8', '\ub300\ud654 \uc2dc\uc791\ud558\uae30']
+  };
+  var __et = ETICHETTE[lingua] || ETICHETTE.en;
+  tag.style.setProperty('--mr-titolo', JSON.stringify(__et[0]));
+  tag.style.setProperty('--mr-inizia', JSON.stringify(__et[1]));
 })();
 document.body.appendChild(tag);
 
@@ -1125,7 +1146,8 @@ window.__alghoDiagnostica = function () {
 // Svuota la conversazione (storico + stato lato Algho) e riparte dal saluto:
 // il cliente non deve chiudere e riaprire la chat per cambiare argomento.
 (function Ricomincia() {
-  var TESTO = { it: 'Ricomincia', en: 'Start over', fr: 'Recommencer', de: 'Neu starten', es: 'Empezar de nuevo' };
+  var TESTO = { it: 'Ricomincia', en: 'Start over', fr: 'Recommencer', de: 'Neu starten', es: 'Empezar de nuevo',
+                ja: '\u3084\u308a\u76f4\u3059', ko: '\ub2e4\uc2dc \uc2dc\uc791' };   // P197: anche ja e ko
   var lingua = linguaPagina();
 
   function inserisci(radice) {
