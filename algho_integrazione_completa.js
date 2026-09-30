@@ -211,6 +211,8 @@ tag.setAttribute("theme-style", "light");
 tag.setAttribute("theme-css", "https://loriscaputo17-arch.github.io/otb-integration/otb-agent-marni.css?v=" + Math.floor(Date.now()/300000));
 tag.setAttribute("widget-border-color", "#000000");
 tag.setAttribute("z-index", "9999");
+tag.setAttribute("question-id", "1424849");
+tag.setAttribute("question-repeat", "true");
 // Schermata iniziale: testi e privacy vengono dal widget (prop native del viewer:
 // start-message, privacy-message, privacy-url, invert-privacy), non dal CSS.
 // start-message e' solo testo: la prima riga e' il titolo (::first-line nel CSS),
