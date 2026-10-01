@@ -201,7 +201,7 @@ function linguaPagina() {
 }
 
 var tag = document.createElement("algho-viewer");
-tag.setAttribute("bot-id", "4b3aed95d31a91a91e0b4d53e80abb93"); // PRODUZIONE (25/09/2026)
+tag.setAttribute("bot-id", "c1cf74305c4c42d8eaf9f2ec1d72375d"); // PRODUZIONE (01/10/2026); i precedenti: 4b3aed95d31a91a91e0b4d53e80abb93, 46dd7fcd8f0c7813b315322759067142
 tag.setAttribute("language", linguaPagina());
 tag.setAttribute("widget", "true");
 tag.setAttribute("audio", "false");
