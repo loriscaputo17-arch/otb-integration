@@ -201,7 +201,7 @@ function linguaPagina() {
 }
 
 var tag = document.createElement("algho-viewer");
-tag.setAttribute("bot-id", "46dd7fcd8f0c7813b315322759067142"); // PRODUZIONE (30/09/2026) - bot nuovo; il precedente era 4b3aed95d31a91a91e0b4d53e80abb93
+tag.setAttribute("bot-id", "4b3aed95d31a91a91e0b4d53e80abb93"); // PRODUZIONE - rimesso il 01/10/2026 su richiesta di Loris; il bot nuovo e' 46dd7fcd8f0c7813b315322759067142
 tag.setAttribute("language", linguaPagina());
 tag.setAttribute("widget", "true");
 tag.setAttribute("audio", "false");
