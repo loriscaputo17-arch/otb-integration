@@ -201,7 +201,7 @@ function linguaPagina() {
 }
 
 var tag = document.createElement("algho-viewer");
-tag.setAttribute("bot-id", "4b3aed95d31a91a91e0b4d53e80abb93"); // PRODUZIONE - rimesso il 01/10/2026 su richiesta di Loris; il bot nuovo e' 46dd7fcd8f0c7813b315322759067142
+tag.setAttribute("bot-id", "4b3aed95d31a91a91e0b4d53e80abb93"); // PRODUZIONE (25/09/2026)
 tag.setAttribute("language", linguaPagina());
 tag.setAttribute("widget", "true");
 tag.setAttribute("audio", "false");
@@ -211,8 +211,6 @@ tag.setAttribute("theme-style", "light");
 tag.setAttribute("theme-css", "https://loriscaputo17-arch.github.io/otb-integration/otb-agent-marni.css?v=" + Math.floor(Date.now()/300000));
 tag.setAttribute("widget-border-color", "#000000");
 tag.setAttribute("z-index", "9999");
-tag.setAttribute("question-id", "1424849");
-tag.setAttribute("question-repeat", "true");
 // Schermata iniziale: testi e privacy vengono dal widget (prop native del viewer:
 // start-message, privacy-message, privacy-url, invert-privacy), non dal CSS.
 // start-message e' solo testo: la prima riga e' il titolo (::first-line nel CSS),
