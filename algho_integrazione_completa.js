@@ -201,7 +201,7 @@ function linguaPagina() {
 }
 
 var tag = document.createElement("algho-viewer");
-tag.setAttribute("bot-id", "c1cf74305c4c42d8eaf9f2ec1d72375d"); // PRODUZIONE (01/10/2026); i precedenti: 4b3aed95d31a91a91e0b4d53e80abb93, 46dd7fcd8f0c7813b315322759067142
+tag.setAttribute("bot-id", "c1cf74305c4c42d8eaf9f2ec1d72375d"); // STAGING (02/10/2026) - bot sull'ambiente di prova; in produzione era 4b3aed95d31a91a91e0b4d53e80abb93
 tag.setAttribute("language", linguaPagina());
 tag.setAttribute("widget", "true");
 tag.setAttribute("audio", "false");
@@ -266,7 +266,8 @@ script.setAttribute("id", "algho-viewer-module");
 script.setAttribute("type", "text/javascript");
 script.setAttribute("defer", "defer");
 script.setAttribute("charset", "UTF-8");
-script.setAttribute("src", "https://virtualassistant.alghoncloud.com/algho-viewer.min.js"); // PRODUZIONE (25/09/2026)
+script.setAttribute("src", "https://staging-fe.alghoncloud.com/algho-viewer.min.js"); // STAGING (02/10/2026): il bot c1cf7430... vive qui.
+// Per tornare in produzione: https://virtualassistant.alghoncloud.com/algho-viewer.min.js
 document.body.appendChild(script);
 
 // ---------- 4. Imposta l'AJWT QUANDO Algho e' pronto ----------
