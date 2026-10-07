@@ -559,7 +559,10 @@ ul.message-link-content::after {
    gia' il riquadro della foto. Un div per scheda, in modalita' widget, e'
    peso che non ci possiamo permettere. */
 .mr-card, .message-text .mr-card { position: relative !important; }
+/* e' uno <span>, non un <button>: il player i bottoni li rifiuta */
 .mr-piu, .message-text .mr-piu {
+  display: block !important;
+  user-select: none !important;
   position: absolute !important;
   right: 8px !important;
   /* la foto e' quadrata e occupa la parte alta della card: il "+" si appoggia

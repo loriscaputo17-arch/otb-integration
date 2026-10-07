@@ -297,6 +297,43 @@ script.setAttribute("charset", "UTF-8");
 script.setAttribute("src", AMBIENTE.player); // il player sta dove sta il bot
 document.body.appendChild(script);
 
+// ---------- IL "+" SULLE SCHEDE PRODOTTO (P223d, 07/10/2026) ----------
+// Il player, in modalita' widget, rifiuta l'HTML che contiene un <button>:
+// degrada tutta la risposta a testo semplice, senza foto e senza schede.
+// Misurato: tre schede con un <button> dentro pesano meno di tre schede senza,
+// e spariscono lo stesso. Quindi il "+" arriva come <span> con i dati addosso
+// e il clic glielo attacchiamo qui.
+(function PiuSulleCard() {
+  function agisci(el) {
+    var id = el.getAttribute('data-p') || '';
+    var msg = el.getAttribute('data-m') || '';
+    var a = window.algho;
+    if (!a) return;
+    try { if (id && a.setContext) a.setContext(id); } catch (e) {}
+    try { if (a.sendUserMessage) a.sendUserMessage(msg); } catch (e) {}
+  }
+  function attacca(radice) {
+    if (radice.__marniPiu) return;
+    radice.__marniPiu = true;
+    radice.addEventListener('click', function (ev) {
+      var el = ev.target;
+      while (el && el !== radice && !(el.classList && el.classList.contains('mr-piu'))) el = el.parentNode;
+      if (el && el.classList && el.classList.contains('mr-piu')) {
+        ev.preventDefault();
+        ev.stopPropagation();   // senza questo il clic apre anche la scheda sul sito
+        agisci(el);
+      }
+    }, true);
+  }
+  var tentativi = 0;
+  var t = setInterval(function () {
+    tentativi++;
+    var host = document.querySelector('algho-viewer');
+    if (host && host.shadowRoot) { clearInterval(t); attacca(host.shadowRoot); }
+    else if (tentativi > 120) clearInterval(t);
+  }, 500);
+})();
+
 // ---------- 4. Imposta l'AJWT QUANDO Algho e' pronto ----------
 (function attendiAlghoEImpostaAJWT() {
   var tentativi = 0;
