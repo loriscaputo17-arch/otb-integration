@@ -555,15 +555,16 @@ ul.message-link-content::after {
    in basso a destra sull'immagine. E' un gesto sulla card - aggiunge al
    carrello - mentre le options in fondo restano le azioni per continuare a
    parlare. */
-.mr-card-media, .message-text .mr-card-media {
-  position: relative !important;
-  display: block !important;
-  line-height: 0 !important;
-}
+/* niente contenitore in piu': il "+" si appoggia dentro la card, che e'
+   gia' il riquadro della foto. Un div per scheda, in modalita' widget, e'
+   peso che non ci possiamo permettere. */
+.mr-card, .message-text .mr-card { position: relative !important; }
 .mr-piu, .message-text .mr-piu {
   position: absolute !important;
   right: 8px !important;
-  bottom: 8px !important;
+  /* la foto e' quadrata e occupa la parte alta della card: il "+" si appoggia
+     sul suo angolo in basso a destra, come nel Figma */
+  top: calc(100% / 1.618) !important;
   width: 24px !important;
   height: 24px !important;
   padding: 0 !important;
