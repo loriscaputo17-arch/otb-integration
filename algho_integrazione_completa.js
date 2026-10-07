@@ -1,4 +1,15 @@
 // ============================================================
+// Caricato dal sito con un solo tag:
+//   <script src="...algho_integrazione_completa.js" defer></script>
+// Tutto sta dentro una funzione: fuori restano SOLO le funzioni che i bottoni
+// della chat chiamano per nome (window.marniVai, window.trasferisciAlCarrello,
+// window.askGeoAndFindStore, window.chiediPosizione...), che sono gia'
+// assegnate esplicitamente a window piu' sotto. Prima "var tag" e "var script"
+// finivano nel namespace globale del sito: due nomi cosi' comuni, su una pagina
+// che ne carica settantasei di script, prima o poi si scontrano.
+// ============================================================
+(function () {
+// ============================================================
 // INTEGRAZIONE ALGHO COMPLETA per il sito Marni
 // - AJWT unsigned (identita' utente loggato da localStorage user_info)
 // - Caricamento widget Algho
@@ -200,8 +211,25 @@ function linguaPagina() {
   return /^(it|en|fr|de|es|ja|ko)$/.test(l) ? l : 'en';
 }
 
+// ---------- AMBIENTE ----------
+// Lo stesso file sta su staging e su produzione: lo decide il dominio, non chi
+// lo incolla. Senza questo, chi mette il tag su www.marni.com si porta dietro
+// il bot di prova - e il cliente parla con l'assistente sbagliato.
+var AMBIENTE = (function () {
+  var h = String(location.hostname || '').toLowerCase();
+  var diProva = /(^|\.)staging\./.test(h) || /(^|\.)test\./.test(h) ||
+                h === 'localhost' || h === '127.0.0.1' || /\.localhost$|\.test$/.test(h);
+  return diProva
+    ? { nome: 'staging',
+        bot: 'c1cf74305c4c42d8eaf9f2ec1d72375d',
+        player: 'https://staging-fe.alghoncloud.com/algho-viewer.min.js' }
+    : { nome: 'produzione',
+        bot: '4b3aed95d31a91a91e0b4d53e80abb93',
+        player: 'https://virtualassistant.alghoncloud.com/algho-viewer.min.js' };
+})();
+
 var tag = document.createElement("algho-viewer");
-tag.setAttribute("bot-id", "c1cf74305c4c42d8eaf9f2ec1d72375d"); // STAGING (02/10/2026) - bot sull'ambiente di prova; in produzione era 4b3aed95d31a91a91e0b4d53e80abb93
+tag.setAttribute("bot-id", AMBIENTE.bot);
 tag.setAttribute("language", linguaPagina());
 tag.setAttribute("widget", "true");
 tag.setAttribute("audio", "false");
@@ -266,8 +294,7 @@ script.setAttribute("id", "algho-viewer-module");
 script.setAttribute("type", "text/javascript");
 script.setAttribute("defer", "defer");
 script.setAttribute("charset", "UTF-8");
-script.setAttribute("src", "https://staging-fe.alghoncloud.com/algho-viewer.min.js"); // STAGING (02/10/2026): il bot c1cf7430... vive qui.
-// Per tornare in produzione: https://virtualassistant.alghoncloud.com/algho-viewer.min.js
+script.setAttribute("src", AMBIENTE.player); // il player sta dove sta il bot
 document.body.appendChild(script);
 
 // ---------- 4. Imposta l'AJWT QUANDO Algho e' pronto ----------
@@ -1971,4 +1998,6 @@ window.__alghoDiagnostica = function () {
     if (host && host.shadowRoot) traduci(host.shadowRoot);
   }, 500);
   setTimeout(function () { clearInterval(t); }, 600000);
+})();
+
 })();
