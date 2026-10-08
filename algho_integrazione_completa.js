@@ -239,6 +239,14 @@ tag.setAttribute("theme-style", "light");
 tag.setAttribute("theme-css", "https://loriscaputo17-arch.github.io/otb-integration/otb-agent-marni.css?v=" + Math.floor(Date.now()/300000));
 tag.setAttribute("widget-border-color", "#000000");
 tag.setAttribute("z-index", "9999");
+// P227 (2026-10-08): quante azioni suggerite mostrare prima di nascondere il
+// resto dietro "Mostra altro". Il player di default ne mostra poche e il
+// cliente deve fare un clic in piu' per vedere scelte che gli servono subito -
+// i filtri di colore di una ricerca, per esempio.
+// Sei: misurato sui flussi, il massimo che produciamo oggi e' cinque (ricerca:
+// quattro colori piu' "Completa il look"), quindi con sei non si nasconde mai
+// niente e resta un margine. Da rivedere se le azioni suggerite crescono.
+tag.setAttribute("limit-suggestion", "6");
 // Schermata iniziale: testi e privacy vengono dal widget (prop native del viewer:
 // start-message, privacy-message, privacy-url, invert-privacy), non dal CSS.
 // start-message e' solo testo: la prima riga e' il titolo (::first-line nel CSS),
