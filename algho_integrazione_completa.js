@@ -235,6 +235,14 @@ tag.setAttribute("widget", "true");
 tag.setAttribute("audio", "false");
 tag.setAttribute("voice", "false");
 tag.setAttribute("open", "false");
+// P231 (2026-10-08, AS-27324): il campo di scrittura in modalita' textarea.
+// Francesco: il frontend prevede input-type=1 per usare una <textarea> al posto
+// dell'<input>, ed e' quella che si puo' personalizzare come chiede il Figma -
+// cresce fino a quattro righe, barra di scorrimento sottile, freccia d'invio
+// grigia da vuoto e nera quando c'e' testo. Le regole stanno gia' nel tema che
+// serve Algho (la sua sezione in fondo a /theme/marni.css, vedi P228): senza
+// questo attributo il player resta sull'input e quelle regole non si applicano.
+tag.setAttribute("input-type", "1");
 tag.setAttribute("theme-style", "light");
 // P228 (2026-10-08): da dove arriva il foglio di stile del widget.
 // Algho: scrivendo "{base-url}/theme/marni.css" il player risolve da se'
