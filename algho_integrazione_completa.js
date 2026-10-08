@@ -293,19 +293,26 @@ tag.setAttribute("limit-suggestion", "6");
   var urlPrivacy = '/' + locale + '/help?content=privacy-policy';
   var TESTI = {
     it: { inizio: 'Ciao, sono Marni Agent\nSono qui per aiutarti con ordini, resi, prodotti e consigli di stile.',
-          privacy: 'Continuando accetti la <a href="' + urlPrivacy + '" target="_blank">Privacy Policy</a> di Marni.' },
+          privacy: 'Continuando accetti la <a href="' + urlPrivacy + '" target="_blank">Privacy Policy</a> di Marni.',
+          scrivi: 'Come posso aiutarti oggi?' },
     en: { inizio: 'Hi, I am Marni Agent\nI am here to help you with orders, returns, products and style advice.',
-          privacy: 'By continuing you accept Marni\'s <a href="' + urlPrivacy + '" target="_blank">Privacy Policy</a>.' },
+          privacy: 'By continuing you accept Marni\'s <a href="' + urlPrivacy + '" target="_blank">Privacy Policy</a>.',
+          scrivi: 'How can I help you today?' },
     fr: { inizio: 'Bonjour, je suis Marni Agent\nJe suis l\u00e0 pour vous aider avec vos commandes, retours, produits et conseils de style.',
-          privacy: 'En continuant, vous acceptez la <a href="' + urlPrivacy + '" target="_blank">Politique de confidentialit\u00e9</a> de Marni.' },
+          privacy: 'En continuant, vous acceptez la <a href="' + urlPrivacy + '" target="_blank">Politique de confidentialit\u00e9</a> de Marni.',
+          scrivi: 'Comment puis-je vous aider aujourd\u2019hui\u00a0?' },
     de: { inizio: 'Hallo, ich bin Marni Agent\nIch helfe Ihnen bei Bestellungen, Retouren, Produkten und Stilfragen.',
-          privacy: 'Mit dem Fortfahren akzeptieren Sie die <a href="' + urlPrivacy + '" target="_blank">Datenschutzerkl\u00e4rung</a> von Marni.' },
+          privacy: 'Mit dem Fortfahren akzeptieren Sie die <a href="' + urlPrivacy + '" target="_blank">Datenschutzerkl\u00e4rung</a> von Marni.',
+          scrivi: 'Wie kann ich Ihnen heute helfen?' },
     es: { inizio: 'Hola, soy Marni Agent\nEstoy aqu\u00ed para ayudarte con pedidos, devoluciones, productos y consejos de estilo.',
-          privacy: 'Al continuar aceptas la <a href="' + urlPrivacy + '" target="_blank">Pol\u00edtica de privacidad</a> de Marni.' },
+          privacy: 'Al continuar aceptas la <a href="' + urlPrivacy + '" target="_blank">Pol\u00edtica de privacidad</a> de Marni.',
+          scrivi: '\u00bfC\u00f3mo puedo ayudarte hoy?' },
     ja: { inizio: '\u3053\u3093\u306b\u3061\u306f\u3001Marni Agent \u3067\u3059\n\u3054\u6ce8\u6587\u3001\u8fd4\u54c1\u3001\u5546\u54c1\u3001\u30b9\u30bf\u30a4\u30ea\u30f3\u30b0\u306e\u3054\u76f8\u8ac7\u3092\u627f\u308a\u307e\u3059\u3002',
-          privacy: '\u7d9a\u884c\u3059\u308b\u3068\u3001Marni \u306e<a href="' + urlPrivacy + '" target="_blank">\u30d7\u30e9\u30a4\u30d0\u30b7\u30fc\u30dd\u30ea\u30b7\u30fc</a>\u306b\u540c\u610f\u3057\u305f\u3082\u306e\u3068\u307f\u306a\u3055\u308c\u307e\u3059\u3002' },
+          privacy: '\u7d9a\u884c\u3059\u308b\u3068\u3001Marni \u306e<a href="' + urlPrivacy + '" target="_blank">\u30d7\u30e9\u30a4\u30d0\u30b7\u30fc\u30dd\u30ea\u30b7\u30fc</a>\u306b\u540c\u610f\u3057\u305f\u3082\u306e\u3068\u307f\u306a\u3055\u308c\u307e\u3059\u3002',
+          scrivi: '\u672c\u65e5\u306f\u3069\u306e\u3088\u3046\u306a\u3054\u7528\u4ef6\u3067\u3057\u3087\u3046\u304b\uff1f' },
     ko: { inizio: '\uc548\ub155\ud558\uc138\uc694, Marni Agent\uc785\ub2c8\ub2e4\n\uc8fc\ubb38, \ubc18\ud488, \uc81c\ud488, \uc2a4\ud0c0\uc77c \uc0c1\ub2f4\uc744 \ub3c4\uc640\ub4dc\ub9bd\ub2c8\ub2e4.',
-          privacy: '\uacc4\uc18d\ud558\uba74 Marni\uc758 <a href="' + urlPrivacy + '" target="_blank">\uac1c\uc778\uc815\ubcf4 \ucc98\ub9ac\ubc29\uce68</a>\uc5d0 \ub3d9\uc758\ud558\ub294 \uac83\uc73c\ub85c \uac04\uc8fc\ub429\ub2c8\ub2e4.' }
+          privacy: '\uacc4\uc18d\ud558\uba74 Marni\uc758 <a href="' + urlPrivacy + '" target="_blank">\uac1c\uc778\uc815\ubcf4 \ucc98\ub9ac\ubc29\uce68</a>\uc5d0 \ub3d9\uc758\ud558\ub294 \uac83\uc73c\ub85c \uac04\uc8fc\ub429\ub2c8\ub2e4.',
+          scrivi: '\uc624\ub298 \ubb34\uc5c7\uc744 \ub3c4\uc640\ub4dc\ub9b4\uae4c\uc694?' }
   };
   var t = TESTI[lingua] || TESTI.en;
   tag.setAttribute("start-message", t.inizio);
@@ -313,6 +320,11 @@ tag.setAttribute("limit-suggestion", "6");
   tag.setAttribute("privacy-url", urlPrivacy);
   tag.setAttribute("invert-privacy", "true");
   tag.setAttribute("hide-menu", "true");
+  // P231b (2026-10-08, AS-27324): il testo del campo di scrittura. Francesco
+  // indica input-placeholder; la frase e' la sua, tradotta nelle lingue del
+  // sito come gli altri testi - lasciata in italiano, un cliente giapponese
+  // leggerebbe "Come posso aiutarti oggi?" sotto la sua conversazione.
+  tag.setAttribute("input-placeholder", t.scrivi);
   // P197 (MCR-4644): "Assistente AI" e "Inizia la conversazione" erano scritti
   // a mano nel CSS, quindi restavano in italiano in tutte le lingue. Ora il
   // testo viaggia in due variabili CSS e il foglio le usa con content: var().
