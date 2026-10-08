@@ -238,21 +238,24 @@ tag.setAttribute("open", "false");
 tag.setAttribute("theme-style", "light");
 // P228 (2026-10-08): da dove arriva il foglio di stile del widget.
 // Algho: scrivendo "{base-url}/theme/marni.css" il player risolve da se'
-// l'indirizzo in base al frontend che lo ospita (dev server o produzione),
-// quindi il CSS viaggia col deploy del frontend Marni invece di stare su
-// GitHub Pages. Si prova questo; il precedente resta qui sotto e si rimette
-// cambiando una parola, nel caso vedessimo problemi.
+// l'indirizzo sul proprio host - staging-fe.alghoncloud.com in prova,
+// virtualassistant.alghoncloud.com in produzione - quindi il tema segue
+// l'ambiente senza che lo decidiamo noi. Verificato: il file c'e' su
+// entrambi, 200 text/css, ed e' il nostro foglio rifinito da loro (41
+// blocchi in piu' sul campo di scrittura, pulsante invia, header, lingue,
+// scrollbar). Si prova questo; il precedente resta qui sotto e torna
+// cambiando una parola, se vedessimo problemi.
 var CSS_TEMA = {
-  // nuovo, in prova: lo serve il frontend Marni da /theme/marni.css
-  frontend: "{base-url}/theme/marni.css",
-  // precedente, quello in uso fino a oggi: GitHub Pages, con cache busting
-  // a cinque minuti (il player tiene il foglio in cache per URL)
+  // nuovo, in prova: lo serve Algho insieme al player, per ambiente
+  algho: "{base-url}/theme/marni.css",
+  // precedente, in uso fino a oggi: GitHub Pages, con cache busting a
+  // cinque minuti (il player tiene il foglio in cache per URL)
   github: "https://loriscaputo17-arch.github.io/otb-integration/otb-agent-marni.css?v=" + Math.floor(Date.now()/300000)
 };
 // Per tornare come prima: "github". Durante le prove si puo' anche forzare
 // dalla barra degli indirizzi, senza ripubblicare nulla:
-//   ...?mr-css=github   oppure   ...?mr-css=frontend
-var CSS_SORGENTE = "frontend";
+//   ...?mr-css=github   oppure   ...?mr-css=algho
+var CSS_SORGENTE = "algho";
 (function () {
   try {
     var q = (location.search.match(/[?&]mr-css=([a-z]+)/i) || [])[1];
@@ -361,6 +364,52 @@ document.body.appendChild(script);
     tentativi++;
     var host = document.querySelector('algho-viewer');
     if (host && host.shadowRoot) { clearInterval(t); attacca(host.shadowRoot); }
+    else if (tentativi > 120) clearInterval(t);
+  }, 500);
+})();
+
+// ---------- 3b. Il "+" dentro la card: stile sempre con noi ----------
+// P228b (2026-10-08): le regole di .mr-piu stanno nel nostro foglio, ma il
+// tema ora puo' arrivare da Algho ({base-url}/theme/marni.css): la loro copia
+// e' il nostro foglio rifinito, e il "+" l'abbiamo aggiunto dopo, quindi
+// la' non c'e'. Senza queste regole il "+" resta un carattere qualunque in
+// mezzo alla card. Iniettandole nello shadow root valgono con qualunque tema,
+// e quando Algho le avra' nel loro foglio queste si limitano a ripeterle.
+// (.mr-card ha gia' position: relative in entrambi i fogli.)
+(function stilePiuSempre() {
+  var CSS_PIU =
+    '.mr-piu, .message-text .mr-piu {' +
+    '  display: block !important; user-select: none !important;' +
+    '  position: absolute !important; right: 8px !important;' +
+    /* la foto e' quadrata e occupa la parte alta della card: il "+" si
+       appoggia sul suo angolo in basso a destra, come nel Figma */
+    '  top: calc(100% / 1.618) !important;' +
+    '  width: 24px !important; height: 24px !important;' +
+    '  padding: 0 !important; margin: 0 !important;' +
+    '  border: none !important; border-radius: 0 !important;' +
+    '  background: #FFFFFF !important; color: var(--marni-ink, #141414) !important;' +
+    '  font-family: inherit !important; font-size: 16px !important;' +
+    '  line-height: 24px !important; text-align: center !important;' +
+    '  cursor: pointer !important; box-shadow: none !important; z-index: 2 !important;' +
+    '}' +
+    '.mr-piu:hover, .message-text .mr-piu:hover {' +
+    '  background: var(--marni-ink, #141414) !important; color: #FFFFFF !important;' +
+    '}';
+  var messo = false;
+  function metti(shadow) {
+    if (messo || !shadow) return;
+    if (shadow.querySelector('style[data-mr-piu]')) { messo = true; return; }
+    var st = document.createElement('style');
+    st.setAttribute('data-mr-piu', '1');
+    st.textContent = CSS_PIU;
+    shadow.appendChild(st);
+    messo = true;
+  }
+  var tentativi = 0;
+  var t = setInterval(function () {
+    tentativi++;
+    var host = document.querySelector('algho-viewer');
+    if (host && host.shadowRoot) { clearInterval(t); metti(host.shadowRoot); }
     else if (tentativi > 120) clearInterval(t);
   }, 500);
 })();
