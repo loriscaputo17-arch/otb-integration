@@ -1,0 +1,1563 @@
+/* marni.css - foglio di stile del widget assistente Marni.
+ *
+ * Questo file va servito dal frontend Marni all'indirizzo /theme/marni.css:
+ * nello script di integrazione il tema e' dichiarato come
+ *   plugin.setAttribute("theme-css", "{base-url}/theme/marni.css");
+ * e il player Algho risolve {base-url} sul frontend che lo ospita (dev server
+ * o produzione). Copia generata da otb-agent-marni.css, che resta la sorgente:
+ * quando cambia il foglio, va rigenerata anche questa.
+ */
+
+/* ============================================================
+   MARNI AGENT — tema del widget Algho
+   Allineato al Figma "Marni Agent by QuestIt v2" (pagina Atoms +
+   Flussi) — 2026-09-19.
+
+   Token (dal Figma):
+     font        Futura PT 400 · 14px / 20px · letter-spacing .21px
+     ink         #0D0D0D          testo, bullet dei messaggi bot
+     blu utente  #1100FF          testo e bullet dei messaggi cliente
+     muto        #7D7D7D          placeholder, prezzo barrato, note
+     bordo chip  #CCCCCC          chip, bottoni, box (hover #404040)
+     riga input  #262626          sola riga sotto il campo
+     riga header #000000          1px sotto l'header
+     verde       #1A7F37          solo stati positivi di fatto
+     arancio     #F28C28          chiuso / attenzione
+     rosso       #B42318          errore
+     raggio      0                nessun angolo arrotondato
+   Larghezza risposte: 360px mobile / 420px desktop.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500&display=swap');
+
+:host, :root, .chat, .chat-widget, .chat-panel-container {
+  --marni-ink:     #0D0D0D;
+  --marni-blu:     #1100FF;
+  --marni-muto:    #7D7D7D;
+  --marni-bordo:   #CCCCCC;
+  --marni-hover:   #404040;
+  --marni-riga:    #262626;
+  --marni-verde:   #1A7F37;
+  --marni-arancio: #F28C28;
+  --marni-rosso:   #B42318;
+  --marni-fondo:   #F2F2F2;
+  --marni-font:    futura-pt, 'Futura PT', 'Jost', 'Helvetica Neue', Arial, sans-serif;
+  --marni-fs:      14px;
+  --marni-lh:      20px;
+  --marni-ls:      .21px;
+}
+
+/* ---------- base ---------- */
+.chat, .chat *,
+.chat-widget, .chat-widget *,
+.chat-panel-container, .chat-panel-container * {
+  font-family: var(--marni-font) !important;
+  letter-spacing: var(--marni-ls) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.chat {
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+   border: 1px solid #E0E0E0 !important;
+}
+
+/* desktop (≥ 992px, stessa soglia del sito): rapporto 3:4 come chiede
+   MCR-4639, ma piu' grande del 60% del ticket: al 60% Loris l'ha trovata
+   piccola (28/09), quindi 75% dell'altezza della finestra e larghezza 3/4
+   (56vh). Prima di MCR-4639 era 33% x 82%. */
+  @media (min-width: 992px) {
+    .widget .chat, .widget.floating .chat {
+      width: 56vh !important;
+      height: 75vh !important;
+      margin: 0 !important;
+       right: 0 !important;
+        left: initial !important;
+        bottom: 0 !important;
+        top: initial !important;
+    }
+  }
+  /* desktop basso (finestra < 620px di altezza): tutta l'altezza */
+  @media (min-width: 992px) and (max-height: 620px) {
+    .widget .chat, .widget.floating .chat {
+      width: 100% !important;
+      height: 100% !important;
+      top: 0 !important; bottom: 0 !important; left: 0 !important;
+    }
+  }
+  /* mobile e tablet (< 992px): schermo intero */
+  @media (max-width: 991px) {
+    .widget .chat, .widget.floating .chat {
+      position: fixed !important;
+      width: auto !important;
+      height: auto !important;
+      left: 0 !important; right: 0 !important; top: 0 !important; bottom: 0 !important;
+      margin: 0 !important;
+      max-width: none !important;
+      max-height: none !important;
+    }
+  }
+
+.chat .chat-container,
+.chat-panel-container,
+.chat-panel-window,
+.chat-body {
+  background: #FFFFFF !important;
+}
+.chat-panel-container { border: 1px solid #E0E0E0 !important; }
+
+/* ---------- launcher (pallino con la M) ---------- */
+.chat-widget .chat-widget-container {
+  /* P192: fumetto Marni, SVG inline (niente dipendenza dagli static di marni.com,
+     il cui path contiene l'hash di build e puo' sparire a ogni deploy) */
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='387' height='377' viewBox='0 0 387 377' fill='none'><path d='M87.9353 309.334L3.1392 377L3.14383 0C-7.36929 0 12.6591 0 3.14383 0L383.859 0.0110004C364.823 -8.64264e-07 394.372 0.0110004 383.859 0.0110004L383.856 309.334C394.37 309.334 374.338 309.334 383.856 309.334H87.9353ZM74.7677 270.667H345.785V38.6679H41.2109V297.446L74.7677 270.667ZM174.462 135.334H212.534V174.001H174.462V135.334ZM98.3184 135.334H136.39V174.001H98.3184V135.334ZM250.605 135.334H288.677V174.001H250.605V135.334Z' fill='%230D0D0D'/></svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: 48% auto !important;
+  background-color: #FFFFFF !important;
+  border-radius: 100% !important;
+}
+.chat-widget .icon-widget,
+.chat-widget .animate-widget { display: none !important; }
+.chat-widget.chat-button { color: var(--marni-ink) !important; border-radius: 100% !important; overflow: hidden !important; }
+
+/* ============================================================
+   HEADER — "Assistente AI" a sinistra, icone a destra, riga nera
+   ============================================================ */
+.chat-body .header-container,
+.chat-body .header-chat {
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #E0E0E0 !important;
+  min-height: 68px !important;
+  padding: 0 24px !important;
+  box-sizing: border-box !important;
+  align-items: center !important;
+}
+.chat-body .header-chat { border-bottom: none !important; padding: 0 !important; align-items: center; position: relative !important;}
+.chat-body .header-title {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  color: var(--marni-ink) !important;
+  flex: 1 1 auto !important;
+  justify-content: space-between !important;
+  left: auto !important;
+  top: auto !important;
+   width: 93% !important;
+}
+.chat-body .header-title::before {
+  content: var(--mr-titolo, "Assistente AI");   /* P197: lo script la traduce */
+  font-size: var(--marni-fs);
+  line-height: var(--marni-lh);
+  color: var(--marni-ink);
+}
+.chat-body .header-close button,
+.chat-body .header-title button { background: transparent !important; color: var(--marni-ink) !important; }
+.chat-button svg, .header-chat svg { color: var(--marni-ink) !important; fill: currentColor !important; }
+/* "Ricomincia": pulsante testuale nell'header, prima della X (inserito dallo script) */
+.chat-body .header-close { display: flex !important; align-items: center !important; justify-content: flex-end !important; gap: 12px !important; pointer-events: none !important; }
+.chat-body .header-close > * { pointer-events: auto !important; }
+.chat-body .header-close .mr-ricomincia {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--marni-ink) !important;
+  padding: 0 !important;
+  color: var(--marni-ink) !important;
+  font-family: inherit !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+  letter-spacing: var(--marni-ls) !important;
+  cursor: pointer !important;
+   display: none !important;
+}
+.chat-body .header-close .mr-ricomincia:hover { color: var(--marni-hover) !important; border-color: var(--marni-hover) !important; }
+ul.bot-language { padding: 0 !important; margin: 0 !important; }
+/* chiusura: la X del Figma al posto dell'icona di riduzione */
+.chat-body .header-close .chat-button { display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 24px !important; height: 24px !important; padding: 0 !important; border: none !important; }
+.chat-body .header-close .chat-button svg { display: none !important; }
+.chat-body .header-close .chat-button::before { content: "\2715"; font-size: 15px; line-height: 1; color: var(--marni-ink); }
+/* lingua: il segno "文A" del Figma quando la lingua mostrata e' una sola */
+ul.bot-language li:only-child button img.flag-icon { display: none !important; }
+
+ul.bot-language li:only-child button::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 18px !important;
+  height: 18px !important;
+  flex-shrink: 0 !important;
+  background-color: var(--marni-ink) !important;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M9 16.5C4.85786 16.5 1.5 13.1421 1.5 9C1.5 4.85786 4.85786 1.5 9 1.5C13.1421 1.5 16.5 4.85786 16.5 9C16.5 13.1421 13.1421 16.5 9 16.5ZM7.28252 14.7506C6.56057 13.2194 6.11799 11.5307 6.02048 9.75H3.04642C3.3435 12.1324 5.03729 14.081 7.28252 14.7506ZM7.52302 9.75C7.63582 11.5791 8.15835 13.2973 9 14.814C9.84165 13.2973 10.3642 11.5791 10.477 9.75H7.52302ZM14.9536 9.75H11.9795C11.882 11.5307 11.4395 13.2194 10.7175 14.7506C12.9627 14.081 14.6565 12.1324 14.9536 9.75ZM3.04642 8.25H6.02048C6.11799 6.46933 6.56057 4.78055 7.28252 3.24942C5.03729 3.919 3.3435 5.86762 3.04642 8.25ZM7.52302 8.25H10.477C10.3642 6.42092 9.84165 4.70269 9 3.18599C8.15835 4.70269 7.63582 6.42092 7.52302 8.25ZM10.7175 3.24942C11.4395 4.78055 11.882 6.46933 11.9795 8.25H14.9536C14.6565 5.86762 12.9627 3.919 10.7175 3.24942Z'/%3E%3C/svg%3E") center / contain no-repeat !important;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M9 16.5C4.85786 16.5 1.5 13.1421 1.5 9C1.5 4.85786 4.85786 1.5 9 1.5C13.1421 1.5 16.5 4.85786 16.5 9C16.5 13.1421 13.1421 16.5 9 16.5ZM7.28252 14.7506C6.56057 13.2194 6.11799 11.5307 6.02048 9.75H3.04642C3.3435 12.1324 5.03729 14.081 7.28252 14.7506ZM7.52302 9.75C7.63582 11.5791 8.15835 13.2973 9 14.814C9.84165 13.2973 10.3642 11.5791 10.477 9.75H7.52302ZM14.9536 9.75H11.9795C11.882 11.5307 11.4395 13.2194 10.7175 14.7506C12.9627 14.081 14.6565 12.1324 14.9536 9.75ZM3.04642 8.25H6.02048C6.11799 6.46933 6.56057 4.78055 7.28252 3.24942C5.03729 3.919 3.3435 5.86762 3.04642 8.25ZM7.52302 8.25H10.477C10.3642 6.42092 9.84165 4.70269 9 3.18599C8.15835 4.70269 7.63582 6.42092 7.52302 8.25ZM10.7175 3.24942C11.4395 4.78055 11.882 6.46933 11.9795 8.25H14.9536C14.6565 5.86762 12.9627 3.919 10.7175 3.24942Z'/%3E%3C/svg%3E") center / contain no-repeat !important;
+}
+
+ul.bot-language li .flag-icon,
+.chat-panel-window li.language-item .flag-icon { border: none !important; }
+.chat-panel-window li.language-item .flag-text { font-size: var(--marni-fs) !important; color: var(--marni-ink) !important; }
+.language-title { color: var(--marni-ink) !important; }
+.chat-panel-container .language-filter .language-input-filter {
+  border: none !important;
+  border-bottom: 1px solid var(--marni-riga) !important;
+  padding: 8px 0 !important;
+}
+
+/* ============================================================
+   MESSAGGI — niente bolle. Bot: quadratino nero + testo.
+   Cliente: testo blu allineato a destra + quadratino blu.
+   ============================================================ */
+.container-message-display { background: #FFFFFF !important; padding: 12px 0 !important; }
+.message-date { display: none !important; }
+.message-timestamp { display: none !important; }
+
+.container-message-display .other-message .other-message-body,
+.container-message-display .myself-message .myself-message-body {
+  max-width: 100% !important;
+  padding: 0 !important;
+}
+.container-message-display .other-message .other-message-body .message-text,
+.container-message-display .myself-message .myself-message-body .message-text {
+  background: transparent !important;
+  color: var(--marni-ink) !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  border: none !important;
+  margin: 0 !important;
+}
+.container-message-display .other-message .other-message-body .message-text > .p {
+  position: relative !important;
+  padding: 12px 64px 12px 40px !important;
+}
+.container-message-display .other-message .other-message-body .message-text > .p::before {
+  content: "";
+  position: absolute;
+  left: 24px;
+  top: 19px;
+  width: 6px;
+  height: 6px;
+  background: var(--marni-ink);
+}
+.container-message-display .other-message .other-message-body .message-text > .p p { margin: 0 !important; }
+
+.container-message-display .myself-message { justify-content: flex-end !important; }
+.container-message-display .myself-message .myself-message-body .message-text > .p {
+  position: relative !important;
+  padding: 12px 40px 12px 64px !important;
+  text-align: right !important;
+  color: var(--marni-blu) !important;
+}
+.container-message-display .myself-message .myself-message-body .message-text > .p::after {
+  content: "";
+  position: absolute;
+  right: 24px;
+  top: 19px;
+  width: 6px;
+  height: 6px;
+  background: var(--marni-blu);
+}
+.container-message-display .myself-message .myself-message-body .message-text span { color: var(--marni-blu) !important; }
+.container-message-display .loading-message-body .message-content .message-waiting { background: transparent !important; }
+.container-message-display .other-message-multimedia:empty { display: none !important; }
+
+/* messaggio fatto solo di chip (continuazioni): niente quadratino */
+.container-message-display .other-message .message-text > .p:has(> .mr-chips:only-child)::before,
+.container-message-display .other-message .message-text > .p:has(> div > .mr-chips:only-child)::before { display: none !important; }
+
+/* icona "AI" accanto ai messaggi del bot: non prevista dal design */
+.container-message-display .other-message svg.icon-baloon,
+.container-message-display .other-message .other-message-avatar,
+.container-message-display .padding-left-common-content::before { display: none !important; }
+
+/* ============================================================
+   CHIP / SUGGERIMENTI — colonna, 1px #CCCCCC, 9px 12px
+   ============================================================ */
+/* I chip di Algho ("Completa il look", "Prodotti simili") arrivavano sovrapposti
+   al testo del messaggio: il widget li posiziona in assoluto. Qui restano nel
+   flusso, sotto la risposta, con sfondo pieno. (22/09) */
+.suggestion-list {
+  position: static !important;
+  inset: auto !important;
+  background: #FFFFFF !important;
+  list-style: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+  padding: 4px 40px 12px 20px !important;
+  margin: 0 !important;
+  background: transparent !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.suggestion-list .suggestion-item {
+  position: static !important;
+  display: block !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+.message-button button,
+.suggestion-item .suggestion-item-text {
+  display: inline-block !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 9px 12px !important;
+  border: 1px solid var(--marni-bordo) !important;
+  background: #FFFFFF !important;
+  color: var(--marni-ink) !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  transition: border-color .15s, color .15s !important;
+}
+.message-button button:not([disabled]):hover,
+.suggestion-item .suggestion-item-text:hover {
+  background: #FFFFFF !important;
+  border-color: var(--marni-hover) !important;
+  color: var(--marni-hover) !important;
+}
+.suggestion-item .suggestion-item-text .focused { color: inherit !important; }
+.focus:not(:has(svg)):focus-visible { box-shadow: none !important; }
+
+/* ============================================================
+   INPUT — nessun riquadro, solo la riga sotto
+   ============================================================ */
+
+.container-message-manager-component{
+  border-top: 1px solid #0000001f !important;
+  background: #FFFFFF !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+  width: auto !important;
+}
+
+.container-message-manager {
+  background: #FFFFFF !important;
+  margin-top: 0 !important;
+  padding: 20px 20px !important;
+}
+.toolbar-message-manager { padding: 0 !important; gap: 8px !important; margin-bottom: 0 !important; }
+.chat-body .toolbar-item .toolbar-message-keyboard {
+  border: none !important;
+  border-bottom: 1px solid var(--marni-riga) !important;
+  background: #FFFFFF !important;
+  padding: 4px 4px !important;
+  width: auto !important;
+}
+.chat-body .toolbar-item .toolbar-message-keyboard.focus-within { border-bottom-color: var(--marni-ink) !important; }
+.message-text-box input.message-input {
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+  background: transparent !important;
+}
+
+.chat-body .toolbar-item .toolbar-message-keyboard .message-text-box{
+  padding: 0 !important;
+}
+
+.message-text-box input.message-input::placeholder { color: var(--marni-muto) !important; opacity: 1 !important; }
+.toolbar-message-keyboard button svg { color: var(--marni-bordo) !important; }
+.toolbar-message-keyboard.focus-within button svg { color: var(--marni-ink) !important; }
+.menu-container .rounded svg { background: transparent !important; color: var(--marni-ink) !important; }
+.vue-js-switch .v-switch-label.v-right { color: #FFFFFF !important; }
+.vue-js-switch .v-switch-core { background: var(--marni-ink) !important; }
+.chat-panel-window .slider-range { background: var(--marni-ink) !important; }
+button.button { background: var(--marni-ink) !important; color: #FFFFFF !important; }
+
+/* ============================================================
+   SCHERMATA DI BENVENUTO
+   Testi e privacy arrivano dallo script (attributi start-message,
+   privacy-message, invert-privacy del viewer): qui solo il layout.
+   Tutto in flusso e centrato in verticale: niente posizioni assolute,
+   cosi' su schermi bassi i blocchi si impilano invece di sovrapporsi.
+   Ordine: titolo + sottotitolo (start-message) -> bottone -> privacy.
+   ============================================================ */
+.chat-player-start {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  padding: 32px 28px !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+  background: #FFFFFF !important;
+  overflow: auto !important;
+}
+/* Algho posiziona il blocco con top:50% + translateY(-50%): va azzerato,
+   altrimenti il contenuto sale sopra il bordo su schermi bassi */
+.chat-player-permission, .chat-player-go {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100% !important;
+  position: static !important;
+  top: auto !important; left: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+}
+.chat-player-permission::before, .chat-player-permission::after { content: none !important; }
+/* start-message: prima riga = titolo, dopo l'a-capo = sottotitolo */
+.chat-player-permission-text {
+  display: block !important;
+  white-space: pre-line !important;
+  max-width: 300px !important;
+  margin: 0 auto 32px !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+  text-align: center !important;
+}
+.chat-player-permission-text::first-line { font-size: 24px; line-height: 40px; }
+/* contenitore del bottone: in flusso, senza l'icona animata */
+.animated-icon-play-container {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  overflow: visible !important;
+}
+.animated-icon-play-container > svg,
+.animated-icon-play-container .animated-icon { display: none !important; }
+.chat-player-toolbar { padding: 0 !important; margin: 0 !important; gap: 1rem !important; width: 96% !important; justify-content: space-between !important; top: 10px !important; left: 10px !important; }
+.chat-player-toolbar button { margin-top: 0 !important; }
+
+/* pulsante "Inizia la conversazione": pieno nero, squadrato, in flusso */
+.chat-player-start .animated-button {
+  position: static !important;
+  transform: none !important;
+  width: 220px !important;
+  height: 40px !important;
+  margin: 0 !important;
+  border: 1px solid var(--marni-ink) !important;
+  background: var(--marni-ink) !important;
+  color: #FFFFFF !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  filter: none !important;
+}
+.chat-player-start .animated-button:hover { background: #333333 !important; }
+.chat-player-start .animated-button svg { display: none !important; }
+.chat-player-start .animated-button::after {
+  content: var(--mr-inizia, "Inizia la conversazione");   /* P197 */
+  font-size: var(--marni-fs);
+  line-height: var(--marni-lh);
+  color: #FFFFFF;
+}
+/* privacy (privacy-message, HTML): sotto il bottone grazie a invert-privacy */
+.chat-player-privacy {
+  max-width: 260px !important;
+  margin: 24px auto 0 !important;
+  font-size: 12px !important;
+  line-height: 18px !important;
+  color: var(--marni-ink) !important;
+}
+.chat-player-privacy p { font-size: 12px !important; line-height: 18px !important; color: var(--marni-ink) !important; margin: 0 !important; }
+.chat-player-privacy a { color: var(--marni-ink) !important; text-decoration: underline !important; }
+.chat-player-start::after { content: none !important; }
+@media (max-height: 620px) {
+  .chat-player-start { padding: 16px 20px !important; }
+  .chat-player-permission-text { margin-bottom: 20px !important; }
+  .chat-player-permission-text::first-line { font-size: 20px; line-height: 28px; }
+  .chat-player-privacy { margin-top: 16px !important; }
+}
+
+/* ============================================================
+   ANTEPRIMA LINK (card compatta del widget)
+   ============================================================ */
+ul.message-link-content {
+  position: relative !important;
+  list-style: none !important;
+  display: flex !important;
+  padding: 12px !important;
+  margin: 0 40px 8px 40px !important;
+  border: 1px solid var(--marni-bordo) !important;
+  background: #FFFFFF !important;
+  cursor: pointer !important;
+}
+ul.message-link-content:hover { border-color: var(--marni-hover) !important; }
+.message-link-content .link-image { max-width: 100% !important; }
+.message-link-content .message-link-items { border-bottom: none !important; }
+li.message-link-items { flex: 1 1 auto !important; min-width: 0 !important; list-style: none !important; margin: 0 !important; padding: 0 18px 0 0 !important; }
+.message-link-item {
+  display: grid !important;
+  grid-template-columns: 40px 1fr !important;
+  grid-template-areas: "img titolo" "img descrizione" !important;
+  align-items: center !important;
+  column-gap: 12px !important;
+  row-gap: 1px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+}
+.message-link-item .link-image { grid-area: img !important; height: 40px !important; object-fit: cover !important; background: var(--marni-fondo) !important; margin: 0 !important; display: block !important; }
+.message-link-item .link-title { grid-area: titolo !important; font-size: var(--marni-fs) !important; font-weight: 400 !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; margin: 0 !important; padding: 0 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+.message-link-item .link-description { grid-area: descrizione !important; font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin: 0 !important; padding: 0 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+li.message-link-anchor { position: static !important; list-style: none !important; margin: 0 !important; padding: 0 !important; }
+li.message-link-anchor button { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; margin: 0 !important; padding: 0 !important; border: none !important; background: transparent !important; cursor: pointer !important; font-size: 0 !important; z-index: 2 !important; }
+li.message-link-anchor button .focused, li.message-link-anchor button span, li.message-link-anchor button a { display: none !important; }
+ul.message-link-content::after {
+  content: "";
+  position: absolute !important;
+  right: 14px !important;
+  top: 50% !important;
+  width: 7px !important;
+  height: 7px !important;
+  margin-top: -4px !important;
+  border-right: 1px solid var(--marni-ink) !important;
+  border-bottom: 1px solid var(--marni-ink) !important;
+  transform: rotate(-45deg) !important;
+  pointer-events: none !important;
+}
+
+/* ============================================================
+   COMPONENTI DELLE RISPOSTE (classi mr-* generate dai flussi n8n)
+   Il componente Figma porta il nome della classe: .mr-card, .mr-chip…
+   ============================================================ */
+.mr-wrap, .message-text .mr-wrap {
+  width: 100% !important;
+  max-width: 420px !important;
+  box-sizing: border-box !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+}
+
+/* testi */
+.mr-intro, .message-text .mr-intro { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; margin: 0 0 8px !important; }
+.mr-titolo, .message-text .mr-titolo { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; margin-bottom: 2px !important; }
+.mr-sottotitolo, .message-text .mr-sottotitolo { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin-bottom: 8px !important; }
+/* nota, motivazione e sezione: stesso stile del testo del messaggio (mr-titolo) */
+.mr-nota, .message-text .mr-nota,
+.mr-motivazione, .message-text .mr-motivazione { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; margin-bottom: 10px !important; }
+.mr-nota--stile, .message-text .mr-nota--stile { color: var(--marni-ink) !important; font-style: normal !important; }
+.mr-criteri, .message-text .mr-criteri { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin: 0 0 12px !important; }
+.mr-avviso, .message-text .mr-avviso { font-size: 12px !important; line-height: 16px !important; color: var(--marni-arancio) !important; margin-bottom: 8px !important; }
+.mr-successo, .message-text .mr-successo { font-size: var(--marni-fs) !important; color: var(--marni-verde) !important; font-weight: 400 !important; margin-bottom: 8px !important; }
+.mr-errore, .message-text .mr-errore { font-size: var(--marni-fs) !important; color: var(--marni-rosso) !important; margin-bottom: 8px !important; }
+.mr-scorri, .message-text .mr-scorri { display: none !important; }
+
+/* griglia prodotti: 3 colonne, 2px di spazio (ProductGrid del Figma) */
+.mr-carosello, .message-text .mr-carosello {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  overflow: visible !important;
+  padding: 0 0 12px !important;
+  /* a tutta larghezza dentro la chat: il paragrafo ha 40px di rientro a
+     sinistra e 64px a destra, e la bolla altri 46px (max-width: 100% - 46px).
+     Con -120px la terza colonna finiva fuori dal pannello (MCR-4589). */
+  margin: 0 -110px 0 -40px !important;
+}
+@media (max-width: 400px) {
+  .mr-carosello, .message-text .mr-carosello { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+/* P223 (2026-10-07): il "+" sopra la foto, come nel Figma.
+   La foto e il bottone stanno in un contenitore posizionato: il "+" si appoggia
+   in basso a destra sull'immagine. E' un gesto sulla card - aggiunge al
+   carrello - mentre le options in fondo restano le azioni per continuare a
+   parlare. */
+/* niente contenitore in piu': il "+" si appoggia dentro la card, che e'
+   gia' il riquadro della foto. Un div per scheda, in modalita' widget, e'
+   peso che non ci possiamo permettere. */
+.mr-card, .message-text .mr-card { position: relative !important; }
+/* e' uno <span>, non un <button>: il player i bottoni li rifiuta */
+.mr-piu, .message-text .mr-piu {
+  display: block !important;
+  user-select: none !important;
+  position: absolute !important;
+  right: 8px !important;
+  /* la foto e' quadrata e occupa la parte alta della card: il "+" si appoggia
+     sul suo angolo in basso a destra, come nel Figma */
+  top: calc(100% / 1.618) !important;
+  width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: #FFFFFF !important;
+  color: var(--marni-ink) !important;
+  font-family: inherit !important;
+  font-size: 16px !important;
+  line-height: 24px !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  z-index: 2 !important;
+}
+.mr-piu:hover, .message-text .mr-piu:hover { background: var(--marni-ink) !important; color: #FFFFFF !important; }
+
+/* card prodotto */
+.mr-card, .message-text .mr-card {
+  flex: none !important;
+  width: auto !important;
+  min-width: 0 !important;
+  background: #FFFFFF !important;
+  border: none !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative;
+}
+.mr-card-foto, .message-text .mr-card-foto {
+  display: block !important;
+  padding: 0 !important;
+  background: var(--marni-fondo) !important;
+  aspect-ratio: 164 / 218 !important;
+  overflow: hidden !important;
+}
+.mr-card-foto img, .message-text .mr-card-foto img { width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; margin: 0 !important; }
+.mr-card-corpo, .message-text .mr-card-corpo { background: #FFFFFF !important; padding: 12px 16px 16px 8px !important; }
+.mr-card-link, .message-text .mr-card-link { text-decoration: none !important; color: var(--marni-ink) !important; }
+.mr-card-nome, .message-text .mr-card-nome {
+  font-size: var(--marni-fs) !important;
+  line-height: 16.8px !important;
+  min-height: 34px !important;
+  color: var(--marni-ink) !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+.mr-card-prezzo, .message-text .mr-card-prezzo { font-size: var(--marni-fs) !important; line-height: 16.8px !important; color: var(--marni-ink) !important; font-weight: 400 !important; margin: 8px 0 0 !important; display: flex !important; flex-wrap: wrap !important; gap: 8px !important; align-items: baseline !important; }
+.mr-card-prezzo del, .mr-card-prezzo .mr-prezzo-pieno, .message-text .mr-card-prezzo .mr-prezzo-pieno { font-size: var(--marni-fs) !important; color: var(--marni-muto) !important; text-decoration: line-through !important; font-weight: 400 !important; margin: 0 !important; }
+.mr-card-prezzo .mr-prezzo-scontato, .message-text .mr-card-prezzo .mr-prezzo-scontato { color: var(--marni-ink) !important; }
+.mr-card-sconto, .message-text .mr-card-sconto { color: #27AE61 !important; letter-spacing: .28px !important; }
+.mr-card-nota, .message-text .mr-card-nota { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin-top: 4px !important; }
+.mr-card-desc, .message-text .mr-card-desc { display: none !important; }
+/* componenti dismessi il 21/09 (tolti dai flussi; qui per sicurezza) */
+.mr-card-perche, .message-text .mr-card-perche, .mr-criteri--sotto, .message-text .mr-criteri--sotto { display: none !important; }
+.mr-card-perche, .message-text .mr-card-perche { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; padding: 6px 0 0 !important; }
+.mr-card-categoria, .message-text .mr-card-categoria { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; background: transparent !important; padding: 0 0 4px !important; text-align: left !important; }
+
+.mr-card-categoria{
+  display: none !important;
+}
+
+/* azioni: fuori dalle card restano nel flusso (erano in absolute e finivano
+   sopra il testo: le CTA "spaccate" di MCR-4591) */
+.mr-azioni, .message-text .mr-azioni {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  position: static !important;
+  margin: 12px 0 4px !important;
+}
+.mr-azioni--spaziate, .message-text .mr-azioni--spaziate { flex-direction: column !important; align-items: flex-start !important; }
+/* sulla card resta il solo carrello: angolo in alto a destra, sopra la foto.
+   Prima era ancorato al 30% dell'altezza e finiva sul nome del capo (MCR-4589). */
+.mr-card .mr-azioni, .message-text .mr-card .mr-azioni {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  bottom: auto !important;
+  left: auto !important;
+  margin: 0 !important;
+  z-index: 2 !important;
+}
+/* bottoni di azione testuali ("Boutique a Milano", "Parla con un operatore"):
+   erano senza stile e uscivano come bottoni di sistema */
+.mr-btn-azione, .message-text .mr-btn-azione {
+  display: inline-block !important;
+  width: auto !important;
+  min-width: 0 !important;
+  padding: 9px 12px !important;
+  background: #FFFFFF !important;
+  color: var(--marni-ink) !important;
+  border: 1px solid var(--marni-bordo) !important;
+  border-radius: 0 !important;
+  font-family: inherit !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  letter-spacing: var(--marni-ls) !important;
+  text-align: left !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+}
+.mr-btn-azione:hover, .message-text .mr-btn-azione:hover { border-color: var(--marni-hover) !important; color: var(--marni-hover) !important; background: #FFFFFF !important; }
+.mr-btn-azione--principale, .message-text .mr-btn-azione--principale { border-color: var(--marni-ink) !important; }
+.mr-btn, .message-text .mr-btn {
+  flex: 0 0 auto !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #FFFFFF !important;
+  border: 1px solid var(--marni-bordo) !important;
+  cursor: pointer !important;
+  font-size: var(--marni-fs) !important;
+  line-height: 18px !important;
+  color: var(--marni-ink) !important;
+  transition: border-color .15s !important;
+}
+.mr-btn:hover, .message-text .mr-btn:hover { background: #FFFFFF !important; border-color: var(--marni-hover) !important; }
+/* Icone delle azioni sulle card: gli emoji dei flussi vengono nascosti e
+   sostituiti da tratti monocromi coerenti con il Figma. Dal 21/09 sulle card
+   resta il solo bottone carrello (Dettagli e Preferiti sono tolti dai flussi):
+   l'icona base e' la borsa; le regole nth-of-type restano per compatibilita'. */
+.mr-azioni .mr-btn, .message-text .mr-azioni .mr-btn { font-size: 0 !important; line-height: 0 !important; position: relative !important; }
+.mr-azioni .mr-btn::before, .message-text .mr-azioni .mr-btn::before {
+  content: "" !important; display: block !important; width: 16px !important; height: 16px !important;
+  background: currentColor !important;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M5 8h14l-1 12H6L5 8z'/><path d='M9 8V6a3 3 0 0 1 6 0v2'/></svg>") center / contain no-repeat !important; mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M5 8h14l-1 12H6L5 8z'/><path d='M9 8V6a3 3 0 0 1 6 0v2'/></svg>") center / contain no-repeat !important;
+}
+.mr-azioni .mr-btn:nth-of-type(2)::before, .message-text .mr-azioni .mr-btn:nth-of-type(2)::before { -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M5 8h14l-1 12H6L5 8z'/><path d='M9 8V6a3 3 0 0 1 6 0v2'/></svg>") !important; mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M5 8h14l-1 12H6L5 8z'/><path d='M9 8V6a3 3 0 0 1 6 0v2'/></svg>") !important; }
+.mr-azioni .mr-btn:nth-of-type(3)::before, .message-text .mr-azioni .mr-btn:nth-of-type(3)::before { -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M12 20s-7-4.4-7-9.5A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 2.5C19 15.6 12 20 12 20z'/></svg>") !important; mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6'><path d='M12 20s-7-4.4-7-9.5A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 2.5C19 15.6 12 20 12 20z'/></svg>") !important; }
+.mr-azioni .mr-btn-azione, .message-text .mr-azioni .mr-btn-azione { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; }
+.mr-azioni .mr-btn-azione::before { content: none !important; }
+.mr-btn--scuro, .message-text .mr-btn--scuro { background: #FFFFFF !important; border-color: var(--marni-ink) !important; color: var(--marni-ink) !important; }
+.mr-btn--scuro:hover, .message-text .mr-btn--scuro:hover { background: var(--marni-ink) !important; color: #FFFFFF !important; }
+
+/* pulsante largo (azione principale) */
+.mr-btn-largo, .message-text .mr-btn-largo {
+  display: block !important;
+  width: 100% !important;
+  padding: 10px 12px !important;
+  background: var(--marni-ink) !important;
+  color: #FFFFFF !important;
+  border: 1px solid var(--marni-ink) !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  cursor: pointer !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  box-sizing: border-box !important;
+}
+.mr-btn-largo:hover, .message-text .mr-btn-largo:hover { background: #333333 !important; }
+.mr-btn-largo--chiaro, .message-text .mr-btn-largo--chiaro { background: #FFFFFF !important; color: var(--marni-ink) !important; border: 1px solid var(--marni-ink) !important; }
+.mr-btn-largo--chiaro:hover, .message-text .mr-btn-largo--chiaro:hover { background: #FFFFFF !important; border-color: var(--marni-hover) !important; color: var(--marni-hover) !important; }
+
+/* pulsante testuale (inviti) = chip */
+.mr-btn-testo, .message-text .mr-btn-testo {
+  padding: 9px 12px !important;
+  background: #FFFFFF !important;
+  color: var(--marni-ink) !important;
+  border: 1px solid var(--marni-bordo) !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  cursor: pointer !important;
+}
+.mr-btn-testo:hover, .message-text .mr-btn-testo:hover { border-color: var(--marni-hover) !important; color: var(--marni-hover) !important; background: #FFFFFF !important; }
+
+/* taglie: caselle quadrate */
+.mr-taglie, .message-text .mr-taglie { display: flex !important; flex-wrap: wrap !important; gap: 8px !important; margin: 4px 0 12px !important; }
+.mr-taglia, .message-text .mr-taglia {
+  min-width: 32px !important;
+  padding: 6px 8px !important;
+  background: #FFFFFF !important;
+  color: var(--marni-ink) !important;
+  border: 1px solid var(--marni-bordo) !important;
+  font-size: var(--marni-fs) !important;
+  line-height: 18px !important;
+  text-align: center !important;
+  cursor: pointer !important;
+}
+.mr-taglia:hover, .message-text .mr-taglia:hover { border-color: var(--marni-hover) !important; background: #FFFFFF !important; }
+.mr-taglia--esaurita, .message-text .mr-taglia--esaurita { color: var(--marni-bordo) !important; border-color: #E5E5E5 !important; cursor: default !important; text-decoration: line-through !important; }
+
+/* chip: colonna, come nel Figma (AI_Prompt) */
+.mr-chips, .message-text .mr-chips { display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; margin: 8px 0 4px !important; }
+.mr-chip, .message-text .mr-chip {
+  padding: 9px 12px !important;
+  background: #FFFFFF !important;
+  color: var(--marni-ink) !important;
+  border: 1px solid var(--marni-bordo) !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  text-align: left !important;
+  cursor: pointer !important;
+}
+.mr-chip:hover, .message-text .mr-chip:hover { border-color: var(--marni-hover) !important; color: var(--marni-hover) !important; background: #FFFFFF !important; }
+.mr-chip--scuro, .message-text .mr-chip--scuro { background: var(--marni-ink) !important; color: #FFFFFF !important; border-color: var(--marni-ink) !important; }
+/* chip di affinamento (colori/prezzi): in riga, quelle sono filtri */
+.mr-chips--filtri, .message-text .mr-chips--filtri { flex-direction: row !important; flex-wrap: wrap !important; }
+
+/* riquadri e sezioni */
+.mr-box, .message-text .mr-box { border: 1px solid var(--marni-bordo) !important; padding: 12px !important; margin-bottom: 12px !important; background: #FFFFFF !important; }
+.mr-box--pulito, .message-text .mr-box--pulito { border: none !important; padding: 0 !important; }
+.mr-sezione, .message-text .mr-sezione { border-top: 1px solid #E5E5E5 !important; margin-top: 12px !important; padding-top: 12px !important; font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; }
+
+/* righe (carrello, ordini) */
+.mr-riga, .message-text .mr-riga { display: flex !important; gap: 12px !important; align-items: center !important; padding: 12px 0 !important; border-bottom: 1px solid #E5E5E5 !important; }
+.mr-riga:last-child, .message-text .mr-riga:last-child { border-bottom: none !important; }
+.mr-riga-foto, .message-text .mr-riga-foto { width: 56px !important; height: 72px !important; object-fit: cover !important; background: var(--marni-fondo) !important; flex: 0 0 56px !important; }
+.mr-riga-testo, .message-text .mr-riga-testo { flex: 1 1 auto !important; min-width: 0 !important; }
+.mr-riga-nome, .message-text .mr-riga-nome { font-size: var(--marni-fs) !important; line-height: 16.8px !important; color: var(--marni-ink) !important; }
+.mr-riga-meta, .message-text .mr-riga-meta { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin-top: 4px !important; }
+.mr-riga-prezzo, .message-text .mr-riga-prezzo { font-size: var(--marni-fs) !important; color: var(--marni-ink) !important; font-weight: 400 !important; white-space: nowrap !important; }
+.mr-totale, .message-text .mr-totale { display: flex !important; justify-content: space-between !important; align-items: baseline !important; padding: 12px 0 !important; border-top: 1px solid var(--marni-ink) !important; font-size: var(--marni-fs) !important; color: var(--marni-ink) !important; }
+.mr-totale b, .message-text .mr-totale b { font-weight: 400 !important; }
+
+/* stati ordine: testo + quadratino colorato, niente pillole */
+.mr-stato, .message-text .mr-stato { display: inline-flex !important; align-items: center !important; gap: 8px !important; padding: 0 !important; background: transparent !important; font-size: 12px !important; line-height: 16px !important; font-weight: 400 !important; }
+.mr-stato::before, .message-text .mr-stato::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+.mr-stato--corso, .message-text .mr-stato--corso { color: var(--marni-arancio) !important; }
+.mr-stato--spedito, .message-text .mr-stato--spedito { color: var(--marni-ink) !important; }
+.mr-stato--consegnato, .message-text .mr-stato--consegnato { color: var(--marni-verde) !important; }
+.mr-stato--annullato, .message-text .mr-stato--annullato { color: var(--marni-rosso) !important; }
+
+/* negozi */
+.mr-negozio, .message-text .mr-negozio { border: 1px solid var(--marni-bordo) !important; padding: 12px !important; margin-bottom: 8px !important; background: #FFFFFF !important; position: relative !important; }
+.mr-negozio-nome, .message-text .mr-negozio-nome { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; font-weight: 400 !important; padding-right: 24px !important; }
+.mr-negozio-distanza, .message-text .mr-negozio-distanza { font-size: var(--marni-fs) !important; color: var(--marni-ink) !important; float: none !important; display: block !important; margin-top: 8px !important; }
+.mr-negozio-indirizzo, .message-text .mr-negozio-indirizzo { font-size: var(--marni-fs) !important; color: var(--marni-ink) !important; line-height: var(--marni-lh) !important; margin-top: 4px !important; }
+.mr-negozio-aperto, .mr-negozio-chiuso, .message-text .mr-negozio-aperto, .message-text .mr-negozio-chiuso { display: inline-flex !important; align-items: center !important; gap: 8px !important; font-size: 12px !important; line-height: 16px !important; margin-top: 8px !important; }
+.mr-negozio-aperto::before, .mr-negozio-chiuso::before, .message-text .mr-negozio-aperto::before, .message-text .mr-negozio-chiuso::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+.mr-negozio-aperto, .message-text .mr-negozio-aperto { color: var(--marni-verde) !important; }
+.mr-negozio-chiuso, .message-text .mr-negozio-chiuso { color: var(--marni-arancio) !important; }
+/* azioni negozio: "Apri in Maps" + "Chiama" affiancati */
+.mr-negozio-azioni, .message-text .mr-negozio-azioni { display: flex !important; flex-wrap: wrap !important; gap: 8px !important; margin-top: 12px !important; }
+.mr-btn-mappa, .message-text .mr-btn-mappa {
+  display: inline-block !important;
+  padding: 7px 12px !important;
+  background: var(--marni-ink) !important;
+  color: #FFFFFF !important;
+  border: 1px solid var(--marni-ink) !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+}
+.mr-btn-mappa:hover, .message-text .mr-btn-mappa:hover { background: #333333 !important; color: #FFFFFF !important; }
+.mr-btn-mappa--chiaro, .message-text .mr-btn-mappa--chiaro { background: #FFFFFF !important; color: var(--marni-ink) !important; }
+.mr-btn-mappa--chiaro:hover, .message-text .mr-btn-mappa--chiaro:hover { background: #FFFFFF !important; color: var(--marni-hover) !important; border-color: var(--marni-hover) !important; }
+
+/* palette armocromia */
+.mr-box-palette, .message-text .mr-box-palette { font-size: 12px !important; line-height: 18px !important; color: var(--marni-ink) !important; margin: 0 0 12px !important; padding: 12px !important; background: #FFFFFF !important; border: 1px solid var(--marni-bordo) !important; border-left: 1px solid var(--marni-bordo) !important; }
+
+/* link dentro le risposte */
+.message-text a { color: var(--marni-ink) !important; text-decoration: underline !important; }
+.message-text .mr-card a, .message-text .mr-card-link, .message-text .mr-card-link:visited, .message-text .mr-card-nome { color: var(--marni-ink) !important; text-decoration: none !important; }
+.message-text img { border-radius: 0 !important; }
+
+/* ============================================================
+   PANNELLO DAL BASSO — scelta taglia / colore (Figma "add to cart")
+   Il blocco delle scelte viene spostato qui dallo script: la chat
+   resta in ombra e la scelta e' sempre sopra la piega, anche su mobile.
+   ============================================================ */
+.mr-sheet-velo {
+  position: absolute !important;
+  inset: 0 !important;
+  background: rgba(13, 13, 13, .45) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity .18s ease !important;
+  z-index: 40 !important;
+}
+.mr-sheet-velo--aperto { opacity: 1 !important; pointer-events: auto !important; }
+.mr-sheet {
+  position: absolute !important;
+  left: 0 !important; right: 0 !important; bottom: 0 !important;
+  max-height: 70% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #FFFFFF !important;
+  border-top: 1px solid var(--marni-bordo) !important;
+  transform: translateY(100%) !important;
+  transition: transform .22s ease !important;
+  z-index: 41 !important;
+}
+.mr-sheet--aperto { transform: translateY(0) !important; }
+.mr-sheet-testa {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 16px 20px 12px !important;
+  border-bottom: 1px solid #E5E5E5 !important;
+}
+.mr-sheet-titolo {
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+}
+.mr-sheet-chiudi {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+  color: var(--marni-ink) !important;
+  cursor: pointer !important;
+}
+.mr-sheet-corpo { overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; }
+/* le scelte diventano righe a tutta larghezza, come nel Figma */
+.mr-sheet-elenco { display: block !important; margin: 0 !important; padding: 0 !important; }
+.mr-sheet-elenco .mr-taglia,
+.mr-sheet-elenco .mr-colore-riga {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 14px 20px !important;
+  border: none !important;
+  border-bottom: 1px solid #F0F0F0 !important;
+  background: #FFFFFF !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+  text-align: left !important;
+  cursor: pointer !important;
+}
+.mr-sheet-elenco .mr-taglia:hover,
+.mr-sheet-elenco .mr-colore-riga:hover { background: #F7F7F7 !important; border-color: #F0F0F0 !important; }
+.mr-sheet-elenco .mr-taglia--esaurita {
+  color: var(--marni-muto) !important;
+  text-decoration: none !important;
+  cursor: default !important;
+}
+.mr-sheet-elenco .mr-taglia--esaurita:hover { background: #FFFFFF !important; }
+.mr-sheet-elenco .mr-etichetta { display: none !important; }
+.mr-sheet-piede { padding: 14px 20px 18px !important; border-top: 1px solid #E5E5E5 !important; text-align: right !important; }
+.mr-sheet-guida {
+  font-size: 12px !important;
+  line-height: 16px !important;
+  color: var(--marni-ink) !important;
+  text-decoration: underline !important;
+}
+/* nel messaggio resta il bottone per riaprire la scelta */
+.mr-sheet-riapri { margin-top: 8px !important; }
+
+/* ============================================================
+   PANNELLO LINGUA (Figma "Seleziona lingua")
+   Titolo, campo Filtra con la sola riga, elenco con pastiglia
+   grigia e nome della lingua: niente bordi ne' pillole colorate.
+   ============================================================ */
+.chat-panel-window .language-title,
+.chat-panel-container .language-title {
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+  font-weight: 400 !important;
+  padding: 16px 20px !important;
+  border-bottom: 1px solid #E5E5E5 !important;
+}
+.chat-panel-container .language-filter { padding: 8px 20px 0 !important; }   /* P199: margini laterali come le righe */
+.chat-panel-container .language-filter .language-input-filter {
+  border: none !important;
+  border-bottom: 1px solid var(--marni-riga) !important;
+  padding: 10px 0 !important;
+  font-size: var(--marni-fs) !important;
+  color: var(--marni-ink) !important;
+}
+.chat-panel-window ul.bot-language li.language-item,
+.chat-panel-window li.language-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 10px 20px !important;
+  background: #FFFFFF !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+.chat-panel-window li.language-item:hover { background: #F7F7F7 !important; }
+.chat-panel-window li.language-item .flag-icon {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 100% !important;
+  overflow: hidden !important;
+  background: #E5E5E5 !important;
+  border: none !important;
+  flex: 0 0 34px !important;
+}
+.chat-panel-window li.language-item .flag-text {
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+}
+
+/* P194: quel bordo e' gia' trasparente ma occupa 2px. Toglierlo all'hover
+   faceva rimpicciolire la riga di 4px e spostava in su tutto l'elenco:
+   resta 2px in tutti e due gli stati, semplicemente invisibile. */
+.chat-panel-window li.language-item .flag-text,
+.chat-panel-window li.language-item .flag-text:hover{
+   border: 2px solid transparent !important;
+}
+
+.chat-panel-container .language-filter{
+   height: auto !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* Figma: card-azione, totale carrello, freccia Maps, scheda ordine    */
+/* ------------------------------------------------------------------ */
+
+/* card-azione: riquadro con miniatura, testo e freccia (Resi.png, carrello) */
+.mr-card-azione, .message-text .mr-card-azione {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 12px !important;
+  margin: 12px 0 !important;
+  background: #FFFFFF !important;
+  border: 1px solid var(--marni-bordo) !important;
+  border-radius: 0 !important;
+  color: var(--marni-ink) !important;
+  font-family: inherit !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  text-align: left !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+}
+.mr-card-azione:hover, .message-text .mr-card-azione:hover { border-color: var(--marni-hover) !important; background: #FFFFFF !important; color: var(--marni-ink) !important; }
+.mr-card-azione-foto, .message-text .mr-card-azione-foto {
+  width: 48px !important;
+  height: 48px !important;
+  flex: 0 0 48px !important;
+  object-fit: cover !important;
+  background: var(--marni-fondo) !important;
+  display: block !important;
+}
+.mr-card-azione-testo, .message-text .mr-card-azione-testo {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+}
+.mr-card-azione-freccia, .message-text .mr-card-azione-freccia {
+  flex: 0 0 auto !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  color: var(--marni-ink) !important;
+}
+
+/* totale del carrello: riquadro con bordo, una riga sola (Risposta dell'addtocart) */
+.mr-box-totale, .message-text .mr-box-totale {
+  display: block !important;
+  border: 1px solid var(--marni-bordo) !important;
+  background: #FFFFFF !important;
+  padding: 12px !important;
+  margin: 12px 0 !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+}
+.mr-box-totale .mr-forte, .message-text .mr-box-totale .mr-forte { font-weight: 400 !important; white-space: nowrap !important; }
+
+/* negozi: freccia "apri in Maps" in alto a destra della scheda */
+.mr-negozio-maps, .message-text .mr-negozio-maps {
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+  width: 20px !important;
+  height: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  color: var(--marni-ink) !important;
+  text-decoration: none !important;
+}
+.mr-negozio-maps:hover, .message-text .mr-negozio-maps:hover { color: var(--marni-hover) !important; }
+
+/* scheda ordine (Ordini.png): titolo fuori, riquadro con stato, consegna, tracking, totale */
+.mr-ordine-titolo, .message-text .mr-ordine-titolo { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; }
+.mr-ordine-data, .message-text .mr-ordine-data { font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; margin-bottom: 8px !important; }
+.mr-ordine-box, .message-text .mr-ordine-box {
+  border: 1px solid var(--marni-bordo) !important;
+  background: #FFFFFF !important;
+  padding: 12px !important;
+  margin-bottom: 12px !important;
+}
+.mr-ordine-stato, .message-text .mr-ordine-stato { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; margin-bottom: 8px !important; }
+.mr-ordine-consegna, .message-text .mr-ordine-consegna {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 8px !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-arancio) !important;
+  margin-bottom: 8px !important;
+}
+.mr-ordine-consegna::before, .message-text .mr-ordine-consegna::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; position: relative; top: -2px; }
+.mr-ordine-consegna--ok, .message-text .mr-ordine-consegna--ok { color: var(--marni-verde) !important; }
+.mr-ordine-consegna--ko, .message-text .mr-ordine-consegna--ko { color: var(--marni-rosso) !important; }
+.mr-ordine-tracking, .message-text .mr-ordine-tracking {
+  display: inline-block !important;
+  font-size: var(--marni-fs) !important;
+  line-height: var(--marni-lh) !important;
+  color: var(--marni-ink) !important;
+  text-decoration: underline !important;
+  margin-bottom: 8px !important;
+}
+.mr-ordine-tracking:hover, .message-text .mr-ordine-tracking:hover { color: var(--marni-hover) !important; }
+.mr-ordine-totale, .message-text .mr-ordine-totale { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; }
+/* capo annullato dentro la griglia di un ordine */
+.mr-card--annullata, .message-text .mr-card--annullata { opacity: 0.55 !important; }
+
+/* etichetta Flagship/Outlet nella scheda negozio: discreta, non una pillola */
+.mr-tag, .message-text .mr-tag { display: inline-block !important; margin-top: 4px !important; font-size: 12px !important; line-height: 16px !important; color: var(--marni-muto) !important; background: transparent !important; border: none !important; padding: 0 !important; }
+.mr-tag--rosso, .message-text .mr-tag--rosso { color: var(--marni-rosso) !important; }
+/* indirizzo su due righe (P80) */
+.mr-negozio-indirizzo br { line-height: inherit; }
+
+/* carrello: testata, messaggio vuoto e pulsante di rimozione (erano senza stile) */
+.mr-carrello, .message-text .mr-carrello { display: block !important; }
+.mr-carrello-testata, .message-text .mr-carrello-testata { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; margin-bottom: 8px !important; }
+.mr-vuoto, .message-text .mr-vuoto { font-size: var(--marni-fs) !important; line-height: var(--marni-lh) !important; color: var(--marni-ink) !important; }
+.mr-rimuovi, .message-text .mr-rimuovi {
+  position: absolute !important;
+  top: 6px !important;
+  right: 6px !important;
+  width: 22px !important;
+  height: 22px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid var(--marni-bordo) !important;
+  border-radius: 0 !important;
+  color: var(--marni-ink) !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+}
+.mr-rimuovi:hover, .message-text .mr-rimuovi:hover { border-color: var(--marni-hover) !important; color: var(--marni-hover) !important; background: #FFFFFF !important; }
+
+/* schermata di apertura: stessa testata della chat (Figma "ChatsuPDP") —
+   titolo a sinistra, lingua e impostazioni a destra, X di chiusura in fondo.
+   Prima il titolo non c'era e la chiusura stava al centro. */
+.chat-panel-container .chat-player-toolbar { justify-content: flex-start !important; gap: 14px !important; padding-right: 34px !important; box-sizing: border-box !important; }
+.chat-panel-container .chat-player-toolbar::before { content: var(--mr-titolo, "Assistente AI"); font-size: var(--marni-fs); line-height: var(--marni-lh); color: var(--marni-ink); margin-right: auto; }
+.chat-panel-container .chat-player-header-close { display: flex !important; justify-content: flex-end !important; padding: 10px 10px 0 0 !important; }
+.chat-panel-container .chat-player-header-close .chat-button { width: 24px !important; height: 24px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; padding: 0 !important; border: none !important; }
+.chat-panel-container .chat-player-header-close .chat-button svg { display: none !important; }
+.chat-panel-container .chat-player-header-close .chat-button::before { content: "\2715"; font-size: 15px; line-height: 1; color: var(--marni-ink); }
+/* metadati invisibili: KPI (intento + argomento Odity) e stato della conversazione (P182) */
+.mr-meta, .message-text .mr-meta,
+.mr-stato, .message-text .mr-stato { display: none !important; }
+
+/* ---------- NPS a fine chat (P185) ---------- */
+.mr-nps{margin-top:14px;padding-top:12px;border-top:1px solid #ececec}
+.mr-nps-domanda{font-size:13px;color:#111;line-height:1.5;margin:0 0 8px}
+.mr-nps-voti{display:flex;flex-wrap:wrap;gap:4px}
+.mr-nps-voto{min-width:30px;padding:6px 0;background:#fff;border:1px solid #ddd;border-radius:2px;
+  font-size:12px;color:#111;cursor:pointer;flex:1 1 30px;text-align:center;font-family:inherit}
+.mr-nps-voto:hover{background:#111;color:#fff;border-color:#111}
+.mr-nps-scala{font-size:11px;color:#999;margin:6px 0 0}
+.mr-nps-grazie{font-size:13px;color:#1a7f37;margin:8px 0 0}
+
+
+/* ============================================================
+   P188 (2026-09-28) — RITOCCHI RICHIESTI DA MARNI
+   Header: via la parola "Ricomincia", il mappamondo passa a destra
+   accanto al segno di riduzione, e le due icone diventano quelle del
+   Figma. Card prodotto: il carrello scende nell'angolo in basso a
+   destra e diventa il "+". Pannello lingua: foglio dal basso come nel
+   mockup, con la riga scelta evidenziata e la spunta.
+   ============================================================ */
+
+/* --- header: lo spazio per le due icone lo fa gia' il width:93% qui sopra --- */
+
+/* il mappamondo lo disegna la regola qui sopra (mask sull'icona lingua):
+   qui resta solo la bandierina da nascondere */
+ul.bot-language li button img.flag-icon { display: none !important; }
+
+/* riduzione: il segno "−" del Figma al posto della X */
+.chat-body .header-close .chat-button::before {
+  content: "" !important;
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22 viewBox=%220 0 18 18%22 fill=%22none%22><path d=%22M3.75 8.25V9.75H14.25V8.25H3.75Z%22 fill=%22%230D0D0D%22/></svg>") center / 18px 18px no-repeat !important;
+  font-size: 0 !important;
+}
+
+/* --- card prodotto: il "+" in basso a destra sopra la foto --- */
+.mr-card .mr-azioni, .message-text .mr-card .mr-azioni {
+  top: auto !important;
+  bottom: 8px !important;
+  right: 8px !important;
+}
+.mr-card .mr-azioni .mr-btn, .message-text .mr-card .mr-azioni .mr-btn {
+  width: 28px !important;
+  height: 28px !important;
+  border: none !important;
+  background: transparent !important;
+}
+.mr-card .mr-azioni .mr-btn::before, .message-text .mr-card .mr-azioni .mr-btn::before {
+  -webkit-mask: none !important;
+  mask: none !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22 viewBox=%220 0 18 18%22 fill=%22none%22><rect width=%2218%22 height=%2218%22 fill=%22white%22/><path d=%22M8.25 8.25V3.75H9.75V8.25H14.25V9.75H9.75V14.25H8.25V9.75H3.75V8.25H8.25Z%22 fill=%22%230D0D0D%22/></svg>") center / 18px 18px no-repeat !important;
+}
+
+/* --- pannello lingua: foglio dal basso, come nel mockup --- */
+.chat-panel-container {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  top: auto !important;
+  width: 100% !important;
+  max-height: 72% !important;
+  background: #FFFFFF !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, .12) !important;
+  overflow: auto !important;
+  z-index: 30 !important;
+}
+/* nel mockup non c'e' il campo di ricerca: l'elenco parte subito */
+.chat-panel-container .language-filter { display: none !important; }
+.chat-panel-window .language-title,
+.chat-panel-container .language-title {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 18px 20px !important;
+  border-bottom: none !important;
+}
+/* la riga scelta: fondo tenue e spunta a destra */
+.chat-panel-window ul.bot-language li.language-item.active,
+.chat-panel-window ul.bot-language li.language-item.selected,
+.chat-panel-window ul.bot-language li.language-item[aria-selected="true"],
+.chat-panel-window ul.bot-language li.language-item.language-item--selected,
+.chat-panel-window ul.bot-language li.language-item[class*="select"] {
+  background: #F4F4F4 !important;
+}
+.chat-panel-window ul.bot-language li.language-item.active::after,
+.chat-panel-window ul.bot-language li.language-item.selected::after,
+.chat-panel-window ul.bot-language li.language-item[aria-selected="true"]::after,
+.chat-panel-window ul.bot-language li.language-item.language-item--selected::after,
+.chat-panel-window ul.bot-language li.language-item[class*="select"]::after {
+  content: "" !important;
+  margin-left: auto !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22 viewBox=%220 0 18 18%22 fill=%22none%22><path d=%22M7 12.2l-3.2-3.2 1.06-1.06L7 10.08l6.14-6.14L14.2 5 7 12.2z%22 fill=%22%230D0D0D%22/></svg>") center / 18px 18px no-repeat !important;
+}
+.chat-panel-window ul.bot-language li.language-item { padding: 12px 20px !important; }
+
+/* nota nell'intro della ricerca (P190): "ho preferito qualcosa di piu' elegante" */
+.mr-intro .mr-nota-inline, .message-text .mr-intro .mr-nota-inline {
+  display: block !important;
+  margin-top: 4px !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+  color: #777777 !important;
+}
+
+
+/* ============================================================
+   P191 (2026-09-28) — secondo giro di ritocchi
+   ============================================================ */
+
+/* 1. "Ricomincia" torna visibile (era nascosto dal commit precedente) */
+.chat-body .header-close .mr-ricomincia { display: inline-block !important; }
+
+/* 2. mappamondo e segno di riduzione sulla stessa riga: prima il mondo
+      scendeva di un paio di pixel perche' la voce della lingua e' un <li>
+      con la sua altezza di riga */
+.chat-body .header-title ul.bot-language,
+.chat-body .header-title ul.bot-language li,
+.chat-body .header-title ul.bot-language li button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 24px !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 3. niente alone azzurro quando si clicca nel campo di scrittura:
+      e' un box-shadow del player, non un bordo */
+.toolbar-message-keyboard,
+.toolbar-message-keyboard.focus-within,
+.toolbar-message-keyboard:focus-within,
+.container-message-manager .toolbar-message-keyboard {
+  box-shadow: none !important;
+  outline: none !important;
+}
+.message-input:focus, .message-input:focus-visible { outline: none !important; box-shadow: none !important; }
+
+/* 4. la freccia di invio: quella del Figma, grigia */
+.toolbar-message-keyboard .chat-button svg { display: none !important; }
+.toolbar-message-keyboard .chat-button::before {
+  content: "" !important;
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22 viewBox=%220 0 18 18%22 fill=%22none%22><path d=%22M9.74965 5.87132V15H8.24965V5.87132L4.22668 9.8943L3.16602 8.83365L8.99965 3L14.8333 8.83365L13.7726 9.8943L9.74965 5.87132Z%22 fill=%22%238E8E8E%22/></svg>") center / 18px 18px no-repeat !important;
+}
+
+/* 5. pannello lingua: la ✕ in alto a destra e la barra di ricerca di nuovo visibile */
+.chat-panel-container .language-filter { display: block !important; }
+.chat-panel-window .language-title,
+.chat-panel-container .language-title { position: relative !important; }
+.chat-panel-container .language-title button,
+.chat-panel-container .language-title [class*="close"],
+.chat-panel-container > [class*="close"],
+.chat-panel-window > [class*="close"],
+.mr-lingua-chiudi {
+  position: absolute !important;
+  top: 14px !important;
+  right: 16px !important;
+  width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  border: none !important;
+  background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22 viewBox=%220 0 18 18%22 fill=%22none%22><path d=%22M4.7 3.64L9 7.94l4.3-4.3 1.06 1.06L10.06 9l4.3 4.3-1.06 1.06L9 10.06l-4.3 4.3-1.06-1.06L7.94 9l-4.3-4.3 1.06-1.06z%22 fill=%22%230D0D0D%22/></svg>") center / 18px 18px no-repeat !important;
+  font-size: 0 !important;
+  cursor: pointer !important;
+  z-index: 2 !important;
+}
+.chat-panel-container .language-title button svg,
+.chat-panel-container .language-title [class*="close"] svg { display: none !important; }
+
+/* 6. all'hover la riga della lingua non si deve muovere: prima il bordo
+      compariva solo al passaggio e spostava tutto di un pixel */
+.chat-panel-window ul.bot-language li.language-item,
+.chat-panel-window ul.bot-language li.language-item:hover,
+.chat-panel-window ul.bot-language li.language-item:focus,
+.chat-panel-window ul.bot-language li.language-item * ,
+.chat-panel-window ul.bot-language li.language-item *:hover {
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+.chat-panel-window ul.bot-language li.language-item { transition: background-color .12s ease !important; }
+
+/* ============================================================
+   P193 (28/09/2026) — la schermata di avvio non e' il pannello lingua
+   Il player usa .chat-panel-container per due cose diverse: il pannello
+   delle lingue (foglio dal basso) e la schermata di avvio (privacy +
+   "Inizia la conversazione"). Le regole del foglio dal basso scritte con
+   P188/P191 si applicavano anche alla schermata di avvio: da qui il
+   contenuto spostato in basso, la ✕ comparsa a sinistra e le icone
+   fuori riga. Lo script marca il pannello con .mr-avvio / .mr-lingue.
+   ============================================================ */
+
+/* 1. avvio: il pannello riempie la finestra della chat, niente foglio dal basso */
+.chat-panel-container.mr-avvio {
+  top: 0 !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+  width: 100% !important; height: 100% !important; max-height: none !important;
+  border: none !important; border-radius: 0 !important; box-shadow: none !important;
+  overflow: hidden !important;
+}
+.chat-panel-container.mr-avvio .chat-panel-window { top: 56px !important; bottom: 0 !important; height: auto !important; }
+/* stesse regole per i browser che arrivano prima dello script */
+.chat-panel-container:has(.chat-player-start) {
+  top: 0 !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+  width: 100% !important; height: 100% !important; max-height: none !important;
+  border: none !important; border-radius: 0 !important; box-shadow: none !important;
+  overflow: hidden !important;
+}
+.chat-panel-container:has(.chat-player-start) .chat-panel-window { top: 56px !important; bottom: 0 !important; height: auto !important; }
+
+/* 2. la ✕ di troppo a sinistra: e' .chat-panel-close, che la regola di P191
+      ([class*="close"]) aveva trasformato in una seconda chiusura. Sulla
+      schermata di avvio la chiusura e' quella in alto a destra. */
+.chat-panel-container.mr-avvio .chat-panel-close,
+.chat-panel-container:has(.chat-player-start) .chat-panel-close { display: none !important; }
+
+/* 3. mappamondo, impostazioni e ✕ sulla stessa riga */
+.chat-panel-container .chat-player-toolbar {
+  top: 14px !important; height: 24px !important; align-items: center !important;
+}
+.chat-panel-container .chat-player-toolbar > *,
+.chat-panel-container .chat-player-toolbar .bot-language,
+.chat-panel-container .chat-player-toolbar .bot-language li,
+.chat-panel-container .chat-player-toolbar button {
+  height: 24px !important; margin: 0 !important; padding: 0 !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  position: relative !important; top: 0 !important;   /* il player spinge il mappamondo giu' di 3px */
+}
+.chat-panel-container .chat-player-header-close { top: 14px !important; padding: 0 !important; }
+.chat-panel-container .chat-player-header-close .chat-button { height: 24px !important; margin: 0 !important; }
+
+/* 4. il disclaimer va sopra il campo di scrittura, non sotto */
+.chat-body { display: flex !important; flex-direction: column !important; }
+.chat-body > .header-container { order: 1 !important; }
+.chat-body > .container-message-display { order: 2 !important; }
+.chat-body > .container-warning-message { order: 3 !important; }
+.chat-body > .container-message-manager-component { order: 4 !important; }
+
+/* 5. il mappamondo non deve finire sopra "Ricomincia": lo script misura il
+      bottone (la parola cambia con la lingua) e scrive --mr-ricomincia-w */
+.chat-body .header-title {
+  box-sizing: border-box !important;
+  padding-right: var(--mr-ricomincia-w, 0px) !important;
+}
+
+/* ============================================================
+   P194 (28/09/2026) — rifiniture sulla schermata di avvio e sul
+   pannello delle lingue
+   ============================================================ */
+
+/* 1. due "mondi" nella schermata di avvio: quello di destra e' il bottone
+      "Impostazioni" del player, che ha l'icona di un mappamondo. Nella chat
+      non c'e', quindi via anche qui: resta solo la lingua. */
+.chat-panel-container .chat-player-toolbar > button.chat-button[aria-label="Impostazioni"],
+.chat-panel-container .chat-player-toolbar > button.chat-button[content="Impostazioni"] { display: none !important; }
+
+/* 2. la chiusura della schermata di avvio e' la stessa della chat: il trattino */
+.chat-panel-container .chat-player-header-close .chat-button::before {
+  content: "" !important;
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2218%22 height=%2218%22 viewBox=%220 0 18 18%22 fill=%22none%22><path d=%22M3.75 8.25V9.75H14.25V8.25H3.75Z%22 fill=%22%230D0D0D%22/></svg>") center / 18px 18px no-repeat !important;
+  font-size: 0 !important;
+}
+
+/* 3. la ✕ del pannello lingua finiva a sinistra: il player le mette un "left"
+      suo, e con left e right insieme vince left. Va azzerato. */
+.chat-panel-container .language-title button,
+.chat-panel-container .language-title [class*="close"],
+.chat-panel-container > [class*="close"],
+.chat-panel-window > [class*="close"],
+.mr-lingua-chiudi { left: auto !important; }
+
+/* 4. hover sulla riga della lingua: non deve muovere niente. Le regole di P191
+      erano scritte su "ul.bot-language li.language-item", ma la lista non ha
+      sempre quella classe sull'ul: qui si parte da li.language-item. */
+.chat-panel-window li.language-item,
+.chat-panel-container li.language-item {
+  box-sizing: border-box !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 10px 20px !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+.chat-panel-window li.language-item:hover,
+.chat-panel-window li.language-item:focus,
+.chat-panel-window li.language-item:focus-visible,
+.chat-panel-window li.language-item:active,
+.chat-panel-container li.language-item:hover,
+.chat-panel-container li.language-item:focus,
+.chat-panel-container li.language-item:focus-visible,
+.chat-panel-container li.language-item:active {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 10px 20px !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+.chat-panel-window li.language-item *,
+.chat-panel-window li.language-item *:hover,
+.chat-panel-window li.language-item *:focus,
+.chat-panel-window li.language-item *:active,
+.chat-panel-container li.language-item *,
+.chat-panel-container li.language-item *:hover,
+.chat-panel-container li.language-item *:focus,
+.chat-panel-container li.language-item *:active {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  transform: none !important;
+}
+
+/* 5. la ✕ del pannello lingua e' 40x40 dentro una casella di 24: rientra */
+.chat-panel-container > .chat-panel-close .chat-button,
+.chat-panel-container > .chat-panel-close .chat-button svg {
+  width: 24px !important; height: 24px !important; padding: 0 !important; margin: 0 !important;
+}
+.chat-panel-container > .chat-panel-close .chat-button { display: flex !important; align-items: center !important; justify-content: center !important; }
+
+/* ============================================================
+   P195 (28/09/2026) — un header solo nella schermata di avvio
+   La schermata di avvio ha il suo header (etichetta, mappamondo, chiusura),
+   ma quello della chat resta sotto e si vede lo stesso: da qui i due
+   mappamondi e le due chiusure sovrapposte. Finche' c'e' l'avvio, l'header
+   della chat sparisce.
+   ============================================================ */
+.chat-body.mr-avvio-attivo > .header-container { display: none !important; }
+.chat-body:has(~ .chat-panel .chat-player-start) > .header-container,
+.chat-container:has(.chat-player-start) .chat-body > .header-container { display: none !important; }
+
+/* ============================================================
+   P197 (28/09/2026) — "Ricomincia" non si riusciva a cliccare
+   .header-title e' assoluto e largo quanto l'header: essendo posizionato
+   si disegna SOPRA il bottone (che e' statico) e si mangiava il clic.
+   Misurato: al centro di .mr-ricomincia l'elemento in cima era .header-title.
+   Ora il titolo non intercetta il mouse, solo il mappamondo che contiene.
+   ============================================================ */
+.chat-body .header-chat .header-title { pointer-events: none !important; }
+.chat-body .header-chat .header-title ul.bot-language,
+.chat-body .header-chat .header-title ul.bot-language * { pointer-events: auto !important; }
+.chat-body .header-chat .header-close { position: relative !important; z-index: 4 !important; }
+
+/* ============================================================
+   P198 (28/09/2026, MCR-4641) — il drawer della lingua come nel mockup
+   "Drawer fills 70% of the container. Close button on the header of the
+   drawer. Smaller flags. Inside scroll. Hover interaction."
+   ============================================================ */
+.chat-panel-container.mr-lingue {
+  top: auto !important; bottom: 0 !important;
+  height: 70% !important; max-height: 70% !important;
+  border-radius: 12px 12px 0 0 !important;
+  overflow: hidden !important;
+}
+.chat-panel-container.mr-lingue .chat-panel-window {
+  top: 56px !important; bottom: 0 !important; height: auto !important;
+  left: 0 !important; right: 0 !important; overflow-y: auto !important;
+}
+/* header del drawer: titolo a sinistra, ✕ a destra (la ✕ e' gia' posizionata
+   dalle regole di P194) */
+.chat-panel-container.mr-lingue .language-title {
+  padding: 16px 20px !important; border-bottom: 1px solid #E5E5E5 !important;
+}
+/* righe: bandierine piu' piccole, riga piu' bassa */
+.chat-panel-window li.language-item { padding: 8px 20px !important; gap: 12px !important; }
+.chat-panel-window li.language-item > button {
+  width: 100% !important; display: flex !important; align-items: center !important;
+  justify-content: flex-start !important; position: relative !important; background: transparent !important;
+}
+.chat-panel-window li.language-item .flag-icon {
+  width: 24px !important; height: 24px !important; flex: 0 0 24px !important;
+}
+/* lingua in uso: fondo grigio e spunta a destra (lo script marca la riga) */
+.chat-panel-window li.language-item.mr-lingua-attiva { background: #F2F2F2 !important; }
+.chat-panel-window li.language-item.mr-lingua-attiva > button::after {
+  content: "" !important; position: absolute !important; right: 0 !important;
+  top: 50% !important; transform: translateY(-50%) !important;
+  width: 16px !important; height: 16px !important;
+  background: url("data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 16 16%22 fill=%22none%22><path d=%22M6.5 11.56 2.44 7.5 3.5 6.44 6.5 9.44 12.5 3.44 13.56 4.5z%22 fill=%22%230D0D0D%22/></svg>") center / 16px 16px no-repeat !important;
+}
+
+/* ============================================================
+   P201 (28/09/2026, MCR-4652) — la schermata iniziale respira
+   Il disclaimer occupava 106px su 525 di chat (misurato) e schiacciava il
+   messaggio di benvenuto, che restava in una colonna di poche righe con la
+   barra di scorrimento gia' all'apertura. Stesso testo, meno ingombro:
+   corpo piu' piccolo, allineato a sinistra come il resto della chat.
+   ============================================================ */
+.chat-body > .container-warning-message {
+  font-size: 11px !important;
+  line-height: 14px !important;
+  text-align: left !important;
+  padding: 6px 0 !important;
+  margin: 0 20px 8px !important;
+  color: #8E8E8E !important;
+}
+.chat-body > .container-warning-message p { font-size: 11px !important; line-height: 14px !important; margin: 0 !important; }
+/* l'elenco dei messaggi si prende tutto lo spazio che resta */
+.chat-body > .container-message-display { flex: 1 1 auto !important; min-height: 0 !important; }

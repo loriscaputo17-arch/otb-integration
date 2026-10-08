@@ -236,7 +236,30 @@ tag.setAttribute("audio", "false");
 tag.setAttribute("voice", "false");
 tag.setAttribute("open", "false");
 tag.setAttribute("theme-style", "light");
-tag.setAttribute("theme-css", "https://loriscaputo17-arch.github.io/otb-integration/otb-agent-marni.css?v=" + Math.floor(Date.now()/300000));
+// P228 (2026-10-08): da dove arriva il foglio di stile del widget.
+// Algho: scrivendo "{base-url}/theme/marni.css" il player risolve da se'
+// l'indirizzo in base al frontend che lo ospita (dev server o produzione),
+// quindi il CSS viaggia col deploy del frontend Marni invece di stare su
+// GitHub Pages. Si prova questo; il precedente resta qui sotto e si rimette
+// cambiando una parola, nel caso vedessimo problemi.
+var CSS_TEMA = {
+  // nuovo, in prova: lo serve il frontend Marni da /theme/marni.css
+  frontend: "{base-url}/theme/marni.css",
+  // precedente, quello in uso fino a oggi: GitHub Pages, con cache busting
+  // a cinque minuti (il player tiene il foglio in cache per URL)
+  github: "https://loriscaputo17-arch.github.io/otb-integration/otb-agent-marni.css?v=" + Math.floor(Date.now()/300000)
+};
+// Per tornare come prima: "github". Durante le prove si puo' anche forzare
+// dalla barra degli indirizzi, senza ripubblicare nulla:
+//   ...?mr-css=github   oppure   ...?mr-css=frontend
+var CSS_SORGENTE = "frontend";
+(function () {
+  try {
+    var q = (location.search.match(/[?&]mr-css=([a-z]+)/i) || [])[1];
+    if (q && CSS_TEMA[q.toLowerCase()]) CSS_SORGENTE = q.toLowerCase();
+  } catch (e) {}
+})();
+tag.setAttribute("theme-css", CSS_TEMA[CSS_SORGENTE] || CSS_TEMA.github);
 tag.setAttribute("widget-border-color", "#000000");
 tag.setAttribute("z-index", "9999");
 // P227 (2026-10-08): quante azioni suggerite mostrare prima di nascondere il
