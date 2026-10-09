@@ -221,15 +221,12 @@ var AMBIENTE = (function () {
                 h === 'localhost' || h === '127.0.0.1' || /\.localhost$|\.test$/.test(h);
   return diProva
     ? { nome: 'staging',
-        bot: 'c1cf74305c4c42d8eaf9f2ec1d72375d',
+        // P237 (2026-10-09): bot nuovo su staging, come richiesto.
+        // Il precedente era c1cf74305c4c42d8eaf9f2ec1d72375d.
+        bot: 'd365d904d2357c42159c4ef242a86980',
         player: 'https://staging-fe.alghoncloud.com/algho-viewer.min.js' }
     : { nome: 'produzione',
-        // P237 (2026-10-09): bot di produzione nuovo. Che fosse quello di
-        // produzione e non quello di prova non l'ho dedotto dal nome: la sua
-        // prima chiamata ai nostri webhook, stamattina alle 07:44, arrivava da
-        // virtualassistant.alghoncloud.com (il player di produzione) con i
-        // form "PROD -". Il precedente era 4b3aed95d31a91a91e0b4d53e80abb93.
-        bot: 'd365d904d2357c42159c4ef242a86980',
+        bot: '4b3aed95d31a91a91e0b4d53e80abb93',
         player: 'https://virtualassistant.alghoncloud.com/algho-viewer.min.js' };
 })();
 
