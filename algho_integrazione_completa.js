@@ -224,7 +224,13 @@ var AMBIENTE = (function () {
         // P237 (2026-10-09): bot nuovo su staging, come richiesto.
         // Il precedente era c1cf74305c4c42d8eaf9f2ec1d72375d.
         bot: 'd365d904d2357c42159c4ef242a86980',
-        player: 'https://staging-fe.alghoncloud.com/algho-viewer.min.js' }
+        // P237b (2026-10-09): il bot d365d904 vive sul player di PRODUZIONE.
+        // Verificato aprendo la stessa pagina sui due player: su staging-fe
+        // esce una pagina vuota, su virtualassistant la chat si apre (il bot
+        // si chiama "Marni_1"). Tenendo qui staging-fe, su staging.marni.com
+        // il widget non comparirebbe affatto: il player e il bot devono
+        // stare nello stesso ambiente.
+        player: 'https://virtualassistant.alghoncloud.com/algho-viewer.min.js' }
     : { nome: 'produzione',
         bot: '4b3aed95d31a91a91e0b4d53e80abb93',
         player: 'https://virtualassistant.alghoncloud.com/algho-viewer.min.js' };
