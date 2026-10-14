@@ -1434,6 +1434,105 @@ document.body.appendChild(script);
   }, 500);
 })();
 
+// ---------- PREFERITI IN CHAT (P235, 14/10/2026) ----------
+// Storico del 14/10: il flusso v2 rispondeva "♥ Ho aggiunto <altro capo> ai tuoi preferiti"
+// senza salvare niente. Ora il flusso v3-preferiti trova il capo e risponde con
+// <span class="mr-preferiti" data-pid="...">: il salvataggio lo fa questo script con la
+// sessione del sito (Wishlist-AddProduct, POST pid: funziona anche da ospite, misurato) e
+// "salvato" compare solo se il sito risponde success. "Mostrami i preferiti" arriva come
+// <div class="mr-riepilogo-preferiti">, riempito da Wishlist-GetWishlist con "Rimuovi"
+// (Wishlist-RemoveProduct, POST pid).
+(function PreferitiInChat() {
+  var T = {
+    it: { salva: 'Salva nei preferiti', salvato: '♥ Salvato nei preferiti', errore: 'Non sono riuscito a salvarlo: riprova dal cuore sulla scheda del capo.', vuoto: 'Non hai ancora capi nei preferiti.', rimuovi: 'Rimuovi', tolto: 'Rimosso dai preferiti.', carica: 'Non riesco a leggere i preferiti in questo momento.' },
+    en: { salva: 'Save to wishlist', salvato: '♥ Saved to your wishlist', errore: 'I could not save it: please use the heart on the product page.', vuoto: 'Your wishlist is empty.', rimuovi: 'Remove', tolto: 'Removed from your wishlist.', carica: 'I cannot read your wishlist right now.' },
+    fr: { salva: 'Ajouter aux favoris', salvato: '♥ Ajouté aux favoris', errore: 'Je n’ai pas pu l’ajouter : utilisez le cœur sur la fiche produit.', vuoto: 'Vos favoris sont vides.', rimuovi: 'Supprimer', tolto: 'Supprimé des favoris.', carica: 'Je ne peux pas lire vos favoris pour le moment.' },
+    de: { salva: 'Zur Wunschliste', salvato: '♥ Zur Wunschliste hinzugefügt', errore: 'Speichern nicht möglich: bitte das Herz auf der Produktseite verwenden.', vuoto: 'Ihre Wunschliste ist leer.', rimuovi: 'Entfernen', tolto: 'Von der Wunschliste entfernt.', carica: 'Die Wunschliste kann gerade nicht gelesen werden.' },
+    es: { salva: 'Guardar en favoritos', salvato: '♥ Guardado en favoritos', errore: 'No he podido guardarlo: usa el corazón de la ficha del producto.', vuoto: 'Tu lista de favoritos está vacía.', rimuovi: 'Eliminar', tolto: 'Eliminado de favoritos.', carica: 'No puedo leer tus favoritos en este momento.' },
+    ja: { salva: 'ウィッシュリストに追加', salvato: '♥ ウィッシュリストに追加しました', errore: '追加できませんでした。商品ページのハートをお使いください。', vuoto: 'ウィッシュリストは空です。', rimuovi: '削除', tolto: '削除しました。', carica: '現在ウィッシュリストを読み込めません。' },
+    ko: { salva: '위시리스트에 추가', salvato: '♥ 위시리스트에 추가되었습니다', errore: '추가하지 못했습니다. 상품 페이지의 하트를 이용해 주세요.', vuoto: '위시리스트가 비어 있습니다.', rimuovi: '삭제', tolto: '삭제되었습니다.', carica: '지금은 위시리스트를 불러올 수 없습니다.' }
+  };
+  var L = T[linguaPagina()] || T.en;
+  var CSS = '.mr-preferiti{cursor:pointer}' +
+    '.mr-preferiti--fatto{cursor:default;opacity:.85}' +
+    '.mr-riepilogo-preferiti{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}' +
+    '.mr-pref-capo{width:31%;min-width:90px;font-size:12px;line-height:16px}' +
+    '.mr-pref-capo img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}' +
+    '.mr-pref-capo .mr-rimuovi{cursor:pointer;text-decoration:underline;display:inline-block;margin-top:4px}' +
+    '.mr-pref-esito{width:100%;font-size:12px;padding:4px 0}';
+  function endpoint(nome) {
+    var base = '/on/demandware.store/Sites-MarniEU-Site/it_IT/';
+    try {
+      var a = document.querySelector('a[href*="/on/demandware.store/"], form[action*="/on/demandware.store/"], [data-add*="/on/demandware.store/"]');
+      var href = a ? (a.getAttribute('href') || a.getAttribute('action') || a.getAttribute('data-add') || '') : '';
+      var m = href.match(/(\/on\/demandware\.store\/Sites-[^/]+\/[^/]+\/)/);
+      if (m) base = m[1];
+    } catch (e) {}
+    return base + nome;
+  }
+  function posta(nome, pid) {
+    return fetch(endpoint(nome), { method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+      body: 'pid=' + encodeURIComponent(pid) + (nome === 'Wishlist-AddProduct' ? '&optionId=&optionVal=' : '') })
+      .then(function (r) { return r.ok ? r.json().catch(function () { return {}; }) : null; })
+      .then(function (j) { return !!j && j.success !== false && j.error !== true; })
+      .catch(function () { return false; });
+  }
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function aggiornaIcona() { try { if (window.jQuery) window.jQuery('body').trigger('wishlist:update'); } catch (e) {} }
+  function disegna(box, esito) {
+    box.textContent = '';
+    if (esito) box.appendChild(el('div', 'mr-pref-esito', esito));
+    return fetch(endpoint('Wishlist-GetWishlist'), { credentials: 'include' }).then(function (r) { return r.json(); }).then(function (j) {
+      var it = Array.isArray(j.item) ? j.item : [];
+      if (!it.length) { box.appendChild(el('div', 'mr-pref-esito', L.vuoto)); return; }
+      var loc = (location.pathname.match(/^\/([a-z]{2}-[a-z]{2})\//i) || [null, 'it-it'])[1];
+      it.forEach(function (x) {
+        var c = el('div', 'mr-pref-capo');
+        var a = document.createElement('a'); a.href = '/' + loc + '/' + encodeURIComponent(x.sku) + '.html'; a.target = '_blank';
+        if (x.img) { var i = el('img'); i.src = x.img; i.alt = x.name || x.sku; a.appendChild(i); }
+        c.appendChild(a);
+        var rm = el('span', 'mr-rimuovi', L.rimuovi); rm.__pid = x.sku; c.appendChild(rm);
+        box.appendChild(c);
+      });
+    }).catch(function () { box.textContent = ''; box.appendChild(el('div', 'mr-pref-esito', L.carica)); });
+  }
+  function attacca(radice) {
+    if (radice.__marniPreferiti) return;
+    radice.__marniPreferiti = true;
+    var st = document.createElement('style'); st.setAttribute('data-mr-preferiti', '1'); st.textContent = CSS; radice.appendChild(st);
+    var riempi = function () {
+      radice.querySelectorAll('.mr-riepilogo-preferiti:not([data-mr-fatto])').forEach(function (b) { b.setAttribute('data-mr-fatto', '1'); disegna(b); });
+    };
+    new MutationObserver(riempi).observe(radice, { childList: true, subtree: true });
+    riempi();
+    radice.addEventListener('click', function (ev) {
+      var t = ev.target;
+      if (!t || !t.classList) return;
+      if (t.classList.contains('mr-preferiti') && !t.classList.contains('mr-preferiti--fatto') && t.getAttribute('data-pid')) {
+        ev.preventDefault(); ev.stopPropagation();
+        t.textContent = '…';
+        posta('Wishlist-AddProduct', t.getAttribute('data-pid')).then(function (ok) {
+          if (ok) { t.textContent = L.salvato; t.classList.add('mr-preferiti--fatto'); aggiornaIcona(); }
+          else t.textContent = L.errore;
+        });
+      } else if (t.classList.contains('mr-rimuovi') && t.__pid) {
+        var box = t.closest('.mr-riepilogo-preferiti'); if (!box) return;
+        ev.preventDefault(); ev.stopPropagation();
+        t.textContent = '…';
+        posta('Wishlist-RemoveProduct', t.__pid).then(function (ok) { aggiornaIcona(); disegna(box, ok ? L.tolto : L.carica); });
+      }
+    }, true);
+  }
+  var tentativi = 0;
+  var tm = setInterval(function () {
+    tentativi++;
+    var host = document.querySelector('algho-viewer');
+    if (host && host.shadowRoot) { clearInterval(tm); attacca(host.shadowRoot); }
+    else if (tentativi > 120) clearInterval(tm);
+  }, 500);
+})();
+
 // ---------- DIAGNOSTICA ----------
 // Da console: __alghoDiagnostica()  -> mostra se l'identita' viene riconosciuta e inviata
 window.__alghoDiagnostica = function () {
