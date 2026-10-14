@@ -1355,6 +1355,29 @@ window.__alghoDiagnostica = function () {
 // Era stato tolto con P188 perche' nel Figma l'header ha solo mappamondo e riduzione.
 // Svuota la conversazione (storico + stato lato Algho) e riparte dal saluto:
 // il cliente non deve chiudere e riaprire la chat per cambiare argomento.
+// Cancella i cookie che Algho lascia sul dominio di Marni. Un cookie si
+// cancella solo se dominio e percorso combaciano con quelli con cui e' stato
+// scritto, e quelli non si possono leggere: si prova la manciata di
+// combinazioni possibili, che e' corta. I cookie scritti dal dominio di Algho
+// (virtualassistant.alghoncloud.com) sono di terze parti e da qui non si
+// toccano: li cancella il browser, o li fa scadere Algho.
+function scordaCookieAlgho() {
+  var host = location.hostname;
+  var domini = [null, host, '.' + host, '.' + host.split('.').slice(-2).join('.')];
+  var percorsi = ['/', location.pathname];
+  var nomi = document.cookie.split(';')
+    .map(function (c) { return c.split('=')[0].trim(); })
+    .filter(function (n) { return n && /algho/i.test(n); });
+  nomi.forEach(function (n) {
+    domini.forEach(function (d) {
+      percorsi.forEach(function (p) {
+        document.cookie = n + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=' + p + (d ? ('; domain=' + d) : '');
+      });
+    });
+  });
+  return nomi;
+}
+
 (function Ricomincia() {
   var TESTO = { it: 'Ricomincia', en: 'Start over', fr: 'Recommencer', de: 'Neu starten', es: 'Empezar de nuevo',
                 ja: '\u3084\u308a\u76f4\u3059', ko: '\ub2e4\uc2dc \uc2dc\uc791' };   // P197: anche ja e ko
@@ -1370,6 +1393,13 @@ window.__alghoDiagnostica = function () {
     b.setAttribute('aria-label', b.textContent);
     b.addEventListener('click', function (ev) {
       ev.preventDefault();
+      // P230 (14/10/2026): si cancella anche il cookie di Algho, altrimenti
+      // "Ricomincia" cambia lo userId ma il vecchio resta scritto sul browser e
+      // torna alla prossima visita. Misurato sul sito: Algho lascia un cookie
+      // solo, _algho_user_id, sul dominio di Marni; niente in localStorage,
+      // sessionStorage o IndexedDB. Il filtro sul nome prende anche eventuali
+      // cookie loro futuri e non tocca quelli del sito (cquid, consenso, misure).
+      try { scordaCookieAlgho(); } catch (e) {}
       try {
         // P47 (2026-09-21): lo stato della conversazione lato n8n e' legato allo
         // userId di Algho: senza cambiarlo, "Ricomincia" svuotava solo la chat e
