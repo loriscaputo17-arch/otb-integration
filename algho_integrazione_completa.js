@@ -413,9 +413,6 @@ document.body.appendChild(script);
     '.mr-card-foto, .message-text .mr-card-foto { position: relative !important; }' +
     '.mr-piu, .message-text .mr-piu {' +
     '  display: block !important; user-select: none !important;' +
-    '  position: absolute !important;' +
-    '  bottom: 10px !important; right: 10px !important;' +
-    '  top: auto !important; left: auto !important;' +
     '  width: 24px !important; height: 24px !important;' +
     '  padding: 0 !important; margin: 0 !important;' +
     '  border: none !important; border-radius: 0 !important;' +
@@ -426,6 +423,30 @@ document.body.appendChild(script);
     '}' +
     '.mr-piu:hover, .message-text .mr-piu:hover {' +
     '  background: var(--marni-ink, #141414) !important; color: #FFFFFF !important;' +
+    '}' +
+    /* Il "+" sta in due posti diversi: i flussi v3 lo scrivono dentro
+       <a class="mr-card-foto">, i v2 come fratello della foto. Due regole,
+       stesso risultato: appoggiato all'angolo in basso a destra della foto,
+       a 10px dai bordi. */
+    '.mr-card-foto .mr-piu, .message-text .mr-card-foto .mr-piu {' +
+    '  position: absolute !important;' +
+    '  bottom: 10px !important; right: 10px !important;' +
+    '  top: auto !important; left: auto !important; margin: 0 !important;' +
+    '}' +
+    /* fratello della foto: resta un flex item della card (che e' una colonna
+       flex) e lo tiriamo su di 34px = 24 di altezza + 10 di stacco. I 10px di
+       margine sotto rimettono a zero lo spazio che occupa, cosi' il corpo
+       della card non si sposta di un pixel. */
+    '.mr-card-foto + .mr-piu, .message-text .mr-card-foto + .mr-piu {' +
+    '  position: static !important; align-self: flex-end !important;' +
+    '  margin: -34px 10px 10px 0 !important;' +
+    '}' +
+    /* card prodotto da sola: senza questo si allarga a tutta la bolla e la
+       foto arriva a 390x519. Il componente del Figma e' 164x218. */
+    '.mr-wrap > .mr-card:only-child, .message-text .mr-wrap > .mr-card:only-child,' +
+    '.mr-riga-semplice > .mr-card:only-child,' +
+    '.message-text .mr-riga-semplice > .mr-card:only-child {' +
+    '  width: 164px !important;' +
     '}' +
     /* ultima riga della card: "Vai alla scheda prodotto" (Figma 498-9538).
        Serve il selettore lungo perche' .message-text .mr-card a toglie la
