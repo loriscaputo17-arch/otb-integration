@@ -404,6 +404,16 @@ document.body.appendChild(script);
         ev.preventDefault();
         ev.stopPropagation();
         aggiungiAlCarrello(agg);
+        return;
+      }
+      // P232 (14/10/2026): le taglie del pannello dal basso. Sono <span> e non
+      // <button> perche' il player i bottoni li rifiuta; il messaggio da mandare
+      // lo porta data-m. Le esaurite restano visibili ma non si cliccano.
+      var tg = risali(ev.target, radice, 'mr-taglia');
+      if (tg && tg.getAttribute('data-m') && !tg.classList.contains('mr-taglia--esaurita')) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        try { if (window.algho && window.algho.sendUserMessage) window.algho.sendUserMessage(tg.getAttribute('data-m')); } catch (e) {}
       }
     }, true);
   }
@@ -1640,7 +1650,8 @@ function scordaCookieAlgho() {
   function scansiona(radice) {
     // taglie: solo quando sono una scelta da fare (bottoni cliccabili)
     Array.prototype.forEach.call(radice.querySelectorAll('.mr-taglie'), function (b) {
-      if (b.querySelector('button:not([disabled])')) prendi(radice, b, 'taglia');
+      // i flussi v3 scrivono <span class="mr-taglia">, i v2 <button>: valgono entrambi
+      if (b.querySelector('button:not([disabled]), .mr-taglia[data-m]')) prendi(radice, b, 'taglia');
     });
     // colori: stessa cosa, l'elenco delle varianti
     Array.prototype.forEach.call(radice.querySelectorAll('.mr-colori'), function (b) {
