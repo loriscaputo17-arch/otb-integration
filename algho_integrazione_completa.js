@@ -406,12 +406,16 @@ document.body.appendChild(script);
 // (.mr-card ha gia' position: relative in entrambi i fogli.)
 (function stilePiuSempre() {
   var CSS_PIU =
+    /* la foto fa da riferimento a chi le sta sopra: il "+" si appoggia al suo
+       angolo in basso a destra e non a quello della card (MCR-4589). Prima qui
+       c'era top: calc(100% / 1.618), una stima della fine della foto col
+       rapporto d'oro, e cadeva sempre qualche pixel fuori. */
+    '.mr-card-foto, .message-text .mr-card-foto { position: relative !important; }' +
     '.mr-piu, .message-text .mr-piu {' +
     '  display: block !important; user-select: none !important;' +
-    '  position: absolute !important; right: 8px !important;' +
-    /* la foto e' quadrata e occupa la parte alta della card: il "+" si
-       appoggia sul suo angolo in basso a destra, come nel Figma */
-    '  top: calc(100% / 1.618) !important;' +
+    '  position: absolute !important;' +
+    '  bottom: 10px !important; right: 10px !important;' +
+    '  top: auto !important; left: auto !important;' +
     '  width: 24px !important; height: 24px !important;' +
     '  padding: 0 !important; margin: 0 !important;' +
     '  border: none !important; border-radius: 0 !important;' +
@@ -422,6 +426,18 @@ document.body.appendChild(script);
     '}' +
     '.mr-piu:hover, .message-text .mr-piu:hover {' +
     '  background: var(--marni-ink, #141414) !important; color: #FFFFFF !important;' +
+    '}' +
+    /* ultima riga della card: "Vai alla scheda prodotto" (Figma 498-9538).
+       Serve il selettore lungo perche' .message-text .mr-card a toglie la
+       sottolineatura a tutti i link della card. */
+    '.mr-card-pdp, .message-text .mr-card-pdp,' +
+    '.message-text .mr-card a.mr-card-pdp {' +
+    '  display: block !important; width: 100% !important;' +
+    '  text-align: right !important; margin-top: 12px !important;' +
+    '  font-size: 12px !important; line-height: 16px !important;' +
+    '  color: var(--marni-ink, #141414) !important;' +
+    '  text-decoration: underline dashed !important;' +
+    '  text-underline-offset: 3px !important;' +
     '}';
   var messo = false;
   function metti(shadow) {
