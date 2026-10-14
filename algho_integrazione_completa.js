@@ -374,16 +374,36 @@ document.body.appendChild(script);
     try { if (id && a.setContext) a.setContext(id); } catch (e) {}
     try { if (a.sendUserMessage) a.sendUserMessage(msg); } catch (e) {}
   }
+  // P231 (14/10/2026): il flusso carrello risponde con un bottone che porta
+  // l'EAN della variante (data-ids). Il carrello vero e' quello del sito, e ci
+  // si scrive da qui con la sessione del cliente: il flusso trova la variante,
+  // il browser la aggiunge. Nell'answerText non c'e' JavaScript, solo la classe.
+  function aggiungiAlCarrello(el) {
+    var ids = String(el.getAttribute('data-ids') || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+    if (!ids.length) return;
+    if (window.trasferisciAlCarrello) window.trasferisciAlCarrello(ids);
+    else { var loc = (location.pathname.match(/^\/([a-z]{2}-[a-z]{2})\//i) || [null, 'it-it'])[1]; location.href = '/' + loc + '/cart'; }
+  }
+  function risali(el, radice, classe) {
+    while (el && el !== radice && !(el.classList && el.classList.contains(classe))) el = el.parentNode;
+    return (el && el.classList && el.classList.contains(classe)) ? el : null;
+  }
   function attacca(radice) {
     if (radice.__marniPiu) return;
     radice.__marniPiu = true;
     radice.addEventListener('click', function (ev) {
-      var el = ev.target;
-      while (el && el !== radice && !(el.classList && el.classList.contains('mr-piu'))) el = el.parentNode;
-      if (el && el.classList && el.classList.contains('mr-piu')) {
+      var piu = risali(ev.target, radice, 'mr-piu');
+      if (piu) {
         ev.preventDefault();
         ev.stopPropagation();   // senza questo il clic apre anche la scheda sul sito
-        agisci(el);
+        agisci(piu);
+        return;
+      }
+      var agg = risali(ev.target, radice, 'mr-aggiungi');
+      if (agg) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        aggiungiAlCarrello(agg);
       }
     }, true);
   }
