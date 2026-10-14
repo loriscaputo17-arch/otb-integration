@@ -409,6 +409,16 @@ document.body.appendChild(script);
       // P232 (14/10/2026): le taglie del pannello dal basso. Sono <span> e non
       // <button> perche' il player i bottoni li rifiuta; il messaggio da mandare
       // lo porta data-m. Le esaurite restano visibili ma non si cliccano.
+      // P234 (14/10/2026): "Usa la mia posizione" del flusso v3-negozi. E' uno <span>
+      // (i <button> il player li rifiuta): qui si chiede la posizione al browser, la si
+      // mette nel contesto (GPS:lat,lon) e si rimanda la domanda.
+      var pos = risali(ev.target, radice, 'mr-posizione');
+      if (pos) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (window.askGeoAndFindStore) window.askGeoAndFindStore();
+        return;
+      }
       var tg = risali(ev.target, radice, 'mr-taglia');
       if (tg && tg.getAttribute('data-m') && !tg.classList.contains('mr-taglia--esaurita')) {
         ev.preventDefault();
@@ -1264,6 +1274,164 @@ document.body.appendChild(script);
       return fatti;
     });
   };
+})();
+
+// ---------- RIEPILOGO DEL CARRELLO IN CHAT (P233, 14/10/2026) ----------
+// Decisione del 14/10: il riepilogo del carrello si mostra in chat. Il carrello
+// vero e' quello della sessione del sito, che n8n non vede: il flusso v3-carrello
+// risponde con un segnaposto <div class="mr-riepilogo-carrello" data-azione="...">
+// e qui lo si riempie con il mini-carrello del sito (Cart-MinicartContent: nome,
+// colore, taglia, prezzo, e il bottone di rimozione con pid e uuid). Le scritture
+// passano dai controller del sito, con la sessione del cliente:
+//   "Rimuovi" -> Cart-RemoveProductLineItem?pid&uuid (un clic, una riga)
+//   "Svuota il carrello" -> le righe una alla volta, solo dopo il clic (GR-06)
+// e la frase "fatto" si scrive solo dopo la risposta del sito. Se il carrello non
+// si legge resta la frase, un avviso e il link al carrello.
+(function RiepilogoCarrello() {
+  var T = {
+    it: { vuoto: 'Il carrello è vuoto.', totale: 'Totale', rimuovi: 'Rimuovi', svuota: 'Svuota il carrello', tolto: 'Rimosso dal carrello.', svuotato: 'Il carrello è stato svuotato.', errore: 'Non sono riuscito a modificare il carrello: riprova dalla pagina del carrello.', carica: 'Non riesco a leggere il carrello in questo momento.' },
+    en: { vuoto: 'Your bag is empty.', totale: 'Total', rimuovi: 'Remove', svuota: 'Empty the bag', tolto: 'Removed from your bag.', svuotato: 'Your bag has been emptied.', errore: 'I could not update your bag: please try again from the bag page.', carica: 'I cannot read your bag right now.' },
+    fr: { vuoto: 'Votre panier est vide.', totale: 'Total', rimuovi: 'Supprimer', svuota: 'Vider le panier', tolto: 'Supprimé du panier.', svuotato: 'Votre panier a été vidé.', errore: 'Je n’ai pas pu modifier votre panier : réessayez depuis la page du panier.', carica: 'Je ne peux pas lire votre panier pour le moment.' },
+    de: { vuoto: 'Ihr Warenkorb ist leer.', totale: 'Gesamt', rimuovi: 'Entfernen', svuota: 'Warenkorb leeren', tolto: 'Aus dem Warenkorb entfernt.', svuotato: 'Ihr Warenkorb wurde geleert.', errore: 'Der Warenkorb konnte nicht geändert werden: bitte auf der Warenkorbseite erneut versuchen.', carica: 'Der Warenkorb kann gerade nicht gelesen werden.' },
+    es: { vuoto: 'Tu cesta está vacía.', totale: 'Total', rimuovi: 'Eliminar', svuota: 'Vaciar la cesta', tolto: 'Eliminado de la cesta.', svuotato: 'Tu cesta se ha vaciado.', errore: 'No he podido modificar la cesta: inténtalo desde la página de la cesta.', carica: 'No puedo leer tu cesta en este momento.' },
+    ja: { vuoto: 'ショッピングバッグは空です。', totale: '合計', rimuovi: '削除', svuota: 'すべて削除', tolto: '削除しました。', svuotato: 'ショッピングバッグを空にしました。', errore: '変更できませんでした。ショッピングバッグのページからお試しください。', carica: '現在ショッピングバッグを読み込めません。' },
+    ko: { vuoto: '쇼핑백이 비어 있습니다.', totale: '합계', rimuovi: '삭제', svuota: '모두 삭제', tolto: '삭제되었습니다.', svuotato: '쇼핑백을 비웠습니다.', errore: '변경하지 못했습니다. 쇼핑백 페이지에서 다시 시도해 주세요.', carica: '지금은 쇼핑백을 불러올 수 없습니다.' }
+  };
+  var L = T[linguaPagina()] || T.en;
+  var CSS = '.mr-riepilogo-carrello{display:block;margin:8px 0}' +
+    '.mr-riga-carrello{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #E6E6E6}' +
+    '.mr-riga-carrello--evidenza{background:#F7F7F7}' +
+    '.mr-riga-carrello img{width:48px;height:64px;object-fit:cover;flex:0 0 48px}' +
+    '.mr-riga-carrello-testo{flex:1 1 auto;min-width:0;font-size:12px;line-height:16px}' +
+    '.mr-riga-carrello-nome{font-weight:600}' +
+    '.mr-riga-carrello-dett{color:#6B6B6B}' +
+    '.mr-riepilogo-carrello .mr-rimuovi{cursor:pointer;font-size:12px;text-decoration:underline;flex:0 0 auto}' +
+    '.mr-riepilogo-totale{display:flex;justify-content:space-between;font-weight:600;font-size:13px;padding:8px 0}' +
+    '.mr-riepilogo-carrello .mr-svuota{display:block;cursor:pointer;text-align:center;border:1px solid #141414;padding:10px;margin-top:8px;font-size:13px}' +
+    '.mr-riepilogo-esito{font-size:12px;padding:6px 0}' +
+    // P234: orari della settimana nella card negozio del v3
+    '.mr-negozio-orari{display:block;font-size:12px;line-height:16px;color:#6B6B6B;margin-top:4px}';
+
+  function endpoint(nome) {
+    var base = '/on/demandware.store/Sites-MarniEU-Site/it_IT/';
+    try {
+      var a = document.querySelector('a[href*="/on/demandware.store/"], form[action*="/on/demandware.store/"]');
+      var href = a ? (a.getAttribute('href') || a.getAttribute('action') || '') : '';
+      var m = href.match(/(\/on\/demandware\.store\/Sites-[^/]+\/[^/]+\/)/);
+      if (m) base = m[1];
+    } catch (e) {}
+    return base + nome;
+  }
+  function testo(n) { return n ? String(n.textContent || '').replace(/\s+/g, ' ').trim() : ''; }
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+
+  // Le righe del carrello lette dal mini-carrello del sito: sono gli stessi dati
+  // che il cliente vede aprendo il carrello in alto a destra.
+  function leggiRighe() {
+    return fetch(endpoint('Cart-MinicartContent'), { credentials: 'include' })
+      .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
+      .then(function (html) {
+        var d = new DOMParser().parseFromString(html, 'text/html');
+        var righe = [];
+        d.querySelectorAll('.btn-cart-remove[data-uuid]').forEach(function (b) {
+          var box = b.closest('.minicart-item-grid, .product-line-item, .product-content') || b.parentNode;
+          var img = box && box.querySelector('img');
+          righe.push({
+            pid: b.getAttribute('data-pid'), uuid: b.getAttribute('data-uuid'),
+            azione: b.getAttribute('data-action') || endpoint('Cart-RemoveProductLineItem'),
+            nome: b.getAttribute('data-name') || testo(box && box.querySelector('.product-title')),
+            dett: box ? Array.prototype.map.call(box.querySelectorAll('.detail-attribute'), function (x) { return testo(x).replace(/\s*(Modifica|Edit|Modifier|Bearbeiten|Editar)\s*$/i, ''); }).join(' · ') : '',
+            prezzo: testo(box && box.querySelector('.line-item-total-price')),
+            img: img ? (img.getAttribute('src') || img.getAttribute('data-src') || '') : ''
+          });
+        });
+        // il totale da Cart-GetCart (numero e valuta), formattato nella lingua della pagina
+        return fetch(endpoint('Cart-GetCart'), { credentials: 'include' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+          .then(function (c) {
+            var tot = '';
+            // stesso formato delle righe del sito ("€1.495,00"): si sostituisce il numero nel prezzo della prima riga
+            try { if (c && c.total_with_vat != null && righe.length) {
+              var num = new Intl.NumberFormat(document.documentElement.lang || 'it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: 'always' }).format(Number(c.total_with_vat));
+              tot = /\d/.test(righe[0].prezzo) ? righe[0].prezzo.replace(/\d[\d.,\s\u00a0\u202f]*\d|\d/, num) : num + ' ' + (c.currency || '');
+            } } catch (e) {}
+            return { righe: righe, totale: tot };
+          });
+      });
+  }
+  function rimuovi(r) {
+    var u = r.azione + (r.azione.indexOf('?') >= 0 ? '&' : '?') + 'pid=' + encodeURIComponent(r.pid) + '&uuid=' + encodeURIComponent(r.uuid);
+    return fetch(u, { credentials: 'include', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      .then(function (x) { return x.ok ? x.json().catch(function () { return {}; }) : null; })
+      .then(function (j) { return !!j && j.error !== true; })
+      .catch(function () { return false; });
+  }
+  function aggiornaMiniCarrello() {
+    // il contatore del sito: lo stesso evento che il sito usa dopo una modifica
+    try { document.dispatchEvent(new CustomEvent('cart:update')); } catch (e) {}
+    try { if (window.jQuery) window.jQuery('body').trigger('cart:update'); } catch (e) {}
+  }
+
+  function disegna(box, esito) {
+    var azione = box.getAttribute('data-azione') || 'mostra';
+    var cerca = String(box.getAttribute('data-cerca') || '').toLowerCase().split(/\s+/).filter(function (w) { return w.length >= 4; });
+    box.textContent = '';
+    if (esito) box.appendChild(el('div', 'mr-riepilogo-esito', esito));
+    return leggiRighe().then(function (dati) {
+      if (!dati.righe.length) { box.appendChild(el('div', 'mr-riepilogo-esito', L.vuoto)); return; }
+      // con "togli le scarpe" le righe che corrispondono vengono prima
+      var punti = function (r) { var n = (r.nome + ' ' + r.dett).toLowerCase(); return cerca.filter(function (w) { return n.indexOf(w.slice(0, 5)) >= 0; }).length; };
+      var righe = dati.righe.slice().sort(function (a, b) { return punti(b) - punti(a); });
+      righe.forEach(function (r) {
+        var riga = el('div', 'mr-riga-carrello' + (cerca.length && punti(r) ? ' mr-riga-carrello--evidenza' : ''));
+        if (r.img) { var i = el('img'); i.src = r.img; i.alt = r.nome; riga.appendChild(i); }
+        var t = el('div', 'mr-riga-carrello-testo');
+        t.appendChild(el('div', 'mr-riga-carrello-nome', r.nome));
+        if (r.dett) t.appendChild(el('div', 'mr-riga-carrello-dett', r.dett));
+        if (r.prezzo) t.appendChild(el('div', 'mr-riga-carrello-dett', r.prezzo));
+        riga.appendChild(t);
+        var x = el('span', 'mr-rimuovi', L.rimuovi);
+        x.__riga = r; riga.appendChild(x);
+        box.appendChild(riga);
+      });
+      if (dati.totale) { var tt = el('div', 'mr-riepilogo-totale'); tt.appendChild(el('span', '', L.totale)); tt.appendChild(el('span', '', dati.totale)); box.appendChild(tt); }
+      if (azione === 'svuota') { var s = el('span', 'mr-svuota', L.svuota); s.__righe = dati.righe; box.appendChild(s); }
+    }).catch(function () { box.textContent = ''; box.appendChild(el('div', 'mr-riepilogo-esito', L.carica)); });
+  }
+
+  function attacca(radice) {
+    if (radice.__marniRiepilogo) return;
+    radice.__marniRiepilogo = true;
+    var st = document.createElement('style'); st.setAttribute('data-mr-riepilogo', '1'); st.textContent = CSS; radice.appendChild(st);
+    var riempi = function () {
+      radice.querySelectorAll('.mr-riepilogo-carrello:not([data-mr-fatto])').forEach(function (b) { b.setAttribute('data-mr-fatto', '1'); disegna(b); });
+    };
+    new MutationObserver(riempi).observe(radice, { childList: true, subtree: true });
+    riempi();
+    radice.addEventListener('click', function (ev) {
+      var t = ev.target;
+      var box = t && t.closest ? t.closest('.mr-riepilogo-carrello') : null;
+      if (!box) return;
+      if (t.classList.contains('mr-rimuovi') && t.__riga) {
+        ev.preventDefault(); ev.stopPropagation();
+        t.textContent = '…';
+        rimuovi(t.__riga).then(function (ok) { aggiornaMiniCarrello(); disegna(box, ok ? L.tolto : L.errore); });
+      } else if (t.classList.contains('mr-svuota') && t.__righe) {
+        ev.preventDefault(); ev.stopPropagation();
+        t.textContent = '…';
+        // una riga alla volta: "svuotato" solo se il sito le ha tolte tutte (GR-06)
+        var tutteOk = true;
+        t.__righe.reduce(function (p, r) { return p.then(function () { return rimuovi(r).then(function (ok) { if (!ok) tutteOk = false; }); }); }, Promise.resolve())
+          .then(function () { aggiornaMiniCarrello(); disegna(box, tutteOk ? L.svuotato : L.errore); });
+      }
+    }, true);
+  }
+  var tentativi = 0;
+  var tm = setInterval(function () {
+    tentativi++;
+    var host = document.querySelector('algho-viewer');
+    if (host && host.shadowRoot) { clearInterval(tm); attacca(host.shadowRoot); }
+    else if (tentativi > 120) clearInterval(tm);
+  }, 500);
 })();
 
 // ---------- DIAGNOSTICA ----------
