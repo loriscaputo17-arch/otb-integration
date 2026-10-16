@@ -41,10 +41,25 @@ function creaAJWTunsigned(utente) {
       sessione: true,
       cquid: cquid,
       dwsid: dwsid ? dwsid.slice(0, 12) : '',   // basta un frammento
+      // P237 (16/10/2026): il genere del profilo, cosi' la ricerca non chiede
+      // "È per donna, uomo o bambino?" a chi ha fatto l'accesso
+      genere: genereProfilo(),
       emessoIl: Date.now()
     }
   };
   return b64url(header) + '.' + b64url(payload) + '.';
+}
+// P237: il genere del profilo. Il sito lo scrive in ogni pagina per Tealium
+// (window.utag_data.customer_gender: "Male" / "Female"), solo da loggato.
+function genereProfilo() {
+  try {
+    var u = window.utag_data || {};
+    if (String(u.user_authenticated) !== 'true') return '';
+    var g = String(u.customer_gender || '').trim().toLowerCase();
+    if (/^(f|female|donna|woman|2)$/.test(g)) return 'donna';
+    if (/^(m|male|uomo|man|1)$/.test(g)) return 'uomo';
+  } catch (e) {}
+  return '';
 }
 // legge un cookie per nome
 function getCookie(nome) {
