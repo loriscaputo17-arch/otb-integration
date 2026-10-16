@@ -384,6 +384,53 @@ document.body.appendChild(script);
     if (window.trasferisciAlCarrello) window.trasferisciAlCarrello(ids);
     else { var loc = (location.pathname.match(/^\/([a-z]{2}-[a-z]{2})\//i) || [null, 'it-it'])[1]; location.href = '/' + loc + '/cart'; }
   }
+  function chiudiPannello(radice) {
+    var p = radice.querySelector('.mr-sheet');
+    if (p) p.classList.remove('mr-sheet--aperto');
+    var o = radice.querySelector('.mr-sheet-velo');
+    if (o) o.classList.remove('mr-sheet-velo--aperto');
+  }
+  // P236: la taglia scelta nel pannello va nel carrello del sito senza passare dalla chat.
+  // L'esito si scrive nel messaggio "Scegli la taglia" al posto del bottone per riaprire.
+  var TT = {
+    it: { attesa: 'Aggiungo al carrello…', fatto: 'Aggiunto al carrello: ', vai: 'Vai al carrello', errore: 'Non sono riuscito ad aggiungerlo al carrello. Riprova o aprilo sul sito.' },
+    en: { attesa: 'Adding to your bag…', fatto: 'Added to your bag: ', vai: 'Go to bag', errore: 'I could not add it to your bag. Please try again or open it on the site.' },
+    fr: { attesa: 'Ajout au panier…', fatto: 'Ajouté au panier : ', vai: 'Voir le panier', errore: 'Je n’ai pas pu l’ajouter au panier. Réessayez ou ouvrez-le sur le site.' },
+    de: { attesa: 'Wird in den Warenkorb gelegt…', fatto: 'In den Warenkorb gelegt: ', vai: 'Zum Warenkorb', errore: 'Der Artikel konnte nicht in den Warenkorb gelegt werden. Bitte erneut versuchen oder auf der Website öffnen.' },
+    es: { attesa: 'Añadiendo a la cesta…', fatto: 'Añadido a la cesta: ', vai: 'Ir a la cesta', errore: 'No he podido añadirlo a la cesta. Inténtalo de nuevo o ábrelo en la web.' },
+    ja: { attesa: 'ショッピングバッグに追加しています…', fatto: 'ショッピングバッグに追加しました：', vai: 'ショッピングバッグへ', errore: '追加できませんでした。もう一度お試しいただくか、サイトで開いてください。' },
+    ko: { attesa: '쇼핑백에 추가하는 중…', fatto: '쇼핑백에 추가했습니다: ', vai: '쇼핑백으로 이동', errore: '쇼핑백에 추가하지 못했습니다. 다시 시도하거나 사이트에서 열어 주세요.' }
+  };
+  function aggiungiTaglia(radice, tg) {
+    var L = TT[linguaPagina()] || TT.en;
+    var ids = String(tg.getAttribute('data-ids') || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+    var nome = tg.getAttribute('data-nome') || tg.textContent || '';
+    // il messaggio da cui e' nato il pannello: stesso data-mr-k del blocco nascosto
+    var el = tg.closest ? tg.closest('.mr-taglie') : null;
+    var k = el ? el.getAttribute('data-mr-k') : '';
+    var orig = k ? radice.querySelector('.mr-taglie[data-mr-k="' + k + '"]:not(.mr-sheet-elenco)') : null;
+    var riapri = orig && orig.previousElementSibling && /mr-sheet-riapri/.test(orig.previousElementSibling.className) ? orig.previousElementSibling : null;
+    var esito = document.createElement('p');
+    esito.className = 'mr-intro mr-esito-taglia';
+    esito.textContent = L.attesa;
+    if (orig) { orig.parentNode.insertBefore(esito, orig); if (riapri) riapri.style.setProperty('display', 'none', 'important'); }
+    var loc = (location.pathname.match(/^\/([a-z]{2}-[a-z]{2})\//i) || [null, 'it-it'])[1];
+    window.trasferisciAlCarrello(ids, false).then(function (fatti) {
+      if (fatti) {
+        esito.textContent = L.fatto + nome + '.';
+        var a = document.createElement('a');
+        a.className = 'mr-card-azione'; a.href = '/' + loc + '/cart';
+        a.innerHTML = '<span class="mr-card-azione-testo"></span><span class="mr-card-azione-freccia">↗</span>';
+        a.firstChild.textContent = L.vai;
+        esito.parentNode && esito.parentNode.insertBefore(a, esito.nextSibling);
+        try { if (window.__sincronizzaCarrello) window.__sincronizzaCarrello(); } catch (e) {}
+        try { window.dataLayer = window.dataLayer || []; window.dataLayer.push({ event: 'add_to_cart', source: 'chat', items: ids.map(function (x) { return { item_id: x }; }) }); } catch (e) {}
+      } else {
+        esito.textContent = L.errore;
+        if (riapri) riapri.style.removeProperty('display');
+      }
+    }, function () { esito.textContent = L.errore; if (riapri) riapri.style.removeProperty('display'); });
+  }
   function risali(el, radice, classe) {
     while (el && el !== radice && !(el.classList && el.classList.contains(classe))) el = el.parentNode;
     return (el && el.classList && el.classList.contains(classe)) ? el : null;
@@ -423,6 +470,11 @@ document.body.appendChild(script);
       if (tg && tg.getAttribute('data-m') && !tg.classList.contains('mr-taglia--esaurita')) {
         ev.preventDefault();
         ev.stopPropagation();
+        // P236 (16/10/2026): il clic sulla taglia chiude il pannello (lo stopPropagation qui sopra
+        // impediva al pannello di sentire il clic) e, se la taglia porta l'EAN, la aggiunge subito:
+        // niente piu' "Confermi e lo metto nel carrello?".
+        chiudiPannello(radice);
+        if (tg.getAttribute('data-ids') && window.trasferisciAlCarrello) { aggiungiTaglia(radice, tg); return; }
         try { if (window.algho && window.algho.sendUserMessage) window.algho.sendUserMessage(tg.getAttribute('data-m')); } catch (e) {}
       }
     }, true);
@@ -1885,6 +1937,8 @@ function scordaCookieAlgho() {
   function prendi(radice, blocco, tipo) {
     if (!blocco || blocco.dataset.mrSheet === '1') return;
     blocco.dataset.mrSheet = '1';
+    // P236: lega il pannello al suo messaggio, per scriverci l'esito dell'aggiunta
+    blocco.setAttribute('data-mr-k', 'k' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
 
     // il titolo: la frase che il flusso ha scritto sopra le scelte
     var intro = blocco.previousElementSibling;
@@ -1909,7 +1963,8 @@ function scordaCookieAlgho() {
     riapri.textContent = tipo === 'colore' ? T.riapriC : T.riapri;
     riapri.addEventListener('click', function () { apri(radice, titolo, elenco.cloneNode(true), tipo === 'taglia'); });
     blocco.parentNode.insertBefore(riapri, blocco);
-    blocco.style.display = 'none';
+    // P236: !important, il foglio della chat mette display:flex !important su .mr-taglie e il blocco restava visibile
+    blocco.style.setProperty('display', 'none', 'important');
 
     apri(radice, titolo, elenco, tipo === 'taglia');
   }
