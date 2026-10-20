@@ -296,6 +296,8 @@ var CSS_SORGENTE = "algho";
 tag.setAttribute("theme-css", CSS_TEMA[CSS_SORGENTE] || CSS_TEMA.github);
 tag.setAttribute("widget-border-color", "#000000");
 tag.setAttribute("z-index", "9999");
+// P238 (2026-10-20): widget spostabile dal cliente (prop del player Algho).
+tag.setAttribute("widget-move", "true");
 // P227 (2026-10-08): quante azioni suggerite mostrare prima di nascondere il
 // resto dietro "Mostra altro". Il player di default ne mostra poche e il
 // cliente deve fare un clic in piu' per vedere scelte che gli servono subito -
