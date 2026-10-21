@@ -1095,11 +1095,9 @@ document.body.appendChild(script);
       return;
     }
 
-    // CARRELLO: solo se contiene qualcosa
+    // CARRELLO: 21/10 niente apertura automatica, il pannello copriva il carrello.
+    // La chat resta disponibile dal bubble.
     if (tipo === 'carrello') {
-      var vuoto = /vuot|empty|leer|vide|vacio/i.test(document.body.innerText.slice(0, 3000));
-      if (vuoto) return;
-      setTimeout(function () { proponi('carrello', T.carrello, null, INV.carrello); }, CONFIG.attesaRiservata);
       return;
     }
 
