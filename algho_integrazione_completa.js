@@ -1771,7 +1771,10 @@ function scordaCookieAlgho() {
         // P84 (2026-09-24, MCR-4586): setUserId apre gia' una conversazione nuova e
         // ripulisce la finestra; chiamando anche resetChatHistory il messaggio di
         // benvenuto veniva stampato due volte ("double incipit").
-        if (window.algho && window.algho.setUserId) window.algho.setUserId('mr-' + Date.now().toString(36));
+        // P241 (22/10/2026): setUserId(null), non 'mr-...'. Il player salva il cookie
+        // _algho_user_id solo quando genera lui l'id (checkUserId con id vuoto): con un
+        // id nostro restava solo in memoria e al cambio pagina la chat ripartiva da zero.
+        if (window.algho && window.algho.setUserId) window.algho.setUserId(null);
         else if (window.algho && window.algho.resetChatHistory) window.algho.resetChatHistory();
         else if (window.algho && window.algho.clearChatHistory) window.algho.clearChatHistory();
         // l'identita' del cliente loggato va rimandata sulla nuova conversazione
