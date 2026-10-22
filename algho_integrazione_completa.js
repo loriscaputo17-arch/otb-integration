@@ -178,7 +178,7 @@ window.askGeoAndFindStore = function () {
     window.chiediPosizione(function (ok) {
       try {
         var f = window.algho && window.algho.sendUserMessage;
-        if (f) f(ok ? 'Qual e\' il negozio Marni piu\' vicino a me?' : 'Cerca un negozio Marni');
+        if (f) f(ok ? 'Cerca la boutique più vicina a me' : 'Cerca una boutique Marni');
       } catch (e) {}
     });
     return;
@@ -204,7 +204,7 @@ window.askGeoAndFindStore = function () {
       var lat = pos.coords.latitude.toFixed(6);
       var lon = pos.coords.longitude.toFixed(6);
       setCtx('GPS:' + lat + ',' + lon);
-      send('Negozio Marni piu vicino a me');
+      send('Cerca la boutique più vicina a me');
     },
     function (err) {
       // ERRORE/NEGATO: avviso in chat, NON rilancio la richiesta citta' (evito loop)
