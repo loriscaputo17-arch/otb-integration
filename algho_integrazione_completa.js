@@ -441,7 +441,7 @@ document.body.appendChild(script);
         a.firstChild.textContent = L.vai;
         esito.parentNode && esito.parentNode.insertBefore(a, esito.nextSibling);
         try { if (window.__sincronizzaCarrello) window.__sincronizzaCarrello(); } catch (e) {}
-        try { window.dataLayer = window.dataLayer || []; window.dataLayer.push({ event: 'add_to_cart', source: 'chat', items: ids.map(function (x) { return { item_id: x }; }) }); } catch (e) {}
+        try { eventoGA('add_to_cart', { source: 'chat', items: ids.map(function (x) { return { item_id: x }; }) }); } catch (e) {}
       } else {
         esito.textContent = L.errore;
         if (riapri) riapri.style.removeProperty('display');
@@ -612,9 +612,51 @@ document.body.appendChild(script);
 // Il clic sul carrello nelle card e' l'unica azione del cliente che parte dal
 // widget: si registra come add_to_cart nel dataLayer (fonte "chat"). Gli altri
 // eventi (rimozioni, look, handover) attendono la mappa KPI di OTB (#45).
+// P242 (26/10/2026): gli eventi della chat vanno a GA4 con gtag(). Su staging
+// GA4 arriva con gtag.js (da Tealium) e non c'e' un contenitore GTM: un oggetto
+// messo con dataLayer.push({event: ...}) non lo legge nessuno. Misurato:
+// dataLayer -> nessuna chiamata a GA4, gtag('event') -> /g/collect.
+// L'evento resta anche nel dataLayer per chi lo legge; se sulla pagina c'e' un
+// contenitore GTM (GTM-...) gtag non si chiama, se no l'evento conterebbe doppio.
+// Ogni evento porta "utente": registrato / ospite (stessa regola dell'AJWT).
+var _codaGA = [];
+function conGTM() {
+  try { return Object.keys(window.google_tag_manager || {}).some(function (k) { return /^GTM-/.test(k); }); }
+  catch (e) { return false; }
+}
+function tipoUtente() {
+  try { return isLoginAttivo() ? 'registrato' : 'ospite'; } catch (e) { return 'ospite'; }
+}
+function eventoGA(nome, dati) {
+  var parametri = { utente: tipoUtente() };
+  for (var k in (dati || {})) { if (Object.prototype.hasOwnProperty.call(dati, k)) parametri[k] = dati[k]; }
+  try {
+    var ev = { event: nome };
+    for (var j in parametri) ev[j] = parametri[j];
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(ev);
+  } catch (e) {}
+  if (conGTM()) return;
+  // gtag arriva qualche secondo dopo la pagina: fino ad allora gli eventi aspettano
+  if (typeof window.gtag === 'function') { try { window.gtag('event', nome, parametri); } catch (e) {} return; }
+  _codaGA.push([nome, parametri]);
+  if (_codaGA.length > 1) return;
+  var giri = 0;
+  var attesa = setInterval(function () {
+    giri++;
+    if (typeof window.gtag === 'function') {
+      clearInterval(attesa);
+      var coda = _codaGA; _codaGA = [];
+      coda.forEach(function (x) { try { window.gtag('event', x[0], x[1]); } catch (e) {} });
+    } else if (giri > 60) { clearInterval(attesa); _codaGA = []; }
+  }, 500);
+}
+
 (function EventiGA4() {
   function push(ev) {
-    try { window.dataLayer = window.dataLayer || []; window.dataLayer.push(ev); } catch (e) {}
+    var dati = {};
+    for (var k in ev) { if (k !== 'event' && Object.prototype.hasOwnProperty.call(ev, k)) dati[k] = ev[k]; }
+    eventoGA(ev.event, dati);
   }
   document.addEventListener('click', function (e) {
     try {
@@ -859,16 +901,13 @@ document.body.appendChild(script);
   // compaiono anche in elementi che non sono messaggi del cliente. Tengo traccia
   // io degli invii, intercettando sendUserMessage.
   var clienteHaScritto = false;
-  try {
-    if (window.algho && typeof window.algho.sendUserMessage === 'function') {
-      var origSend = window.algho.sendUserMessage.bind(window.algho);
-      window.algho.sendUserMessage = function (msg) {
-        // i messaggi che inviamo noi in automatico non contano come scrittura del cliente
-        if (!window.__alghoInvioAutomatico) clienteHaScritto = true;
-        return origSend.apply(null, arguments);
-      };
-    }
-  } catch (e) {}
+  // P242: dall'evento del player, non avvolgendo sendUserMessage (quando questo
+  // codice gira il player non c'e' ancora: l'avvolgimento non avveniva mai)
+  var viewerP = document.querySelector('algho-viewer');
+  if (viewerP) viewerP.addEventListener('alghoPreSendMessage', function () {
+    // i messaggi che inviamo noi in automatico non contano come scrittura del cliente
+    if (!window.__alghoInvioAutomatico) clienteHaScritto = true;
+  });
   // Non basta intercettare sendUserMessage: il cliente puo' aver scritto
   // direttamente nel widget, o aperto la chat cliccando il pulsante. Guardiamo
   // la conversazione vera: se c'e' anche un solo messaggio, lasciamolo fare.
@@ -894,20 +933,11 @@ document.body.appendChild(script);
 
   // il widget non espone isOpen: tengo traccia io delle aperture
   var chatApertaOra = false;
-  try {
-    ['open','showChat'].forEach(function (m) {
-      if (window.algho && typeof window.algho[m] === 'function') {
-        var orig = window.algho[m].bind(window.algho);
-        window.algho[m] = function () { chatApertaOra = true; return orig.apply(null, arguments); };
-      }
-    });
-    ['close','hideChat'].forEach(function (m) {
-      if (window.algho && typeof window.algho[m] === 'function') {
-        var orig2 = window.algho[m].bind(window.algho);
-        window.algho[m] = function () { chatApertaOra = false; return orig2.apply(null, arguments); };
-      }
-    });
-  } catch (e) {}
+  // P242: aperture e chiusure dagli eventi del player (vedi sopra)
+  if (viewerP) {
+    viewerP.addEventListener('alghoShow', function () { chatApertaOra = true; });
+    viewerP.addEventListener('alghoHide', function () { chatApertaOra = false; });
+  }
   // Il cliente puo' aver aperto la chat cliccando il widget, senza passare
   // dai metodi che intercettiamo: controlliamo se il pannello e' visibile.
   function pannelloVisibile() {
@@ -2035,10 +2065,9 @@ function scordaCookieAlgho() {
   var SESSIONE = 'marni_kpi_';
   function push(nome, dati) {
     try {
-      window.dataLayer = window.dataLayer || [];
-      var ev = { event: 'marni_chat_' + nome, source: 'chat' };
+      var ev = { source: 'chat' };
       for (var k in dati) { if (Object.prototype.hasOwnProperty.call(dati, k)) ev[k] = dati[k]; }
-      window.dataLayer.push(ev);
+      eventoGA('marni_chat_' + nome, ev);
     } catch (e) {}
   }
   function unaVolta(chiave) {
@@ -2069,30 +2098,27 @@ function scordaCookieAlgho() {
     var d = BASE(); d.origine = origine || 'utente';
     push('open', d);
   }
-  try {
-    ['open', 'showChat'].forEach(function (m) {
-      if (window.algho && typeof window.algho[m] === 'function') {
-        var orig = window.algho[m].bind(window.algho);
-        window.algho[m] = function () { segnaApertura(window.__alghoInvioAutomatico ? 'proattivo' : 'utente'); return orig.apply(null, arguments); };
-      }
+  // P242 (26/10/2026): prima qui si avvolgevano window.algho.open, showChat e
+  // sendUserMessage appena caricato lo script. Ma il player arriva qualche secondo
+  // dopo (misurato su staging: script 4,0 s, player 7,9 s): window.algho non
+  // c'era ancora e open, start e user_message non partivano mai. E anche avvolti
+  // non avrebbero visto il clic sul bubble ne' i messaggi scritti a mano.
+  // Il player emette eventi suoi sull'elemento <algho-viewer>, che esiste gia'.
+  var viewer = document.querySelector('algho-viewer');
+  if (viewer) {
+    viewer.addEventListener('alghoShow', function () {
+      segnaApertura(window.__alghoInvioAutomatico ? 'proattivo' : 'utente');
     });
-  } catch (e) {}
-
-  // ---------- messaggi del cliente ----------
-  try {
-    if (window.algho && typeof window.algho.sendUserMessage === 'function') {
-      var origSend = window.algho.sendUserMessage.bind(window.algho);
-      window.algho.sendUserMessage = function (msg) {
-        try {
-          segnaApertura('utente');
-          var d = BASE(); d.automatico = !!window.__alghoInvioAutomatico;
-          if (unaVolta('primo_messaggio')) push('start', d);
-          push('user_message', d);
-        } catch (e) {}
-        return origSend.apply(null, arguments);
-      };
-    }
-  } catch (e) {}
+    // ---------- messaggi del cliente: scritti, chip, bottoni ----------
+    viewer.addEventListener('alghoPreSendMessage', function () {
+      try {
+        segnaApertura('utente');
+        var d = BASE(); d.automatico = !!window.__alghoInvioAutomatico;
+        if (unaVolta('primo_messaggio')) push('start', d);
+        push('user_message', d);
+      } catch (e) {}
+    });
+  }
 
   // ---------- clic dentro la chat: chip, prodotti, carrello, operatore ----------
   document.addEventListener('click', function (e) {
@@ -2389,9 +2415,7 @@ function scordaCookieAlgho() {
 (function nps() {
   function manda(voto, radice) {
     try {
-      var d = { bot: 'marni', voto: voto, pagina: location.pathname };
-      if (window.dataLayer && window.dataLayer.push) window.dataLayer.push({ event: 'nps_score', nps_score: voto, marni: d });
-      if (window.gtag) window.gtag('event', 'nps_score', { value: voto, nps_score: voto });
+      eventoGA('nps_score', { value: voto, nps_score: voto, bot: 'marni', pagina: location.pathname });
     } catch (e) {}
   }
 
