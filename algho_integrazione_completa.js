@@ -2112,12 +2112,16 @@ function scordaCookieAlgho() {
   // - impression: una volta per pagina vista, quando l'icona della chat e'
   //   davvero a schermo (o la chat compare gia' aperta).
   var PAGINA = String(Date.now()) + Math.random().toString(36).slice(2, 6);
-  var chatAperta = false;
+  // chat aperta o no si legge dal pannello: al caricamento il widget ripristina
+  // lo stato e alghoShow/alghoHide non sempre arrivano in coppia (visto su staging)
+  function chatAperta() {
+    try { var c = radice().querySelector('.chat-body'); return !!(c && c.getBoundingClientRect().width); } catch (e) { return false; }
+  }
   function ricordaPagina() { try { sessionStorage.setItem(SESSIONE + 'pagina_apertura', PAGINA); } catch (e) {} }
   function giaAperta() { try { return !!sessionStorage.getItem(SESSIONE + 'open'); } catch (e) { return false; } }
   document.addEventListener('click', function (e) {
     try {
-      if (chatAperta || !giaAperta()) return;
+      if (!giaAperta() || chatAperta()) return;
       var path = e.composedPath ? e.composedPath() : [];
       for (var i = 0; i < path.length; i++) {
         var el = path[i];
@@ -2152,9 +2156,7 @@ function scordaCookieAlgho() {
 
   var viewer = document.querySelector('algho-viewer');
   if (viewer) {
-    viewer.addEventListener('alghoHide', function () { chatAperta = false; });
     viewer.addEventListener('alghoShow', function () {
-      chatAperta = true;
       segnaImpressione('chat_aperta');
       if (giaAperta()) return;
       ricordaPagina();
