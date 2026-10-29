@@ -2149,7 +2149,8 @@ function scordaCookieAlgho() {
     try {
       var r = radice();
       var b = r && r.querySelector('button.chat-widget');
-      if (b && (b.offsetWidth || b.offsetHeight)) segnaImpressione('icona');
+      if (chatAperta()) segnaImpressione('chat_aperta');
+      else if (b && (b.offsetWidth || b.offsetHeight)) segnaImpressione('icona');
     } catch (e) {}
     if (impressione || giriIcona > 120) clearInterval(cercaIcona);
   }, 500);
@@ -2157,7 +2158,6 @@ function scordaCookieAlgho() {
   var viewer = document.querySelector('algho-viewer');
   if (viewer) {
     viewer.addEventListener('alghoShow', function () {
-      segnaImpressione('chat_aperta');
       if (giaAperta()) return;
       ricordaPagina();
       segnaApertura(window.__alghoInvioAutomatico ? 'proattivo' : 'utente');
