@@ -236,9 +236,9 @@ var AMBIENTE = (function () {
                 h === 'localhost' || h === '127.0.0.1' || /\.localhost$|\.test$/.test(h);
   return diProva
     ? { nome: 'staging',
-        // P237 (2026-10-09): bot nuovo su staging, come richiesto.
-        // Il precedente era c1cf74305c4c42d8eaf9f2ec1d72375d.
-        bot: 'd365d904d2357c42159c4ef242a86980',
+        // P243 (2026-10-29): bot nuovo su staging, come richiesto.
+        // Il precedente era d365d904d2357c42159c4ef242a86980 (prima ancora c1cf74305c4c42d8eaf9f2ec1d72375d).
+        bot: '78badb13afd5cd8c0430a07d90637545',
         // P237b (2026-10-09): il bot d365d904 vive sul player di PRODUZIONE.
         // Verificato aprendo la stessa pagina sui due player: su staging-fe
         // esce una pagina vuota, su virtualassistant la chat si apre (il bot
