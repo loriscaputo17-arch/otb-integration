@@ -2104,9 +2104,60 @@ function scordaCookieAlgho() {
   // c'era ancora e open, start e user_message non partivano mai. E anche avvolti
   // non avrebbero visto il clic sul bubble ne' i messaggi scritti a mano.
   // Il player emette eventi suoi sull'elemento <algho-viewer>, che esiste gia'.
+  // P244 (29/10/2026): richiesti da OTB per le analisi.
+  // - reopen: il cliente clicca l'icona e la chat in questa sessione era gia'
+  //   stata aperta (open parte una volta sola). Le riaperture automatiche del
+  //   widget al cambio pagina non contano: serve il clic sull'icona.
+  //   cambio_pagina = l'ultima apertura era su un'altra pagina (o un refresh).
+  // - impression: una volta per pagina vista, quando l'icona della chat e'
+  //   davvero a schermo (o la chat compare gia' aperta).
+  var PAGINA = String(Date.now()) + Math.random().toString(36).slice(2, 6);
+  var chatAperta = false;
+  function ricordaPagina() { try { sessionStorage.setItem(SESSIONE + 'pagina_apertura', PAGINA); } catch (e) {} }
+  function giaAperta() { try { return !!sessionStorage.getItem(SESSIONE + 'open'); } catch (e) { return false; } }
+  document.addEventListener('click', function (e) {
+    try {
+      if (chatAperta || !giaAperta()) return;
+      var path = e.composedPath ? e.composedPath() : [];
+      for (var i = 0; i < path.length; i++) {
+        var el = path[i];
+        if (el && el.classList && el.classList.contains('chat-widget')) {
+          var prima = '';
+          try { prima = sessionStorage.getItem(SESSIONE + 'pagina_apertura') || ''; } catch (x) {}
+          var d = BASE(); d.cambio_pagina = !!prima && prima !== PAGINA;
+          push('reopen', d);
+          ricordaPagina();
+          return;
+        }
+      }
+    } catch (err) {}
+  }, true);
+  var impressione = false;
+  function segnaImpressione(stato) {
+    if (impressione) return;
+    impressione = true;
+    var d = BASE(); d.stato = stato;
+    push('impression', d);
+  }
+  var giriIcona = 0;
+  var cercaIcona = setInterval(function () {
+    giriIcona++;
+    try {
+      var r = radice();
+      var b = r && r.querySelector('button.chat-widget');
+      if (b && (b.offsetWidth || b.offsetHeight)) segnaImpressione('icona');
+    } catch (e) {}
+    if (impressione || giriIcona > 120) clearInterval(cercaIcona);
+  }, 500);
+
   var viewer = document.querySelector('algho-viewer');
   if (viewer) {
+    viewer.addEventListener('alghoHide', function () { chatAperta = false; });
     viewer.addEventListener('alghoShow', function () {
+      chatAperta = true;
+      segnaImpressione('chat_aperta');
+      if (giaAperta()) return;
+      ricordaPagina();
       segnaApertura(window.__alghoInvioAutomatico ? 'proattivo' : 'utente');
     });
     // ---------- messaggi del cliente: scritti, chip, bottoni ----------
