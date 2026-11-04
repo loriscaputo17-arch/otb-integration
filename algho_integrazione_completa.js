@@ -1729,6 +1729,9 @@ window.__alghoDiagnostica = function () {
       if (a.hasAttribute('data-mr-vai') && stessoSito(a.href) && !(ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button !== 0)) {
         ev.preventDefault();
         ev.stopPropagation();
+        // P248: la guida alle taglie del capo della pagina in cui si e' gia': si apre qui, senza ricaricare
+        var dest = new URL(a.href, window.location.href);
+        if (a.hasAttribute('data-mr-guida') && dest.pathname === window.location.pathname) { apriGuida(dest.hash); return; }
         try { if (window.algho && window.algho.setCurrentUrl) window.algho.setCurrentUrl(a.href); } catch (e) {}
         window.location.assign(a.href);
         return;
@@ -1752,6 +1755,44 @@ window.__alghoDiagnostica = function () {
     if (radice) { clearInterval(t); aggancia(radice); }
     else if (att > 60) clearInterval(t);
   }, 500);
+
+  // P248 (04/11/2026, manipulation #20): la guida alle taglie aperta sulla pagina prodotto. Il flusso scheda
+  // manda il link alla pagina del capo con #mr-guida=<cm|in>[&t=<taglia>]: qui si clicca il bottone "Guida alle
+  // taglie" della pagina (.size-guidelines-button, uguale in tutte le lingue), si sceglie l'unita' (radio
+  // unit-measure, valori cm / in) e la taglia (select choose-your-size), poi si toglie il #mr-guida dall'indirizzo
+  function apriGuida(hash) {
+    var m = String(hash || '').match(/^#mr-guida=(cm|in)(?:&t=([^&]*))?/);
+    if (!m) return false;
+    var unita = m[1], taglia = '';
+    try { taglia = m[2] ? decodeURIComponent(m[2]) : ''; } catch (e) {}
+    try { if (/^#mr-guida=/.test(window.location.hash)) history.replaceState(history.state, '', window.location.pathname + window.location.search); } catch (e) {}
+    var prove = 0;
+    var t = setInterval(function () {
+      prove++;
+      var b = [].slice.call(document.querySelectorAll('.size-guidelines-button')).filter(function (x) { return x.offsetParent; })[0];
+      if (!b) { if (prove > 40) clearInterval(t); return; }   // la pagina non ha la guida: niente
+      clearInterval(t);
+      b.click();
+      var dopo = 0;
+      var u = setInterval(function () {
+        dopo++;
+        var modale = document.getElementById('size-guidelines-modal');
+        var r = modale && modale.querySelector('input[name="unit-measure"][value="' + unita + '"]');
+        if (!r) { if (dopo > 20) clearInterval(u); return; }
+        clearInterval(u);
+        if (!r.checked) { var l = modale.querySelector('label[for="' + r.id + '"]'); (l || r).click(); }
+        var sel = taglia && modale.querySelector('select[name="choose-your-size"]');
+        if (sel) {
+          var norm = function (v) { return String(v || '').replace(/\s+/g, '').toUpperCase(); };
+          var o = [].slice.call(sel.options).filter(function (x) { return x.value && norm(x.value) === norm(taglia); })[0];
+          if (o) { sel.value = o.value; sel.dispatchEvent(new Event('change', { bubbles: true })); }
+        }
+      }, 250);
+    }, 250);
+    return true;
+  }
+  if (/^#mr-guida=/.test(window.location.hash)) apriGuida(window.location.hash);
+  window.marniApriGuida = apriGuida;
 
   // per i flussi: window.marniVai(url) porta il cliente su una pagina del sito
   window.marniVai = function (href) { if (stessoSito(href)) vai(href); else { try { window.open(href, '_blank', 'noopener'); } catch (e) {} } };
