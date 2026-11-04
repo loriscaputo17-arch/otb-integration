@@ -1403,6 +1403,9 @@ ul.bot-language li button img.flag-icon { display: none !important; }
   overflow: hidden !important;
 }
 .chat-panel-container:has(.chat-player-start) .chat-panel-window { top: 56px !important; bottom: 0 !important; height: auto !important; }
+/* P245: conversazione gia' avviata in questa sessione, lo script preme "Inizia"
+   da solo: la schermata non si deve vedere nemmeno per un attimo */
+.chat-panel-container.mr-avvio.mr-avvio-salta { visibility: hidden !important; }
 
 /* 2. la ✕ di troppo a sinistra: e' .chat-panel-close, che la regola di P191
       ([class*="close"]) aveva trasformato in una seconda chiusura. Sulla

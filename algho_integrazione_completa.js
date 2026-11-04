@@ -157,8 +157,11 @@ function impostaIdentitaAlgho() {
     }
     return false;
   }
-  var token = creaAJWTunsigned(u);
   var firma = (u.customerId || '') + '|' + (u.email || '');
+  // P245 (04/11/2026): si rimanda solo se l'identita' e' cambiata, come dice il
+  // controllo ogni 5 s qui sotto. Prima il token partiva a ogni giro.
+  if (firma === _ultimaIdentita) return true;
+  var token = creaAJWTunsigned(u);
   if (window.algho && window.algho.setAJWT) {
     window.algho.setAJWT(token);
     _ultimaIdentita = firma;
@@ -1794,6 +1797,8 @@ function scordaCookieAlgho() {
       // sessionStorage o IndexedDB. Il filtro sul nome prende anche eventuali
       // cookie loro futuri e non tocca quelli del sito (cquid, consenso, misure).
       try { scordaCookieAlgho(); } catch (e) {}
+      // P245: dopo "Ricomincia" la schermata di avvio torna a valere
+      try { if (window.marniScordaAvvio) window.marniScordaAvvio(); } catch (e) {}
       try {
         // P47 (2026-09-21): lo stato della conversazione lato n8n e' legato allo
         // userId di Algho: senza cambiarlo, "Ricomincia" svuotava solo la chat e
@@ -2556,8 +2561,49 @@ function scordaCookieAlgho() {
 // sopra: la larghezza viaggia in --mr-ricomincia-w.
 // ============================================================
 (function pannelloEHeader() {
+  // P245 (04/11/2026): la schermata di avvio (privacy + "Inizia la conversazione")
+  // tornava a ogni cambio pagina anche a conversazione gia' avviata. Il clic su
+  // "Inizia" (o il primo messaggio) si ricorda per la sessione: alle pagine dopo
+  // la schermata resta nascosta e il bottone lo premiamo noi, una volta per
+  // caricamento. "Ricomincia" cancella il ricordo (sezione Ricomincia).
+  var AVVIO = 'marni_avvio_fatto';
+  function avvioFatto() { try { return sessionStorage.getItem(AVVIO) === '1'; } catch (e) { return false; } }
+  function ricordaAvvio() { try { sessionStorage.setItem(AVVIO, '1'); } catch (e) {} }
+  window.marniScordaAvvio = function () { try { sessionStorage.removeItem(AVVIO); } catch (e) {} };
+  var saltato = false, agganciato = false;
+
+  function saltaAvvio(pan) {
+    if (!avvioFatto()) return;
+    var b = pan.querySelector('.chat-player-start .animated-button');
+    if (!b) return;
+    // stile in linea: il CSS in uso di solito e' il tema di Algho, non il nostro
+    pan.classList.add('mr-avvio-salta');
+    pan.style.setProperty('visibility', 'hidden', 'important');
+    if (saltato) return;
+    saltato = true;
+    try { b.click(); } catch (e) {}
+    // se il player non chiude l'avvio, la schermata si rivede: mai un pannello vuoto
+    setTimeout(function () { mostra(pan); }, 2500);
+  }
+  function mostra(pan) {
+    pan.classList.remove('mr-avvio-salta');
+    pan.style.removeProperty('visibility');
+  }
+
+  function aggancia(radice) {
+    if (agganciato) return;
+    agganciato = true;
+    radice.addEventListener('click', function (ev) {
+      var t = ev.target;
+      if (ev.isTrusted && t && t.closest && t.closest('.chat-player-start .animated-button')) ricordaAvvio();
+    }, true);
+    var host = document.querySelector('algho-viewer');
+    if (host) host.addEventListener('alghoPreSendMessage', ricordaAvvio);
+  }
+
   function marca(radice) {
     try {
+      aggancia(radice);
       if (!radice.querySelector('.chat-panel-container')) {
         var c0 = radice.querySelector('.chat-body');
         if (c0) c0.classList.remove('mr-avvio-attivo');
@@ -2567,6 +2613,7 @@ function scordaCookieAlgho() {
         var lingue = !!pan.querySelector('.language-title, li.language-item');
         pan.classList.toggle('mr-avvio', avvio);
         pan.classList.toggle('mr-lingue', !avvio && lingue);
+        if (avvio) saltaAvvio(pan); else if (pan.classList.contains('mr-avvio-salta')) mostra(pan);
         // P195: la schermata di avvio ha un header suo (etichetta, mappamondo,
         // chiusura). Quello della chat resta visibile sotto e si vedono due
         // mappamondi e due chiusure sovrapposte: finche' c'e' l'avvio, via.
