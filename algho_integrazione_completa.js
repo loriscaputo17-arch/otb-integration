@@ -1723,6 +1723,16 @@ window.__alghoDiagnostica = function () {
       if (!a) return;
       var href = a.getAttribute('href') || '';
       if (!href || href.charAt(0) === '#' || /^(javascript|mailto|tel):/i.test(href)) return;
+      // P246 (04/11/2026): i link delle manipulation (data-mr-vai, messi dai flussi v8c: pagina della
+      // boutique, store locator...) portano il cliente sulla pagina NELLA STESSA SCHEDA, come chiesto dal
+      // cliente. La chat lo segue: lo storico torna perche' il cliente ha gia' scritto (vedi P245).
+      if (a.hasAttribute('data-mr-vai') && stessoSito(a.href) && !(ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button !== 0)) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        try { if (window.algho && window.algho.setCurrentUrl) window.algho.setCurrentUrl(a.href); } catch (e) {}
+        window.location.assign(a.href);
+        return;
+      }
       // il link chiede lui la nuova scheda (card prodotto, bottoni dei flussi): lo lasciamo
       // fare al browser, cosi' la conversazione non si perde
       if ((a.getAttribute('target') || '').toLowerCase() === '_blank') return;
