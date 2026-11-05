@@ -1771,13 +1771,15 @@ window.__alghoDiagnostica = function () {
       prove++;
       var b = [].slice.call(document.querySelectorAll('.size-guidelines-button')).filter(function (x) { return x.offsetParent; })[0];
       if (!b) { if (prove > 40) clearInterval(t); return; }   // la pagina non ha la guida: niente
+      // appena caricata la pagina il bottone c'e' ma non e' ancora attivo (05/11: il clic andava perso):
+      // si riclicca finche' il pannello non e' aperto, al massimo 10 volte
+      var modale = document.getElementById('size-guidelines-modal');
+      if (!(modale && /\bis-open\b/.test(modale.className))) { if (prove % 4 === 1) b.click(); if (prove > 40) clearInterval(t); return; }
       clearInterval(t);
-      b.click();
       var dopo = 0;
       var u = setInterval(function () {
         dopo++;
-        var modale = document.getElementById('size-guidelines-modal');
-        var r = modale && modale.querySelector('input[name="unit-measure"][value="' + unita + '"]');
+        var r = modale.querySelector('input[name="unit-measure"][value="' + unita + '"]');
         if (!r) { if (dopo > 20) clearInterval(u); return; }
         clearInterval(u);
         if (!r.checked) { var l = modale.querySelector('label[for="' + r.id + '"]'); (l || r).click(); }
