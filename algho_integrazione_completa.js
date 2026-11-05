@@ -1,4 +1,4 @@
-​// ============================================================
+// ============================================================
 // Caricato dal sito con un solo tag:
 //   <script src="...algho_integrazione_completa.js" defer></script>
 // Tutto sta dentro una funzione: fuori restano SOLO le funzioni che i bottoni
@@ -229,60 +229,6 @@ function linguaPagina() {
   return /^(it|en|fr|de|es|ja|ko)$/.test(l) ? l : 'en';
 }
 
-// ---------- MEMORIA DELLE SCELTE IN CHAT (05/11/2026) ----------
-// La taglia scelta nel pannello (e il bottone "Aggiungi al carrello") mettono il capo nel carrello del sito senza
-// passare dalla chat: la chat non lo sa. Sulla pagina carrello ogni aggiunta ricarica la pagina, e la chat ridisegna
-// la cronologia da zero: il pannello delle taglie si riapriva sul messaggio gia' usato, e il cliente aggiungeva lo
-// stesso capo a ogni giro ("tutto il look" nel carrello, conversazione 4104817). Qui si ricorda, per questa scheda
-// del browser, quali pannelli si sono gia' aperti e cosa si e' gia' aggiunto. La chiave di un blocco e' il suo
-// contenuto (EAN e messaggi) piu' quanti blocchi uguali lo precedono nella chat: resta la stessa quando la
-// cronologia si ridisegna. Vale per l'utente di Algho di adesso (Ricomincia lo cambia) e scade dopo tre ore ferma.
-var MemoriaChat = (function () {
-  var CHIAVE = 'marni_chat_memoria', DURATA = 3 * 60 * 60 * 1000;
-  function utente() { return leggiCookie('_algho_user_id') || '-'; }
-  function nuova() { return { u: utente(), t: Date.now(), visti: {}, fatti: {} }; }
-  function leggi() {
-    try {
-      var m = JSON.parse(sessionStorage.getItem(CHIAVE) || 'null');
-      return m && m.u === utente() && Date.now() - (m.t || 0) < DURATA ? m : nuova();
-    } catch (e) { return nuova(); }
-  }
-  function scrivi(m) { try { m.t = Date.now(); sessionStorage.setItem(CHIAVE, JSON.stringify(m)); } catch (e) {} }
-  function impronta(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
-  function firma(x) {
-    var dati = Array.prototype.map.call(x.querySelectorAll('[data-m], [data-ids]'), function (y) { return (y.getAttribute('data-ids') || '') + '|' + (y.getAttribute('data-m') || ''); });
-    return impronta(dati.join(';') + '#' + (x.getAttribute('data-ids') || ''));
-  }
-  // selettore: i blocchi dello stesso tipo nella chat (senza le copie dentro il pannello)
-  function chiave(radice, el, selettore) {
-    var mia = firma(el), n = 0, tutti = radice.querySelectorAll(selettore);
-    for (var i = 0; i < tutti.length && tutti[i] !== el; i++) if (firma(tutti[i]) === mia) n++;
-    return mia + '.' + n;
-  }
-  // l'esito di un'aggiunta, come lo scrive il pannello: la frase e "Vai al carrello", prima di un elemento
-  function mostra(prima, dati) {
-    if (!prima || !prima.parentNode || !dati) return;
-    var p = document.createElement('p');
-    p.className = 'mr-intro mr-esito-taglia';
-    p.textContent = dati.testo || '';
-    prima.parentNode.insertBefore(p, prima);
-    if (!dati.href) return;
-    var a = document.createElement('a');
-    a.className = 'mr-card-azione'; a.href = dati.href;
-    a.innerHTML = '<span class="mr-card-azione-testo"></span><span class="mr-card-azione-freccia">↗</span>';
-    a.firstChild.textContent = dati.vai || '';
-    prima.parentNode.insertBefore(a, p.nextSibling);
-  }
-  return {
-    chiave: chiave, mostra: mostra,
-    visto: function (k) { return !!leggi().visti[k]; },
-    vedi: function (k) { var m = leggi(); m.visti[k] = 1; scrivi(m); },
-    fatto: function (k) { return leggi().fatti[k] || null; },
-    fai: function (k, dati) { var m = leggi(); m.fatti[k] = dati; m.visti[k] = 1; scrivi(m); },
-    scorda: function () { try { sessionStorage.removeItem(CHIAVE); } catch (e) {} }
-  };
-})();
-
 // ---------- AMBIENTE ----------
 // Lo stesso file sta su staging e su produzione: lo decide il dominio, non chi
 // lo incolla. Senza questo, chi mette il tag su www.marni.com si porta dietro
@@ -452,21 +398,11 @@ document.body.appendChild(script);
   // l'EAN della variante (data-ids). Il carrello vero e' quello del sito, e ci
   // si scrive da qui con la sessione del cliente: il flusso trova la variante,
   // il browser la aggiunge. Nell'answerText non c'e' JavaScript, solo la classe.
-  function aggiungiAlCarrello(radice, el) {
+  function aggiungiAlCarrello(el) {
     var ids = String(el.getAttribute('data-ids') || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
     if (!ids.length) return;
-    var loc = (location.pathname.match(/^\/([a-z]{2}-[a-z]{2})\//i) || [null, 'it-it'])[1];
-    if (!window.trasferisciAlCarrello) { location.href = '/' + loc + '/cart'; return; }
-    // 05/11: si ricorda l'aggiunta prima di andare al carrello. Tornando, al posto del bottone c'e' "Aggiunto al
-    // carrello" (prima il bottone restava, e un secondo tocco aggiungeva lo stesso capo un'altra volta)
-    var L = TT[linguaPagina()] || TT.en;
-    var k = el.getAttribute('data-mr-k') || MemoriaChat.chiave(radice, el, '.mr-aggiungi');
-    var carta = el.parentNode && el.parentNode.querySelector ? el.parentNode.querySelector('.mr-card-nome') : null;
-    var nome = el.getAttribute('data-nome') || (carta ? carta.textContent : '');
-    window.trasferisciAlCarrello(ids, false).then(function (fatti) {
-      if (fatti) MemoriaChat.fai(k, { testo: L.fatto + nome + '.', vai: L.vai, href: '/' + loc + '/cart' });
-      location.href = '/' + loc + '/cart';
-    });
+    if (window.trasferisciAlCarrello) window.trasferisciAlCarrello(ids);
+    else { var loc = (location.pathname.match(/^\/([a-z]{2}-[a-z]{2})\//i) || [null, 'it-it'])[1]; location.href = '/' + loc + '/cart'; }
   }
   function chiudiPannello(radice) {
     var p = radice.querySelector('.mr-sheet');
@@ -507,8 +443,6 @@ document.body.appendChild(script);
         a.innerHTML = '<span class="mr-card-azione-testo"></span><span class="mr-card-azione-freccia">↗</span>';
         a.firstChild.textContent = L.vai;
         esito.parentNode && esito.parentNode.insertBefore(a, esito.nextSibling);
-        // 05/11: ricordata prima di sincronizzare, che sulla pagina carrello ricarica la pagina
-        if (k) MemoriaChat.fai(k, { testo: esito.textContent, vai: L.vai, href: '/' + loc + '/cart' });
         try { if (window.__sincronizzaCarrello) window.__sincronizzaCarrello(); } catch (e) {}
         try { eventoGA('add_to_cart', { source: 'chat', items: ids.map(function (x) { return { item_id: x }; }) }); } catch (e) {}
       } else {
@@ -536,18 +470,7 @@ document.body.appendChild(script);
       if (agg) {
         ev.preventDefault();
         ev.stopPropagation();
-        aggiungiAlCarrello(radice, agg);
-        return;
-      }
-      // 05/11/2026: un'azione dentro la risposta (il "Prossimo capo" del look intero nel carrello) manda data-m come un
-      // messaggio del cliente. Sta nella risposta e non fra i bottoni di Algho, che dopo un ricarico non tornano
-      var inv = risali(ev.target, radice, 'mr-invia');
-      if (inv) {
-        ev.preventDefault();
-        ev.stopPropagation();
-        if (inv.getAttribute('data-mr-inviato')) return;   // un tocco solo
-        inv.setAttribute('data-mr-inviato', '1');
-        try { if (window.algho && window.algho.sendUserMessage) window.algho.sendUserMessage(inv.getAttribute('data-m') || ''); } catch (e) {}
+        aggiungiAlCarrello(agg);
         return;
       }
       // P232 (14/10/2026): le taglie del pannello dal basso. Sono <span> e non
@@ -1366,18 +1289,6 @@ function eventoGA(nome, dati) {
     }catch(e){}
   }
 
-  // 05/11/2026: l'esito scritto dallo script stesso (.mr-esito-taglia) non conta: chi ha aggiunto ha gia'
-  // sincronizzato, e dopo un ricarico l'esito si riscrive dalla memoria (MemoriaChat): contarlo ricaricava di nuovo
-  // la pagina carrello, senza fine
-  function testoSenzaEsiti(n){
-    var el = n.nodeType === 1 ? n : n.parentNode;
-    if (el && el.closest && el.closest('.mr-esito-taglia')) return '';
-    if (n.nodeType !== 1 || !n.querySelector || !n.querySelector('.mr-esito-taglia')) return n.textContent || '';
-    var c = n.cloneNode(true);
-    Array.prototype.forEach.call(c.querySelectorAll('.mr-esito-taglia'), function(e){ e.parentNode.removeChild(e); });
-    return c.textContent || '';
-  }
-
   // La chat non espone un evento di "aggiunta riuscita": osserviamo le risposte.
   // Quando compare la conferma di un'aggiunta, allineiamo il sito.
   function osserva(){
@@ -1388,7 +1299,7 @@ function eventoGA(nome, dati) {
         for (var i = 0; i < muts.length; i++) {
           var nodi = muts[i].addedNodes || [];
           for (var j = 0; j < nodi.length; j++) {
-            var t = testoSenzaEsiti(nodi[j]);
+            var t = (nodi[j].textContent || '');
             if (/aggiunt[oa] al carrello|added to (your )?(bag|cart)|Il tuo carrello \(/i.test(t)) {
               aggiornaSito();
               return;
@@ -1939,8 +1850,6 @@ function scordaCookieAlgho() {
       // sessionStorage o IndexedDB. Il filtro sul nome prende anche eventuali
       // cookie loro futuri e non tocca quelli del sito (cquid, consenso, misure).
       try { scordaCookieAlgho(); } catch (e) {}
-      // 05/11/2026: i pannelli aperti e le aggiunte ricordate erano della conversazione di prima
-      try { MemoriaChat.scorda(); } catch (e) {}
       // P245: dopo "Ricomincia" la schermata di avvio torna a valere
       try { if (window.marniScordaAvvio) window.marniScordaAvvio(); } catch (e) {}
       try {
@@ -2134,10 +2043,8 @@ function scordaCookieAlgho() {
   function prendi(radice, blocco, tipo) {
     if (!blocco || blocco.dataset.mrSheet === '1') return;
     blocco.dataset.mrSheet = '1';
-    // P236: lega il pannello al suo messaggio, per scriverci l'esito dell'aggiunta. 05/11: una chiave che resta la
-    // stessa quando la cronologia si ridisegna (MemoriaChat), non piu' casuale
-    var k = MemoriaChat.chiave(radice, blocco, (tipo === 'colore' ? '.mr-colori' : '.mr-taglie') + ':not(.mr-sheet-elenco)');
-    blocco.setAttribute('data-mr-k', k);
+    // P236: lega il pannello al suo messaggio, per scriverci l'esito dell'aggiunta
+    blocco.setAttribute('data-mr-k', 'k' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
 
     // il titolo: la frase che il flusso ha scritto sopra le scelte
     var intro = blocco.previousElementSibling;
@@ -2165,26 +2072,7 @@ function scordaCookieAlgho() {
     // P236: !important, il foglio della chat mette display:flex !important su .mr-taglie e il blocco restava visibile
     blocco.style.setProperty('display', 'none', 'important');
 
-    // 05/11/2026: la taglia gia' messa nel carrello: l'esito al posto del bottone per riaprire, e niente pannello
-    var fatto = MemoriaChat.fatto(k);
-    if (fatto) { riapri.style.setProperty('display', 'none', 'important'); MemoriaChat.mostra(blocco, fatto); return; }
-    // il pannello si apre da solo una volta sola: quando la cronologia si ridisegna (la pagina carrello si ricarica a
-    // ogni aggiunta) resta il bottone per riaprirlo. Prima si riapriva a ogni ricarico, e ogni taglia scelta
-    // aggiungeva il capo un'altra volta
-    if (MemoriaChat.visto(k)) return;
-    MemoriaChat.vedi(k);
     apri(radice, titolo, elenco, tipo === 'taglia');
-  }
-
-  // 05/11/2026: il bottone "Aggiungi al carrello" (mr-aggiungi) gia' usato: dopo il ritorno dal carrello, l'esito al
-  // posto del bottone (il blocco resta nascosto, cosi' la chiave dei bottoni uguali dopo non cambia)
-  function aggiunto(radice, b) {
-    var k = MemoriaChat.chiave(radice, b, '.mr-aggiungi');
-    b.setAttribute('data-mr-k', k);
-    var fatto = MemoriaChat.fatto(k);
-    if (!fatto) return;
-    b.style.setProperty('display', 'none', 'important');
-    MemoriaChat.mostra(b, fatto);
   }
 
   function scansiona(radice) {
@@ -2197,7 +2085,6 @@ function scordaCookieAlgho() {
     Array.prototype.forEach.call(radice.querySelectorAll('.mr-colori'), function (b) {
       if (b.querySelector('button')) prendi(radice, b, 'colore');
     });
-    Array.prototype.forEach.call(radice.querySelectorAll('.mr-aggiungi:not([data-mr-k])'), function (b) { aggiunto(radice, b); });
   }
 
   function osserva(radice) {
