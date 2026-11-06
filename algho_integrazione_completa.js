@@ -1821,6 +1821,8 @@ window.__alghoDiagnostica = function () {
         // P248: la guida alle taglie del capo della pagina in cui si e' gia': si apre qui, senza ricaricare
         var dest = new URL(a.href, window.location.href);
         if (a.hasAttribute('data-mr-guida') && dest.pathname === window.location.pathname) { apriGuida(dest.hash); return; }
+        // P249: il modulo dell'ordine della pagina d'aiuto in cui si e' gia': il numero si scrive qui, senza ricaricare
+        if (/^#mr-ordine=/.test(dest.hash) && dest.pathname === window.location.pathname && dest.search === window.location.search) { compilaOrdine(dest.hash); return; }
         try { if (window.algho && window.algho.setCurrentUrl) window.algho.setCurrentUrl(a.href); } catch (e) {}
         window.location.assign(a.href);
         return;
@@ -1884,6 +1886,35 @@ window.__alghoDiagnostica = function () {
   }
   if (/^#mr-guida=/.test(window.location.hash)) apriGuida(window.location.hash);
   window.marniApriGuida = apriGuida;
+
+  // P249 (06/11/2026, manipulation #06/#16/#18): il cliente ospite portato dalla chat sulla pagina d'aiuto
+  // dell'ordine ("Il tuo ordine", "Resi e cambi"). Il flusso ordini manda il link con #mr-ordine=<numero>: qui
+  // si scrive il numero nel modulo della pagina (input orderNumber, uguale in tutte le lingue) e si mette il
+  // cursore sull'email, che scrive il cliente (l'email non va mai nei link). Poi si toglie il #mr-ordine
+  function compilaOrdine(hash) {
+    var m = String(hash || '').match(/^#mr-ordine=([A-Z]{2}\d{8})$/i);
+    if (!m) return false;
+    var numero = m[1].toUpperCase();
+    try { if (/^#mr-ordine=/.test(window.location.hash)) history.replaceState(history.state, '', window.location.pathname + window.location.search); } catch (e) {}
+    var prove = 0;
+    var t = setInterval(function () {
+      prove++;
+      var n = [].slice.call(document.querySelectorAll('input[name="orderNumber"]')).filter(function (x) { return x.offsetParent; })[0];
+      if (!n) { if (prove > 40) clearInterval(t); return; }   // la pagina non ha il modulo: niente
+      clearInterval(t);
+      // il setter nativo: un campo gestito da uno script della pagina vede il valore nuovo
+      try { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(n, numero); } catch (e) { n.value = numero; }
+      n.dispatchEvent(new Event('input', { bubbles: true }));
+      n.dispatchEvent(new Event('change', { bubbles: true }));
+      var f = n.form || document;
+      var e = f.querySelector('input[name="orderEmail"]');
+      try { (e || n).scrollIntoView({ block: 'center' }); } catch (x) {}
+      try { if (e && !e.value) e.focus({ preventScroll: true }); } catch (x) {}
+    }, 250);
+    return true;
+  }
+  if (/^#mr-ordine=/.test(window.location.hash)) compilaOrdine(window.location.hash);
+  window.marniCompilaOrdine = compilaOrdine;
 
   // per i flussi: window.marniVai(url) porta il cliente su una pagina del sito
   window.marniVai = function (href) { if (stessoSito(href)) vai(href); else { try { window.open(href, '_blank', 'noopener'); } catch (e) {} } };
