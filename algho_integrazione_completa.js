@@ -2461,8 +2461,9 @@ function scordaCookieAlgho() {
 // ============================================================
 (function () {
   var MARGINE = 12;     // un filo d'aria sopra la risposta
-  var QUIETE  = 500;    // per quanto l'altezza deve stare ferma prima di lasciare
-  var LIMITE  = 4000;   // tetto massimo: oltre non si insiste
+  // P250: il player torna in fondo anche molti secondi dopo (le ultime foto, la fine della voce): l'inizio
+  // si tiene finche' il cliente non tocca la chat o non arriva un'altra risposta, al massimo LIMITE
+  var LIMITE  = 60000;  // tetto massimo: oltre non si insiste
 
   function zonaDi(radice) {
     return radice.querySelector('.container-message-display') ||
@@ -2487,42 +2488,74 @@ function scordaCookieAlgho() {
     return null;
   }
 
-  function allinea(zona, blocco) {
+  // P250 (06/11/2026): il player divide una risposta in piu' bolle (testo,
+  // card, link, chiusura): l'ultima e' spesso una frase corta che ci sta nello
+  // schermo, e allineando solo quella la vista restava in fondo. La risposta
+  // comincia dalla prima bolla piena di Algho dopo l'ultimo messaggio del
+  // cliente (.myself-message). Senza le bolle del player (.mr-wrap) come prima
+  function inizioRisposta(radice) {
+    var t = bolle(radice), io = -1;
+    for (var i = t.length - 1; i >= 0; i--) if (t[i].querySelector && t[i].querySelector('.myself-message')) { io = i; break; }
+    if (io < 0) return ultimaPiena(radice);
+    for (var j = io + 1; j < t.length; j++) {
+      var el = t[j];
+      if (el.getBoundingClientRect().height > 8 && String(el.textContent || '').trim()) return el;
+    }
+    return null;
+  }
+
+  // blocco: la prima bolla della risposta; la risposta va da li' alla fine
+  // dell'ultima bolla piena
+  function estensione(radice, blocco) {
+    var rb = blocco.getBoundingClientRect(), fine = ultimaPiena(radice);
+    var giu = fine ? Math.max(fine.getBoundingClientRect().bottom, rb.bottom) : rb.bottom;
+    return { top: rb.top, height: giu - rb.top };
+  }
+
+  function allinea(zona, blocco, radice) {
     var rz = zona.getBoundingClientRect();
-    var rb = blocco.getBoundingClientRect();
+    if (rz.height < 50) return false;   // chat chiusa
+    var rb = estensione(radice, blocco);
     // se la risposta entra tutta nello schermo va bene com'e': il
     // comportamento normale del player resta intatto
-    if (rb.height <= rz.height - MARGINE) return;
+    if (rb.height <= rz.height - MARGINE) return false;
     var delta = rb.top - rz.top - MARGINE;
-    if (Math.abs(delta) < 2) return;
+    if (Math.abs(delta) < 2) return false;
     zona.scrollTop += delta;
+    return true;
   }
 
   // si segue la risposta mentre cresce (testo, foto dei prodotti) e si
-  // smette quando l'altezza sta ferma o quando il cliente scorre
-  function segui(zona, blocco) {
-    var avvio = Date.now(), ferma = Date.now(), altezza = -1, mollato = false;
-    function stop() { mollato = true; }
+  // smette quando il cliente tocca la chat, quando arriva un'altra risposta o dopo LIMITE
+  function segui(zona, blocco, radice) {
+    var avvio = Date.now(), mollato = false;
+    // il cliente ha scorso: quella risposta non si riallinea piu', nemmeno quando arriva un'altra sua bolla
+    function stop() { mollato = true; blocco.__mrMollato = true; }
+    blocco.__mrSegue = true;
+    // anche il trascinamento della barra di scorrimento (pointerdown) e' il cliente che scorre
     zona.addEventListener('wheel', stop, { passive: true });
     zona.addEventListener('touchmove', stop, { passive: true });
+    zona.addEventListener('pointerdown', stop, { passive: true });
     zona.addEventListener('keydown', stop, true);
     function pulisci() {
       try {
         zona.removeEventListener('wheel', stop);
         zona.removeEventListener('touchmove', stop);
+        zona.removeEventListener('pointerdown', stop);
         zona.removeEventListener('keydown', stop, true);
       } catch (e) {}
     }
     (function giro() {
       if (mollato) { pulisci(); return; }
       try {
-        var h = Math.round(blocco.getBoundingClientRect().height);
-        if (h !== altezza) { altezza = h; ferma = Date.now(); }
-        allinea(zona, blocco);
+        allinea(zona, blocco, radice);
         var scaduto = Date.now() - avvio > LIMITE;
-        var quieta  = Date.now() - ferma > QUIETE && Date.now() - avvio > 300;
-        if (!scaduto && !quieta) { requestAnimationFrame(giro); return; }
+        // un'altra risposta (il cliente ha scritto): questa non si tiene piu'
+        var altra = inizioRisposta(radice) !== blocco;
+        // setTimeout e non requestAnimationFrame: va anche con la scheda in secondo piano
+        if (!scaduto && !altra && blocco.isConnected) { setTimeout(giro, 100); return; }
       } catch (e) {}
+      blocco.__mrSegue = false;
       pulisci();
     })();
   }
@@ -2531,11 +2564,16 @@ function scordaCookieAlgho() {
     var zona = zonaDi(radice);
     if (!zona) return;
     if (zona.getBoundingClientRect().height < 50) return;   // chat chiusa
-    var ultimo = ultimaPiena(radice);
-    if (!ultimo || ultimo.__mrInizioVisto) return;
-    ultimo.__mrInizioVisto = true;
+    var inizio = inizioRisposta(radice);
+    if (!inizio) return;
+    // una bolla nuova della stessa risposta (arrivano a distanza di secondi): il player torna in fondo, si
+    // riallinea di nuovo, se il cliente non ha scorso e non lo si sta gia' facendo
+    var fine = ultimaPiena(radice);
+    if (inizio.__mrInizioVisto && (inizio.__mrMollato || inizio.__mrSegue || fine === inizio.__mrFine)) return;
+    inizio.__mrInizioVisto = true;
+    inizio.__mrFine = fine;
     // prima si lascia finire al player il suo scorrimento, poi si riallinea
-    setTimeout(function () { segui(zona, ultimo); }, 80);
+    setTimeout(function () { segui(zona, inizio, radice); }, 80);
   }
 
   function osserva(radice) {
@@ -2545,7 +2583,7 @@ function scordaCookieAlgho() {
     // i messaggi gia' sullo schermo non si toccano: su una conversazione
     // ripresa sarebbe uno scatto senza motivo
     try {
-      Array.prototype.forEach.call(bolle(radice), function (w) { w.__mrInizioVisto = true; });
+      Array.prototype.forEach.call(bolle(radice), function (w) { w.__mrInizioVisto = true; w.__mrMollato = true; });
     } catch (e) {}
     var mo = new MutationObserver(function () { scansiona(radice); });
     mo.observe(zona || radice, { childList: true, subtree: true, characterData: true });
