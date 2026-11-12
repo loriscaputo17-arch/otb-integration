@@ -1822,29 +1822,39 @@ window.__alghoDiagnostica = function () {
     window.location.assign(a.href);
   }
 
-  // P252 (12/11/2026, MCR-4795 MCR-4796): quando il cliente chiede lui di aprire lo store locator o il dettaglio
-  // dell'ordine, i flussi negozi e ordini mettono data-mr-auto sul link e la pagina si apre da sola, come la post
-  // action del chip. Solo quei link (le proposte restano da toccare), una volta sola, e solo per una risposta
-  // arrivata dopo che il cliente ha usato la chat in questa pagina: lo storico che torna dopo il cambio pagina
-  // (P245) non riapre niente. Sulla pagina in cui si e' gia' non si ricarica
-  var ATTESA_AUTO = 1200;   // il tempo di leggere la frase
+  // P252 (12/11/2026, MCR-4795 MCR-4796): quando il cliente chiede lui di aprire lo store locator, la pagina di una
+  // boutique o il dettaglio dell'ordine, i flussi negozi e ordini mettono data-mr-auto sul link e la pagina si apre
+  // da sola, come la post action del chip. Solo quei link (le proposte restano da toccare). Si apre solo una
+  // risposta NUOVA: arrivata almeno PAUSA_AUTO dopo un messaggio del cliente comparso in questa pagina (la risposta
+  // di n8n ci mette qualche secondo). Lo storico che torna dopo il cambio pagina (P245) arriva tutto insieme,
+  // domande e risposte, e non riapre niente. Sulla pagina in cui si e' gia' non si ricarica
+  var ATTESA_AUTO = 1200;    // il tempo di leggere la frase
+  var PAUSA_AUTO = 1000;     // una risposta vera arriva almeno tanto dopo il messaggio del cliente
+  var FINESTRA_AUTO = 120000; // e non oltre
   function apriDaSolo(radice) {
+    var ora = Date.now();
+    // il messaggio del cliente appena comparso (dopo che ha usato la chat in questa pagina)
+    var mie = radice.querySelectorAll('.myself-message');
+    for (var k = 0; k < mie.length; k++) {
+      if (mie[k].__mrVisto) continue;
+      mie[k].__mrVisto = true;
+      if (radice.__mrUsata) radice.__mrInvio = ora;
+    }
     var tutti = radice.querySelectorAll('a[data-mr-auto][data-mr-vai]'), nuovo = null;
     for (var i = 0; i < tutti.length; i++) {
       if (tutti[i].__mrVisto) continue;
       tutti[i].__mrVisto = true;
-      if (radice.__mrUsata) nuovo = tutti[i];
+      var dopo = ora - (radice.__mrInvio || 0);
+      if (radice.__mrInvio && dopo >= PAUSA_AUTO && dopo <= FINESTRA_AUTO) nuovo = tutti[i];
     }
     if (!nuovo || !stessoSito(nuovo.href)) return;
-    // una pagina si apre da sola una volta per sessione: lo storico riletto su un'altra pagina non ci riporta
-    // il cliente (una seconda richiesta uguale lascia il link da toccare). Senza sessionStorage non si apre niente
-    var chiave = 'marni_auto_aperte';
+    // rete di sicurezza contro un giro a vuoto: la stessa pagina non si riapre da sola entro 20 secondi
+    var chiave = 'marni_auto_aperta';
     try {
-      var fatte = JSON.parse(sessionStorage.getItem(chiave) || '[]');
-      if (fatte.indexOf(nuovo.href) >= 0) return;
-      fatte.push(nuovo.href);
-      sessionStorage.setItem(chiave, JSON.stringify(fatte.slice(-20)));
-    } catch (e) { return; }
+      var p = JSON.parse(sessionStorage.getItem(chiave) || 'null');
+      if (p && p.h === nuovo.href && ora - p.t < 20000) return;
+      sessionStorage.setItem(chiave, JSON.stringify({ h: nuovo.href, t: ora }));
+    } catch (e) {}
     setTimeout(function () { if (nuovo.isConnected) segui(nuovo, true); }, ATTESA_AUTO);
   }
 
