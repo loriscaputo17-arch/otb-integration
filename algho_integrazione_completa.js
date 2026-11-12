@@ -1808,9 +1808,55 @@ window.__alghoDiagnostica = function () {
     if (!w) window.location.assign(href); // popup bloccato: meglio la pagina che niente
   }
 
+  // il link di una manipulation (data-mr-vai), nella stessa scheda. auto: aperto da solo (P252), e sulla pagina
+  // in cui si e' gia' non si ricarica niente
+  function segui(a, auto) {
+    var dest = new URL(a.href, window.location.href);
+    var qui = dest.pathname === window.location.pathname && dest.search === window.location.search;
+    // P248: la guida alle taglie del capo della pagina in cui si e' gia': si apre qui, senza ricaricare
+    if (a.hasAttribute('data-mr-guida') && dest.pathname === window.location.pathname) { apriGuida(dest.hash); return; }
+    // P249: il modulo dell'ordine della pagina d'aiuto in cui si e' gia': il numero si scrive qui, senza ricaricare
+    if (/^#mr-ordine=/.test(dest.hash) && qui) { compilaOrdine(dest.hash); return; }
+    if (auto && qui) return;
+    try { if (window.algho && window.algho.setCurrentUrl) window.algho.setCurrentUrl(a.href); } catch (e) {}
+    window.location.assign(a.href);
+  }
+
+  // P252 (12/11/2026, MCR-4795 MCR-4796): quando il cliente chiede lui di aprire lo store locator o il dettaglio
+  // dell'ordine, i flussi negozi e ordini mettono data-mr-auto sul link e la pagina si apre da sola, come la post
+  // action del chip. Solo quei link (le proposte restano da toccare), una volta sola, e solo per una risposta
+  // arrivata dopo che il cliente ha usato la chat in questa pagina: lo storico che torna dopo il cambio pagina
+  // (P245) non riapre niente. Sulla pagina in cui si e' gia' non si ricarica
+  var ATTESA_AUTO = 1200;   // il tempo di leggere la frase
+  function apriDaSolo(radice) {
+    var tutti = radice.querySelectorAll('a[data-mr-auto][data-mr-vai]'), nuovo = null;
+    for (var i = 0; i < tutti.length; i++) {
+      if (tutti[i].__mrVisto) continue;
+      tutti[i].__mrVisto = true;
+      if (radice.__mrUsata) nuovo = tutti[i];
+    }
+    if (!nuovo || !stessoSito(nuovo.href)) return;
+    // una pagina si apre da sola una volta per sessione: lo storico riletto su un'altra pagina non ci riporta
+    // il cliente (una seconda richiesta uguale lascia il link da toccare). Senza sessionStorage non si apre niente
+    var chiave = 'marni_auto_aperte';
+    try {
+      var fatte = JSON.parse(sessionStorage.getItem(chiave) || '[]');
+      if (fatte.indexOf(nuovo.href) >= 0) return;
+      fatte.push(nuovo.href);
+      sessionStorage.setItem(chiave, JSON.stringify(fatte.slice(-20)));
+    } catch (e) { return; }
+    setTimeout(function () { if (nuovo.isConnected) segui(nuovo, true); }, ATTESA_AUTO);
+  }
+
   function aggancia(radice) {
     if (!radice || radice.__marniNavAgganciata) return;
     radice.__marniNavAgganciata = true;
+    // P252: la chat usata in questa pagina (un clic, un tasto, il microfono); quello che c'e' gia' e' storico
+    function usata() { radice.__mrUsata = true; }
+    radice.addEventListener('pointerdown', usata, true);
+    radice.addEventListener('keydown', usata, true);
+    apriDaSolo(radice);
+    try { new MutationObserver(function () { apriDaSolo(radice); }).observe(radice, { childList: true, subtree: true }); } catch (e) {}
     radice.addEventListener('click', function (ev) {
       var a = ev.target && ev.target.closest ? ev.target.closest('a[href]') : null;
       if (!a) return;
@@ -1822,13 +1868,7 @@ window.__alghoDiagnostica = function () {
       if (a.hasAttribute('data-mr-vai') && stessoSito(a.href) && !(ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button !== 0)) {
         ev.preventDefault();
         ev.stopPropagation();
-        // P248: la guida alle taglie del capo della pagina in cui si e' gia': si apre qui, senza ricaricare
-        var dest = new URL(a.href, window.location.href);
-        if (a.hasAttribute('data-mr-guida') && dest.pathname === window.location.pathname) { apriGuida(dest.hash); return; }
-        // P249: il modulo dell'ordine della pagina d'aiuto in cui si e' gia': il numero si scrive qui, senza ricaricare
-        if (/^#mr-ordine=/.test(dest.hash) && dest.pathname === window.location.pathname && dest.search === window.location.search) { compilaOrdine(dest.hash); return; }
-        try { if (window.algho && window.algho.setCurrentUrl) window.algho.setCurrentUrl(a.href); } catch (e) {}
-        window.location.assign(a.href);
+        segui(a, false);
         return;
       }
       // il link chiede lui la nuova scheda (card prodotto, bottoni dei flussi): lo lasciamo
