@@ -296,6 +296,9 @@ var AMBIENTE = (function () {
         // P243 (2026-10-29): bot nuovo su staging, come richiesto.
         // Il precedente era d365d904d2357c42159c4ef242a86980 (prima ancora c1cf74305c4c42d8eaf9f2ec1d72375d).
         bot: '78badb13afd5cd8c0430a07d90637545',
+        // P251 (2026-11-12): l'autostart del bot di staging, la domanda 1430874 (attributo question-id del player,
+        // come il parametro autostartQuestionId). Solo staging: in produzione nessun autostart
+        autostart: '1430874',
         // P237b (2026-10-09): il bot d365d904 vive sul player di PRODUZIONE.
         // Verificato aprendo la stessa pagina sui due player: su staging-fe
         // esce una pagina vuota, su virtualassistant la chat si apre (il bot
@@ -310,6 +313,7 @@ var AMBIENTE = (function () {
 
 var tag = document.createElement("algho-viewer");
 tag.setAttribute("bot-id", AMBIENTE.bot);
+if (AMBIENTE.autostart) tag.setAttribute("question-id", AMBIENTE.autostart);
 tag.setAttribute("language", linguaPagina());
 tag.setAttribute("widget", "true");
 tag.setAttribute("audio", "false");
