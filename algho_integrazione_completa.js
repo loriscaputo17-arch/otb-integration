@@ -11,7 +11,7 @@
 (function () {
 // ============================================================
 // INTEGRAZIONE ALGHO COMPLETA per il sito Marni
-// - AJWT unsigned (identita' utente loggato da localStorage user_info)
+// - AJWT unsigned: solo "registrato" e genere, nessuna identita' (P254, 17/11)
 // - Caricamento widget Algho
 // - Snippet GPS per lo Store Locator
 // ============================================================
@@ -24,23 +24,16 @@ function b64url(obj) {
 }
 function creaAJWTunsigned(utente) {
   var header = { alg: 'none', typ: 'JWT' };
-  // I cookie di sessione restano sul browser: n8n non li vede. Ma l'AJWT
-  // viaggia fino ai flussi nell'header algho-json-web-token, quindi e' li'
-  // che va messa la prova di sessione. Senza, lo stato considera OSPITE
-  // qualunque cliente, e wishlist, profilo e guardaroba deviano sempre
-  // sull'alternativa anche a chi ha fatto l'accesso.
-  var cquid = leggiCookie('cquid') || '';
-  var dwsid = leggiCookie('dwsid') || '';
+  // P254 (17/11/2026, segnalazione di sicurezza OTB): questo token NON e' firmato,
+  // quindi chiunque puo' scriverne uno uguale. Prima portava email, customerId,
+  // il cookie cquid e un pezzo di dwsid (la sessione Salesforce), e il flusso
+  // ordini lo usava come prova d'identita': chi conosceva email e customerId di
+  // un cliente vedeva e annullava i suoi ordini. Ora porta solo cio' che non da'
+  // accesso a niente: che il cliente e' registrato e il genere del profilo.
+  // L'identita' vera arrivera' con il token SLAS firmato (session bridge).
   var payload = {
     payload: {
-      email: utente.email || '',
-      customerId: utente.customerId || '',
-      customerNo: utente.customerNo || '',
-      name: utente.name || '',
-      // prova di sessione reale, gia' verificata da isLoginAttivo()
-      sessione: true,
-      cquid: cquid,
-      dwsid: dwsid ? dwsid.slice(0, 12) : '',   // basta un frammento
+      registrato: true,
       // P237 (16/10/2026): il genere del profilo, cosi' la ricerca non chiede
       // "È per donna, uomo o bambino?" a chi ha fatto l'accesso
       genere: genereProfilo(),
