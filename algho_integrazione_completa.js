@@ -30,7 +30,8 @@ function creaAJWTunsigned(utente) {
   // ordini lo usava come prova d'identita': chi conosceva email e customerId di
   // un cliente vedeva e annullava i suoi ordini. Ora porta solo cio' che non da'
   // accesso a niente: che il cliente e' registrato e il genere del profilo.
-  // L'identita' vera arrivera' con il token SLAS firmato (session bridge).
+  // P255 (18/11/2026): lo script non legge piu' email e customerId: sa solo se
+  // il cliente e' loggato. Gli ordini si verificano con numero + email lato server.
   var payload = {
     payload: {
       registrato: true,
@@ -109,39 +110,18 @@ function isLoginAttivo() {
 }
 
 // recupera i dati dell'utente loggato dal sito Marni.
+// P255 (18/11/2026, segnalazione di sicurezza OTB): nessun identificativo del
+// cliente (email, customerId) viene letto o tenuto in memoria: solo loggato si/no
+// e il genere del profilo, che finiscono nel token per Algho.
 function getUtenteLoggato() {
-  // se non c'e' login attivo, sono guest (ignoro user_info residuo)
-  if (!isLoginAttivo()) {
-    return { email: '', customerId: '', customerNo: '', name: '' };
-  }
-  // login attivo: leggo i dati da user_info
-  try {
-    var raw = localStorage.getItem('user_info');
-    if (raw) {
-      var info = JSON.parse(raw);
-      if (info && (info.customer_id || info.customer_email)) {
-        return {
-          email: info.customer_email || '',
-          customerId: info.customer_id || '',
-          customerNo: info.customer_cc_id || '',
-          name: ''
-        };
-      }
-    }
-  } catch (e) {}
-  // login attivo ma user_info assente: provo il cookie email
-  var email = '';
-  var attn = getCookie('attntv_mstore_email');
-  if (attn) email = attn.split(':')[0].trim();
-  if (email && email.indexOf('@') === -1) email = '';
-  return { email: email, customerId: '', customerNo: '', name: '' };
+  return { registrato: isLoginAttivo(), genere: genereProfilo() };
 }
 // imposta l'AJWT su Algho (se l'utente e' loggato)
 var _ultimaIdentita = '';
 
 function impostaIdentitaAlgho() {
   var u = getUtenteLoggato();
-  if (!u.email && !u.customerId) {
+  if (!u.registrato) {
     // Guest: niente AJWT. Ma se prima era loggato ed e' uscito, bisogna
     // dirlo, altrimenti Algho continua a mandare l'identita' di prima.
     if (_ultimaIdentita && window.algho && window.algho.setAJWT) {
@@ -150,7 +130,7 @@ function impostaIdentitaAlgho() {
     }
     return false;
   }
-  var firma = (u.customerId || '') + '|' + (u.email || '');
+  var firma = 'registrato|' + (u.genere || '');
   // P245 (04/11/2026): si rimanda solo se l'identita' e' cambiata, come dice il
   // controllo ogni 5 s qui sotto. Prima il token partiva a ogni giro.
   if (firma === _ultimaIdentita) return true;
@@ -1728,8 +1708,7 @@ window.__alghoDiagnostica = function () {
   var out = {
     login_rilevato: isLoginAttivo(),
     user_info_presente: !!info,
-    email: u.email || '(vuota)',
-    customerId: u.customerId || '(vuoto)',
+    genere_profilo: u.genere || '(non indicato)',
     cookie_cquid: leggiCookie('cquid') || '(assente)',
     algho_pronto: !!(window.algho && window.algho.setAJWT),
     ajwt_inviato: false,
@@ -1757,7 +1736,7 @@ window.__alghoDiagnostica = function () {
       }catch(e){ return '(errore)'; }
     })()
   };
-  if (window.algho && window.algho.setAJWT && (u.email || u.customerId)) {
+  if (window.algho && window.algho.setAJWT && u.registrato) {
     try { window.algho.setAJWT(creaAJWTunsigned(u)); out.ajwt_inviato = true; } catch (e) { out.errore = String(e); }
   }
   console.log(out);
