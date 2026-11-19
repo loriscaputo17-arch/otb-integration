@@ -207,6 +207,75 @@ function linguaPagina() {
   return /^(it|en|fr|de|es|ja|ko)$/.test(l) ? l : 'en';
 }
 
+// ---------- CONTROLLER SFCC: SITO E LOCALE DELLA PAGINA (MCR-4858, 19/11/2026) ----------
+// Un solo punto da cui passano tutte le chiamate ai controller del sito
+// (/on/demandware.store/Sites-<sito>-Site/<locale>/<Controller>): carrello,
+// mini-carrello, contatore, preferiti. Prima ogni sezione aveva la sua copia
+// di endpoint(), con base fissa Sites-MarniEU-Site/it_IT, presa dal primo link
+// della pagina che conteneva /on/demandware.store/: se la lettura falliva, o il
+// link era di un altro sito, le azioni di un cliente US o GB finivano sul sito
+// EU italiano senza che nessuno se ne accorgesse.
+// Ora, in ordine:
+//  1. il contesto che SFCC scrive nella pagina (window.CQuotient.siteId e .locale);
+//  2. il mercato dal segmento della URL (/en-us/ -> MarniUS, en_US), con la
+//     stessa tabella dei flussi n8n (src/comune/mercati.js);
+//  3. altrimenti nessun default: le funzioni di carrello e preferiti della chat
+//     si spengono e in console resta un errore chiaro.
+var ControllerSFCC = (function () {
+  var SITI = {
+    'it-it': 'MarniEU', 'fr-fr': 'MarniEU', 'de-de': 'MarniEU', 'es-es': 'MarniEU',
+    'en-gb': 'MarniGB', 'en-us': 'MarniUS', 'en-ca': 'MarniCA', 'fr-ca': 'MarniCA',
+    'ja-jp': 'MarniJP', 'ko-kr': 'MarniKR', 'en-hk': 'MarniHK', 'zh-hk': 'MarniHK',
+    'en-ae': 'MarniMENA', 'ar-ae': 'MarniMENA'
+  };
+  var base = null, fonte = null, avvisato = false;
+  function valido(sito, locale) {
+    return /^Marni[A-Za-z]+$/.test(sito || '') && /^[a-z]{2}_[A-Z]{2}$/.test(locale || '');
+  }
+  function calcola() {
+    // 1. contesto SFCC della pagina
+    try {
+      var cq = window.CQuotient;
+      if (cq && valido(cq.siteId, cq.locale)) return { sito: cq.siteId, locale: cq.locale, fonte: 'CQuotient' };
+    } catch (e) {}
+    // 2. mercato dalla URL
+    var m = String(location.pathname || '').match(/^\/([a-z]{2})-([a-z]{2})(\/|$)/i);
+    if (m) {
+      var seg = (m[1] + '-' + m[2]).toLowerCase();
+      var loc = m[1].toLowerCase() + '_' + m[2].toUpperCase();
+      if (SITI[seg]) return { sito: SITI[seg], locale: loc, fonte: 'url' };
+    }
+    return null;
+  }
+  function radice() {
+    if (base) return base;
+    var c = calcola();
+    if (c) {
+      base = '/on/demandware.store/Sites-' + c.sito + '-Site/' + c.locale + '/';
+      fonte = c.fonte;
+      return base;
+    }
+    if (!avvisato) {
+      avvisato = true;
+      try { console.error('[Marni chat] MCR-4858: sito e locale SFCC non trovati (niente window.CQuotient, mercato "' +
+        location.pathname + '" non riconosciuto). Carrello, mini-carrello e preferiti dalla chat disattivati: nessuna chiamata parte verso un sito di ripiego.'); } catch (e) {}
+    }
+    return null;
+  }
+  return {
+    // URL del controller, oppure null se il contesto manca
+    url: function (nome) { var b = radice(); return b ? b + nome : null; },
+    // fetch verso un controller: se il contesto manca la promessa viene rifiutata, senza chiamate
+    fetch: function (nome, opzioni) {
+      var u = this.url(nome);
+      return u ? fetch(u, opzioni) : Promise.reject(new Error('MCR-4858: contesto SFCC assente'));
+    },
+    // per la diagnostica in console: window.__controllerSFCC()
+    stato: function () { var b = radice(); return { base: b, fonte: fonte }; }
+  };
+})();
+window.__controllerSFCC = function () { return ControllerSFCC.stato(); };
+
 // ---------- MEMORIA DELLE SCELTE IN CHAT (05/11/2026) ----------
 // La taglia scelta nel pannello (e il bottone "Aggiungi al carrello") mettono il capo nel carrello del sito senza
 // passare dalla chat: la chat non lo sa. Sulla pagina carrello ogni aggiunta ricarica la pagina, e la chat ridisegna
@@ -1334,7 +1403,7 @@ function eventoGA(nome, dati) {
       //    Su questo tema il numero e' il testo dell'elemento con le classi
       //    .minicart-action.counter-icon, e il contenuto del carrello sta in
       //    .product-summary: se e' vuoto, il conteggio e' zero.
-      fetch('/on/demandware.store/Sites-MarniEU-Site/it_IT/Cart-MiniCartShow', { credentials: 'include' })
+      ControllerSFCC.fetch('Cart-MiniCartShow', { credentials: 'include' })
         .then(function(r){ return r.ok ? r.text() : null; })
         .then(function(html){
           if (!html) return;
@@ -1415,21 +1484,9 @@ function eventoGA(nome, dati) {
 // perche' questa funzione gira dentro la pagina.
 (function TrasferimentoCarrello(){
 
-  function endpoint(nome){
-    // ricavo il percorso dei controller dalla pagina, cosi' resta valido
-    // anche cambiando sito o lingua
-    var base = '/on/demandware.store/Sites-MarniEU-Site/it_IT/';
-    try{
-      var a = document.querySelector('a[href*="/on/demandware.store/"], form[action*="/on/demandware.store/"]');
-      var href = a ? (a.getAttribute('href') || a.getAttribute('action') || '') : '';
-      var m = href.match(/(\/on\/demandware\.store\/Sites-[^/]+\/[^/]+\/)/);
-      if (m) base = m[1];
-    }catch(e){}
-    return base + nome;
-  }
-
+  // MCR-4858: i controller passano da ControllerSFCC (sito e locale della pagina)
   function aggiungiUno(pid, quantita){
-    return fetch(endpoint('Cart-AddProduct'), {
+    return ControllerSFCC.fetch('Cart-AddProduct', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
@@ -1497,23 +1554,14 @@ function eventoGA(nome, dati) {
     // P234: orari della settimana nella card negozio del v3
     '.mr-negozio-orari{display:block;font-size:12px;line-height:16px;color:#6B6B6B;margin-top:4px}';
 
-  function endpoint(nome) {
-    var base = '/on/demandware.store/Sites-MarniEU-Site/it_IT/';
-    try {
-      var a = document.querySelector('a[href*="/on/demandware.store/"], form[action*="/on/demandware.store/"]');
-      var href = a ? (a.getAttribute('href') || a.getAttribute('action') || '') : '';
-      var m = href.match(/(\/on\/demandware\.store\/Sites-[^/]+\/[^/]+\/)/);
-      if (m) base = m[1];
-    } catch (e) {}
-    return base + nome;
-  }
+  // MCR-4858: i controller passano da ControllerSFCC (sito e locale della pagina)
   function testo(n) { return n ? String(n.textContent || '').replace(/\s+/g, ' ').trim() : ''; }
   function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
 
   // Le righe del carrello lette dal mini-carrello del sito: sono gli stessi dati
   // che il cliente vede aprendo il carrello in alto a destra.
   function leggiRighe() {
-    return fetch(endpoint('Cart-MinicartContent'), { credentials: 'include' })
+    return ControllerSFCC.fetch('Cart-MinicartContent', { credentials: 'include' })
       .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
       .then(function (html) {
         var d = new DOMParser().parseFromString(html, 'text/html');
@@ -1523,7 +1571,7 @@ function eventoGA(nome, dati) {
           var img = box && box.querySelector('img');
           righe.push({
             pid: b.getAttribute('data-pid'), uuid: b.getAttribute('data-uuid'),
-            azione: b.getAttribute('data-action') || endpoint('Cart-RemoveProductLineItem'),
+            azione: b.getAttribute('data-action') || ControllerSFCC.url('Cart-RemoveProductLineItem') || '',
             nome: b.getAttribute('data-name') || testo(box && box.querySelector('.product-title')),
             dett: box ? Array.prototype.map.call(box.querySelectorAll('.detail-attribute'), function (x) { return testo(x).replace(/\s*(Modifica|Edit|Modifier|Bearbeiten|Editar)\s*$/i, ''); }).join(' · ') : '',
             prezzo: testo(box && box.querySelector('.line-item-total-price')),
@@ -1531,7 +1579,7 @@ function eventoGA(nome, dati) {
           });
         });
         // il totale da Cart-GetCart (numero e valuta), formattato nella lingua della pagina
-        return fetch(endpoint('Cart-GetCart'), { credentials: 'include' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+        return ControllerSFCC.fetch('Cart-GetCart', { credentials: 'include' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
           .then(function (c) {
             var tot = '';
             // stesso formato delle righe del sito ("€1.495,00"): si sostituisce il numero nel prezzo della prima riga
@@ -1544,6 +1592,7 @@ function eventoGA(nome, dati) {
       });
   }
   function rimuovi(r) {
+    if (!r.azione) return Promise.resolve(false);
     var u = r.azione + (r.azione.indexOf('?') >= 0 ? '&' : '?') + 'pid=' + encodeURIComponent(r.pid) + '&uuid=' + encodeURIComponent(r.uuid);
     return fetch(u, { credentials: 'include', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
       .then(function (x) { return x.ok ? x.json().catch(function () { return {}; }) : null; })
@@ -1645,18 +1694,9 @@ function eventoGA(nome, dati) {
     '.mr-pref-capo img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}' +
     '.mr-pref-capo .mr-rimuovi{cursor:pointer;text-decoration:underline;display:inline-block;margin-top:4px}' +
     '.mr-pref-esito{width:100%;font-size:12px;padding:4px 0}';
-  function endpoint(nome) {
-    var base = '/on/demandware.store/Sites-MarniEU-Site/it_IT/';
-    try {
-      var a = document.querySelector('a[href*="/on/demandware.store/"], form[action*="/on/demandware.store/"], [data-add*="/on/demandware.store/"]');
-      var href = a ? (a.getAttribute('href') || a.getAttribute('action') || a.getAttribute('data-add') || '') : '';
-      var m = href.match(/(\/on\/demandware\.store\/Sites-[^/]+\/[^/]+\/)/);
-      if (m) base = m[1];
-    } catch (e) {}
-    return base + nome;
-  }
+  // MCR-4858: i controller passano da ControllerSFCC (sito e locale della pagina)
   function posta(nome, pid) {
-    return fetch(endpoint(nome), { method: 'POST', credentials: 'include',
+    return ControllerSFCC.fetch(nome, { method: 'POST', credentials: 'include',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
       body: 'pid=' + encodeURIComponent(pid) + (nome === 'Wishlist-AddProduct' ? '&optionId=&optionVal=' : '') })
       .then(function (r) { return r.ok ? r.json().catch(function () { return {}; }) : null; })
@@ -1668,7 +1708,7 @@ function eventoGA(nome, dati) {
   function disegna(box, esito) {
     box.textContent = '';
     if (esito) box.appendChild(el('div', 'mr-pref-esito', esito));
-    return fetch(endpoint('Wishlist-GetWishlist'), { credentials: 'include' }).then(function (r) { return r.json(); }).then(function (j) {
+    return ControllerSFCC.fetch('Wishlist-GetWishlist', { credentials: 'include' }).then(function (r) { return r.json(); }).then(function (j) {
       var it = Array.isArray(j.item) ? j.item : [];
       if (!it.length) { box.appendChild(el('div', 'mr-pref-esito', L.vuoto)); return; }
       var loc = (location.pathname.match(/^\/([a-z]{2}-[a-z]{2})\//i) || [null, 'it-it'])[1];
