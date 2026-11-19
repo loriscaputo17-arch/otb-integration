@@ -9,6 +9,11 @@
 // che ne carica settantasei di script, prima o poi si scontrano.
 // ============================================================
 (function () {
+// MCR-4851 (19/11/2026): se il tag finisce due volte nella pagina, la seconda
+// copia non fa niente. Altrimenti due <algho-viewer>, due player e ogni
+// ascoltatore registrato due volte.
+if (window.__mrIntegrazioneAlgho) return;
+window.__mrIntegrazioneAlgho = true;
 // ============================================================
 // INTEGRAZIONE ALGHO COMPLETA per il sito Marni
 // - AJWT unsigned: solo "registrato" e genere, nessuna identita' (P254, 17/11)
@@ -256,6 +261,15 @@ var MemoriaChat = (function () {
   };
 })();
 
+// ---------- VERSIONE DEL PLAYER ALGHO (MCR-4851, 19/11/2026) ----------
+// Si carica direttamente il file con la versione nel percorso. L'URL senza
+// versione (/algho-viewer.min.js) e' solo un caricatore di 515 byte che
+// inietta a sua volta /js/<ultima versione>/algho-viewer.min.js: due richieste
+// per pagina, e la versione cambiava senza che nessuno lo decidesse.
+// Per aggiornare: vedi "Aggiornare il player Algho" nel README.
+var ALGHO_VERSIONE = '2.1.605';
+var ALGHO_PLAYER = 'https://virtualassistant.alghoncloud.com/js/' + ALGHO_VERSIONE + '/algho-viewer.min.js';
+
 // ---------- AMBIENTE ----------
 // Lo stesso file sta su staging e su produzione: lo decide il dominio, non chi
 // lo incolla. Senza questo, chi mette il tag su www.marni.com si porta dietro
@@ -278,10 +292,10 @@ var AMBIENTE = (function () {
         // si chiama "Marni_1"). Tenendo qui staging-fe, su staging.marni.com
         // il widget non comparirebbe affatto: il player e il bot devono
         // stare nello stesso ambiente.
-        player: 'https://virtualassistant.alghoncloud.com/algho-viewer.min.js' }
+        player: ALGHO_PLAYER }
     : { nome: 'produzione',
         bot: '4b3aed95d31a91a91e0b4d53e80abb93',
-        player: 'https://virtualassistant.alghoncloud.com/algho-viewer.min.js' };
+        player: ALGHO_PLAYER };
 })();
 
 var tag = document.createElement("algho-viewer");
@@ -402,13 +416,18 @@ tag.setAttribute("limit-suggestion", "6");
 })();
 document.body.appendChild(tag);
 
+// MCR-4851: id "algho-viewer-js", lo stesso che controlla il caricatore di
+// Algho: se qualcuno aggiungesse anche il tag senza versione, quello vede il
+// player gia' presente e non ne inietta un secondo.
+if (!document.getElementById("algho-viewer-js")) {
 var script = document.createElement("script");
-script.setAttribute("id", "algho-viewer-module");
+script.setAttribute("id", "algho-viewer-js");
 script.setAttribute("type", "text/javascript");
 script.setAttribute("defer", "defer");
 script.setAttribute("charset", "UTF-8");
 script.setAttribute("src", AMBIENTE.player); // il player sta dove sta il bot
 document.body.appendChild(script);
+}
 
 // ---------- IL "+" SULLE SCHEDE PRODOTTO (P223d, 07/10/2026) ----------
 // Il player, in modalita' widget, rifiuta l'HTML che contiene un <button>:
