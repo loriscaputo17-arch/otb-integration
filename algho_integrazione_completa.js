@@ -734,6 +734,26 @@ document.body.appendChild(script);
 })();
 
 // ---------- 4. Imposta l'AJWT QUANDO Algho e' pronto ----------
+// P47 (2026-09-21): il login puo' avvenire senza ricaricare la pagina (popup/AJAX):
+// la conversazione gia' aperta deve accorgersene. MCR-4859 (19/11/2026): prima lo
+// si controllava con un timer ogni 5 s, per sempre, anche a chat chiusa. Ora si
+// ricontrolla solo quando serve: all'apertura della chat, prima di ogni messaggio
+// del cliente (cosi' il messaggio parte gia' con l'identita' giusta), quando la
+// scheda torna visibile o riprende il fuoco (login o logout fatti altrove) e
+// quando un'altra scheda cambia i dati del cliente. impostaIdentitaAlgho() manda
+// il token solo se l'identita' e' cambiata: chiamarla in piu' non costa niente.
+(function identitaSuEventi() {
+  function ricontrolla() { try { impostaIdentitaAlgho(); } catch (e) {} }
+  var host = document.querySelector('algho-viewer');
+  if (host) {
+    host.addEventListener('alghoShow', ricontrolla);
+    host.addEventListener('alghoPreSendMessage', ricontrolla);
+  }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) ricontrolla(); });
+  window.addEventListener('focus', ricontrolla);
+  window.addEventListener('pageshow', ricontrolla);
+  window.addEventListener('storage', function (e) { if (!e.key || e.key === 'user_info') ricontrolla(); });
+})();
 (function attendiAlghoEImpostaAJWT() {
   var tentativi = 0;
   var maxTentativi = 60; // ~30s
@@ -742,11 +762,6 @@ document.body.appendChild(script);
     if (window.algho && window.algho.setAJWT) {
       impostaIdentitaAlgho();
       clearInterval(timer);
-      // P47 (2026-09-21): il login puo' avvenire senza ricaricare la pagina
-      // (accesso via popup/AJAX): senza questo controllo la conversazione gia'
-      // aperta restava "ospite" fino al reload. impostaIdentitaAlgho() manda il
-      // token solo se l'identita' e' cambiata.
-      setInterval(function () { try { impostaIdentitaAlgho(); } catch (e) {} }, 5000);
     } else if (tentativi >= maxTentativi) {
       clearInterval(timer);
     }
@@ -998,7 +1013,15 @@ function eventoGA(nome, dati) {
     history[m] = function () { var r = orig.apply(this, arguments); setTimeout(inviaContesto, 300); return r; };
   });
   window.addEventListener('popstate', function () { setTimeout(inviaContesto, 300); });
-  setInterval(inviaContesto, 2000);   // rete di sicurezza per i siti che cambiano vista senza eventi
+  window.addEventListener('hashchange', function () { setTimeout(inviaContesto, 300); });
+  // MCR-4859 (19/11/2026): al posto della "rete di sicurezza" ogni 2 s, per sempre,
+  // si riallinea quando la chat si apre e prima di ogni messaggio del cliente: e' li'
+  // che il contesto serve. inviaContesto() non fa niente se la URL non e' cambiata.
+  var hostC = document.querySelector('algho-viewer');
+  if (hostC) {
+    hostC.addEventListener('alghoShow', inviaContesto);
+    hostC.addEventListener('alghoPreSendMessage', inviaContesto);
+  }
 })();
 
 
@@ -1447,8 +1470,12 @@ function eventoGA(nome, dati) {
   // Quando compare la conferma di un'aggiunta, allineiamo il sito.
   function osserva(){
     try{
+      // MCR-4859: solo sullo shadow DOM del widget. Prima, se lo shadow DOM non era
+      // ancora pronto, si ripiegava su document.body con subtree: l'observer
+      // scattava a ogni cambiamento della PLP o della PDP.
       var host = document.querySelector('algho-viewer');
-      var radice = (host && host.shadowRoot) ? host.shadowRoot : document.body;
+      var radice = host && host.shadowRoot;
+      if (!radice) return;
       var mo = new MutationObserver(function(muts){
         for (var i = 0; i < muts.length; i++) {
           var nodi = muts[i].addedNodes || [];
@@ -1468,8 +1495,9 @@ function eventoGA(nome, dati) {
   var att = 0;
   var t = setInterval(function(){
     att++;
-    if (document.querySelector('algho-viewer')) { clearInterval(t); osserva(); }
-    else if (att > 60) clearInterval(t);
+    var h = document.querySelector('algho-viewer');
+    if (h && h.shadowRoot) { clearInterval(t); osserva(); }
+    else if (att > 120) clearInterval(t);
   }, 500);
 
   // richiamabile a mano per provarla
