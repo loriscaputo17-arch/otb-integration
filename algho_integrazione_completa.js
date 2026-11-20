@@ -340,14 +340,13 @@ var MemoriaChat = (function () {
   };
 })();
 
-// ---------- VERSIONE DEL PLAYER ALGHO (MCR-4851, 19/11/2026) ----------
-// Si carica direttamente il file con la versione nel percorso. L'URL senza
-// versione (/algho-viewer.min.js) e' solo un caricatore di 515 byte che
-// inietta a sua volta /js/<ultima versione>/algho-viewer.min.js: due richieste
-// per pagina, e la versione cambiava senza che nessuno lo decidesse.
-// Per aggiornare: vedi "Aggiornare il player Algho" nel README.
-var ALGHO_VERSIONE = '2.1.605';
-var ALGHO_PLAYER = 'https://virtualassistant.alghoncloud.com/js/' + ALGHO_VERSIONE + '/algho-viewer.min.js';
+// ---------- PLAYER ALGHO (P261, 20/11/2026) ----------
+// Su indicazione di Algho si carica il caricatore senza versione
+// (/algho-viewer.min.js): e' lui a iniettare /js/<versione corrente>/algho-viewer.min.js,
+// cosi' arrivano le correzioni di Algho (accessibilita' compresa) senza toccare
+// questo file. Prima (P256, MCR-4851) la versione era fissata a 2.1.605 e le
+// modifiche di Algho non si vedevano.
+var ALGHO_PLAYER = 'https://virtualassistant.alghoncloud.com/algho-viewer.min.js';
 
 // ---------- AMBIENTE ----------
 // Lo stesso file sta su staging e su produzione: lo decide il dominio, non chi
@@ -495,12 +494,14 @@ tag.setAttribute("limit-suggestion", "6");
 })();
 document.body.appendChild(tag);
 
-// MCR-4851: id "algho-viewer-js", lo stesso che controlla il caricatore di
-// Algho: se qualcuno aggiungesse anche il tag senza versione, quello vede il
-// player gia' presente e non ne inietta un secondo.
-if (!document.getElementById("algho-viewer-js")) {
+// P261: il nostro tag NON ha id "algho-viewer-js": e' l'id che il caricatore di
+// Algho cerca prima di iniettare il player vero, e lo da' proprio al player. Se
+// lo avesse il nostro tag, il caricatore troverebbe se stesso e non caricherebbe
+// niente. Il player non si carica due volte: niente se c'e' gia' il player
+// (algho-viewer-js) o il nostro caricatore (algho-viewer-caricatore).
+if (!document.getElementById("algho-viewer-js") && !document.getElementById("algho-viewer-caricatore")) {
 var script = document.createElement("script");
-script.setAttribute("id", "algho-viewer-js");
+script.setAttribute("id", "algho-viewer-caricatore");
 script.setAttribute("type", "text/javascript");
 script.setAttribute("defer", "defer");
 script.setAttribute("charset", "UTF-8");
