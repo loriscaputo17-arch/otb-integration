@@ -37,9 +37,15 @@ function creaAJWTunsigned(utente) {
   // accesso a niente: che il cliente e' registrato e il genere del profilo.
   // P255 (18/11/2026): lo script non legge piu' email e customerId: sa solo se
   // il cliente e' loggato. Gli ordini si verificano con numero + email lato server.
+  // P260 (20/11/2026, MCR-4793, scelta del PM con il rischio noto): tornano email
+  // e customerId, SOLO perche' il flusso ordini dica "non risultano ordini" a chi
+  // non ne ha (lo conferma Salesforce, col customerId). Il token resta non
+  // firmato: il flusso non ne ricava ne' elenco ne' ordini ne' annullo.
   var payload = {
     payload: {
       registrato: true,
+      email: utente.email || '',
+      customerId: utente.customerId || '',
       // P237 (16/10/2026): il genere del profilo, cosi' la ricerca non chiede
       // "È per donna, uomo o bambino?" a chi ha fatto l'accesso
       genere: genereProfilo(),
@@ -115,11 +121,15 @@ function isLoginAttivo() {
 }
 
 // recupera i dati dell'utente loggato dal sito Marni.
-// P255 (18/11/2026, segnalazione di sicurezza OTB): nessun identificativo del
-// cliente (email, customerId) viene letto o tenuto in memoria: solo loggato si/no
-// e il genere del profilo, che finiscono nel token per Algho.
+// P255 (18/11/2026, segnalazione di sicurezza OTB): solo loggato si/no e genere.
+// P260 (20/11/2026, MCR-4793): per il loggato anche email e customerId di
+// user_info, solo per il token di Algho (vedi creaAJWTunsigned).
 function getUtenteLoggato() {
-  return { registrato: isLoginAttivo(), genere: genereProfilo() };
+  if (!isLoginAttivo()) return { registrato: false, genere: '', email: '', customerId: '' };
+  var u = datiUtente() || {};
+  var email = String(u.customer_email || '').trim();
+  if (email.indexOf('@') < 0) email = '';
+  return { registrato: true, genere: genereProfilo(), email: email, customerId: String(u.customer_id || '') };
 }
 // imposta l'AJWT su Algho (se l'utente e' loggato)
 var _ultimaIdentita = '';
@@ -135,7 +145,7 @@ function impostaIdentitaAlgho() {
     }
     return false;
   }
-  var firma = 'registrato|' + (u.genere || '');
+  var firma = 'registrato|' + (u.genere || '') + '|' + u.customerId + '|' + u.email;
   // P245 (04/11/2026): si rimanda solo se l'identita' e' cambiata, come dice il
   // controllo ogni 5 s qui sotto. Prima il token partiva a ogni giro.
   if (firma === _ultimaIdentita) return true;
