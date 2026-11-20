@@ -1871,6 +1871,7 @@ window.__alghoDiagnostica = function () {
   // in cui si e' gia' non si ricarica niente
   function segui(a, auto) {
     var dest = new URL(a.href, window.location.href);
+    ricordaEmailOrdine(a, dest.hash);
     var qui = dest.pathname === window.location.pathname && dest.search === window.location.search;
     // P248: la guida alle taglie del capo della pagina in cui si e' gia': si apre qui, senza ricaricare
     if (a.hasAttribute('data-mr-guida') && dest.pathname === window.location.pathname) { apriGuida(dest.hash); return; }
@@ -2002,12 +2003,36 @@ window.__alghoDiagnostica = function () {
 
   // P249 (06/11/2026, manipulation #06/#16/#18): il cliente ospite portato dalla chat sulla pagina d'aiuto
   // dell'ordine ("Il tuo ordine", "Resi e cambi"). Il flusso ordini manda il link con #mr-ordine=<numero>: qui
-  // si scrive il numero nel modulo della pagina (input orderNumber, uguale in tutte le lingue) e si mette il
-  // cursore sull'email, che scrive il cliente (l'email non va mai nei link). Poi si toglie il #mr-ordine
+  // si scrive il numero nel modulo della pagina (input orderNumber, uguale in tutte le lingue) e, da P259, anche
+  // l'email (orderEmail) passata fuori dall'indirizzo (vedi sotto). Poi si toglie il #mr-ordine
+  // MCR-4795 (20/11/2026): anche l'email, che il cliente ha gia' scritto in chat e MAO ha fatto combaciare con il
+  // numero. Mai nell'indirizzo: il flusso la mette in data-mr-email sul link; qui la si tiene in sessionStorage (questa
+  // scheda) solo per il tempo del cambio pagina, la si scrive nel modulo e la si cancella subito
+  var CHIAVE_EMAIL_ORDINE = 'marni_ordine_email';
+  function ricordaEmailOrdine(a, hash) {
+    try {
+      var m = String(hash || '').match(/^#mr-ordine=([A-Z]{2}\d{8})$/i), e = a.getAttribute('data-mr-email') || '';
+      if (m && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) sessionStorage.setItem(CHIAVE_EMAIL_ORDINE, JSON.stringify({ n: m[1].toUpperCase(), e: e, t: Date.now() }));
+    } catch (x) {}
+  }
+  function prendiEmailOrdine(numero) {
+    try {
+      var p = JSON.parse(sessionStorage.getItem(CHIAVE_EMAIL_ORDINE) || 'null');
+      sessionStorage.removeItem(CHIAVE_EMAIL_ORDINE);
+      return p && p.n === numero && Date.now() - p.t < 10 * 60 * 1000 ? String(p.e || '') : '';
+    } catch (x) { return ''; }
+  }
+  function scrivi(campo, valore) {
+    // il setter nativo: un campo gestito da uno script della pagina vede il valore nuovo
+    try { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(campo, valore); } catch (e) { campo.value = valore; }
+    campo.dispatchEvent(new Event('input', { bubbles: true }));
+    campo.dispatchEvent(new Event('change', { bubbles: true }));
+  }
   function compilaOrdine(hash) {
     var m = String(hash || '').match(/^#mr-ordine=([A-Z]{2}\d{8})$/i);
     if (!m) return false;
     var numero = m[1].toUpperCase();
+    var email = prendiEmailOrdine(numero);
     try { if (/^#mr-ordine=/.test(window.location.hash)) history.replaceState(history.state, '', window.location.pathname + window.location.search); } catch (e) {}
     var prove = 0;
     var t = setInterval(function () {
@@ -2015,14 +2040,17 @@ window.__alghoDiagnostica = function () {
       var n = [].slice.call(document.querySelectorAll('input[name="orderNumber"]')).filter(function (x) { return x.offsetParent; })[0];
       if (!n) { if (prove > 40) clearInterval(t); return; }   // la pagina non ha il modulo: niente
       clearInterval(t);
-      // il setter nativo: un campo gestito da uno script della pagina vede il valore nuovo
-      try { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(n, numero); } catch (e) { n.value = numero; }
-      n.dispatchEvent(new Event('input', { bubbles: true }));
-      n.dispatchEvent(new Event('change', { bubbles: true }));
+      scrivi(n, numero);
       var f = n.form || document;
       var e = f.querySelector('input[name="orderEmail"]');
+      if (e && email && !e.value) scrivi(e, email);
+      email = '';
       try { (e || n).scrollIntoView({ block: 'center' }); } catch (x) {}
-      try { if (e && !e.value) e.focus({ preventScroll: true }); } catch (x) {}
+      // con l'email gia' scritta il cursore va sul bottone del modulo; senza, sull'email
+      try {
+        if (e && !e.value) e.focus({ preventScroll: true });
+        else { var bt = f.querySelector('button[type="submit"], input[type="submit"]'); if (bt) bt.focus({ preventScroll: true }); }
+      } catch (x) {}
     }, 250);
     return true;
   }
