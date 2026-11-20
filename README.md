@@ -46,35 +46,28 @@ Il CSS di questo repo è il paracadute, e si prova con `?mr-css=github`.
 Le due copie si sono separate dopo P201 del 28/09: vedi
 `fase2/css_per_il_collega_14-10.md` per cosa manca da una parte e dall'altra.
 
-## Aggiornare il player Algho (MCR-4851)
+## Il player Algho (P261, 20/11/2026)
 
-Il player si carica **una volta sola, con la versione fissata** nel JS:
+Il player si carica dal **caricatore senza versione**, come indicato da Algho:
 
 ```js
-var ALGHO_VERSIONE = '2.1.605';
-// -> https://virtualassistant.alghoncloud.com/js/2.1.605/algho-viewer.min.js
+var ALGHO_PLAYER = 'https://virtualassistant.alghoncloud.com/algho-viewer.min.js';
 ```
 
-Non usare `https://virtualassistant.alghoncloud.com/algho-viewer.min.js` (senza
-versione): è un caricatore di 515 byte che inietta a sua volta
-`/js/<ultima versione>/algho-viewer.min.js`. Il risultato sono due richieste per
-pagina, e la versione cambia quando la cambia Algho, senza prove da parte nostra.
+Il caricatore inietta `/js/<versione corrente>/algho-viewer.min.js`: così arrivano
+subito le correzioni di Algho (anche l'accessibilità), senza toccare questo repo.
+Dal 19/11 (P256, MCR-4851) la versione era fissata a 2.1.605 e le modifiche di
+Algho non si vedevano: non rifissarla senza accordo con Algho.
 
-Per passare a una versione nuova:
+Il nostro tag `<script>` ha `id="algho-viewer-caricatore"` e **non**
+`algho-viewer-js`: quell'id lo cerca il caricatore prima di iniettare il player,
+e lo assegna al player stesso. Se lo avesse il nostro tag, il caricatore
+troverebbe se stesso e non caricherebbe niente. Il player non parte due volte:
+niente se nella pagina c'è già `algho-viewer-js` o `algho-viewer-caricatore`.
+L'integrazione intera non riparte se il suo tag è incluso due volte nella
+pagina (`window.__mrIntegrazioneAlgho`).
 
-1. Leggi l'ultima versione dal caricatore:
-   `curl -s https://virtualassistant.alghoncloud.com/algho-viewer.min.js | grep 'const v'`
-2. Verifica che il file esista:
-   `curl -sI https://virtualassistant.alghoncloud.com/js/<versione>/algho-viewer.min.js` (deve dare 200).
-3. Cambia `ALGHO_VERSIONE` nel JS e fai il push (solo staging legge questo repo).
-4. Su staging.marni.com prova almeno: apertura del widget, una ricerca con le
-   schede prodotto, il "+" al carrello, lo store locator e la chat in inglese.
-5. In DevTools > Network, filtro "algho-viewer": ci deve essere **una sola**
-   richiesta a `algho-viewer.min.js`, quella con la versione nuova (più il suo
-   pezzo `algho-viewer.chat.min.js`).
-6. Se qualcosa si rompe, si torna indietro rimettendo la versione precedente.
-
-Il tag `<script>` del player ha `id="algho-viewer-js"`, lo stesso id che controlla
-il caricatore di Algho: se qualcuno aggiungesse anche il tag senza versione, non
-inietterebbe un secondo player. E l'integrazione intera non riparte se il suo
-tag è incluso due volte nella pagina (`window.__mrIntegrazioneAlgho`).
+Prova dopo un cambio: in DevTools > Network, filtro "algho-viewer", ci devono
+essere `algho-viewer.min.js` (il caricatore) e `js/<versione>/algho-viewer.min.js`
+(una volta sola), poi apertura del widget, una ricerca con le schede, il "+" al
+carrello, lo store locator e la chat in inglese.
